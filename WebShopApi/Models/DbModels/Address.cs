@@ -22,8 +22,10 @@ public class Address
     [StringLength(100, MinimumLength = 2)]
     public string Phone { get; set; }
     
+    // Foreign Keys
     [ForeignKey("Customer")]
     public int FkCustomerId { get; set; }
     
+    // Navigational Properties
     public Customer Customer { get; set; }
 }

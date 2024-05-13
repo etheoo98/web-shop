@@ -18,5 +18,6 @@ public class Customer
     [StringLength(100, MinimumLength = 2)]
     public string LastName { get; set; }
     
+    // Navigational Properties
     public ICollection<CustomerOrder> CustomerOrders { get; set; }
 }

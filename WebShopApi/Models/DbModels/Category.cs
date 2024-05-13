@@ -12,5 +12,6 @@ public class Category
     [StringLength(100, MinimumLength = 5)]
     public string Description { get; set; }
 
+    // Navigational Properties
     public ICollection<ProductCategory> ProductCategories { get; set; }
 }

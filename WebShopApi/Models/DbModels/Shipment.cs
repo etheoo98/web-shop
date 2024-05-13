@@ -8,8 +8,10 @@ public class Shipment
     public DateTime ShippedDate { get; set; }
     public DateTime? DeliveryDate { get; set; }
     
+    // Foreign Keys
     [ForeignKey("Order")]
     public int FkOrderId { get; set; }
     
+    // Navigational Properties
     public Order Order { get; set; }
 }

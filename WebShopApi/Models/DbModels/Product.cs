@@ -17,13 +17,14 @@ public class Product
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public DateTime AddDate { get; set; } = DateTime.UtcNow;
-    public bool IsDiscontinued { get; set; } = false;
+    public bool IsDiscontinued { get; set; }
     
+    // Foreign Keys
     [ForeignKey("Discount")]
     public int? FkDiscountId { get; set; }
     
+    // Navigational Properties
     public Discount Discount { get; set; }
-    
     public ICollection<OrderProducts> OrderProducts { get; set; }
     public ICollection<ProductCategory> ProductCategories { get; set; }
 }
