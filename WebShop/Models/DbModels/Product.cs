@@ -1,0 +1,29 @@
+using System.Collections;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebShop.Models.DbModels;
+
+public class Product
+{
+    public int Id { get; set; }
+    
+    [StringLength(100, MinimumLength = 5)]
+    public string Name { get; set; }
+    
+    [StringLength(100, MinimumLength = 5)]
+    public string Description { get; set; }
+    
+    public decimal Price { get; set; }
+    public int Quantity { get; set; }
+    public DateTime AddDate { get; set; } = DateTime.UtcNow;
+    public bool IsDiscontinued { get; set; } = false;
+    
+    [ForeignKey("Discount")]
+    public int? FkDiscountId { get; set; }
+    
+    public Discount Discount { get; set; }
+    
+    public ICollection<OrderProducts> OrderProducts { get; set; }
+    public ICollection<ProductCategory> ProductCategories { get; set; }
+}
