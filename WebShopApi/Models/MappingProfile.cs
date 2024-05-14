@@ -9,7 +9,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // DbModels to Response DTOs
+        // Response - Map database model to DTO
         CreateMap<Address, AddressDto>();
         CreateMap<Category, CategoryDto>();
         CreateMap<Customer, CustomerDto>();
@@ -28,7 +28,7 @@ public class MappingProfile : Profile
         CreateMap<ProductCategory, ProductDto>()
             .ForMember(dest => dest.CategoryDtos, opt => opt.MapFrom(src => src.Category));
         
-        // Requests
+        // Requests - Map DTO to database model
         CreateMap<CreateCustomerDto, Customer>();
         CreateMap<CreateProductDto, Product>();
         CreateMap<CreateCategoryDto, Category>();

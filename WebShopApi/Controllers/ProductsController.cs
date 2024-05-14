@@ -12,6 +12,9 @@ namespace WebShop.Controllers;
 [ApiController]
 public class ProductsController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
+    //
+    // Fetches all Products
+    //
     [HttpGet]
     public async Task<IActionResult> Get()
     {
@@ -25,6 +28,9 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         return Ok(productDtos);
     }
 
+    //
+    // Creates a new Product
+    //
     [HttpPost]
     public async Task<IActionResult> Post(CreateProductDto dto)
     {
@@ -45,9 +51,9 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             if (dto.CategoryIds.Count > 0)
             {
                 var allDbCategoryIds = await context.Categories.Select(c => c.Id).ToListAsync();
-                var allCategoriesExist = dto.CategoryIds.All(id => allDbCategoryIds.Contains(id));
+                var categoriesExist = dto.CategoryIds.All(id => allDbCategoryIds.Contains(id));
                 
-                if (!allCategoriesExist) return BadRequest("Category IDs provided does not exist");
+                if (!categoriesExist) return BadRequest("Category IDs provided does not exist");
                 
                 foreach (var categoryId in dto.CategoryIds)
                 {
@@ -69,12 +75,12 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
 
             await transaction.CommitAsync();
 
-            return StatusCode(201);
+            return Created();
         }
         catch
         {
             await transaction.RollbackAsync();
-            return StatusCode(500); // 500 Internal Server Error, you can provide more details in exception handler.
+            return StatusCode(500);
         }
     }
 }
