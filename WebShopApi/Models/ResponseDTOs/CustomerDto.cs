@@ -10,7 +10,7 @@ public class CustomerDto
     [JsonPropertyName("email")]
     public string Email { get; set; }
     
-    [JsonPropertyName("passwords")]
+    [JsonPropertyName("password")]
     public string Password { get; set; }
     
     [JsonPropertyName("first-name")]
