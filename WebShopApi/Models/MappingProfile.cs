@@ -13,7 +13,13 @@ public class MappingProfile : Profile
         CreateMap<Address, AddressDto>();
         CreateMap<Category, CategoryDto>();
         CreateMap<Customer, CustomerDto>();
-        CreateMap<Order, OrderDto>();
+
+        CreateMap<Order, OrderDto>()
+            .ForMember(dest => dest.CustomerId,
+                opt => opt.MapFrom(src => src.CustomerOrders.Select(co => co.Customer.Id).FirstOrDefault()))
+            .ForMember(dest => dest.ProductDtos, opt => opt.MapFrom(src => src.OrderProducts.Select(op => op.Product)));
+
+        
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.CategoryDtos, opt => opt.MapFrom(src => src.ProductCategories.Select(pc => pc.Category)));
         
@@ -32,5 +38,6 @@ public class MappingProfile : Profile
         CreateMap<CreateCustomerDto, Customer>();
         CreateMap<CreateProductDto, Product>();
         CreateMap<CreateCategoryDto, Category>();
+        CreateMap<CreateOrderDto, Order>();
     }
 }
