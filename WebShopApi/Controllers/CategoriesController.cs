@@ -13,7 +13,7 @@ namespace WebShop.Controllers;
 public class CategoriesController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
     //
-    // GET Fetches all Categories
+    // Fetches all Categories
     //
     [HttpGet]
     public async Task<IActionResult> Get()

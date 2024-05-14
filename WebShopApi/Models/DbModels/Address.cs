@@ -7,19 +7,19 @@ public class Address
 {
     public int Id { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string Country { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string City { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string PostalCode { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string Street { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string Phone { get; set; }
     
     // Foreign Keys

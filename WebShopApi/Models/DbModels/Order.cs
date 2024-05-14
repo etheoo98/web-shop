@@ -9,4 +9,5 @@ public class Order
 
     // Navigational Properties
     public ICollection<OrderProducts> OrderProducts { get; set; }
+    public ICollection<CustomerOrder> CustomerOrders { get; set; }
 }

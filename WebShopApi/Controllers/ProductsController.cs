@@ -12,6 +12,9 @@ namespace WebShop.Controllers;
 [ApiController]
 public class ProductsController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
+    //
+    // Fetches all Products
+    //
     [HttpGet]
     public async Task<IActionResult> Get()
     {
@@ -25,16 +28,25 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         return Ok(productDtos);
     }
 
+    //
+    // Creates a new Product
+    //
     [HttpPost]
     public async Task<IActionResult> Post(CreateProductDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
+        // Validation
+        if (!ModelState.IsValid || dto.CategoryIds.Count == 0) return BadRequest("Missing property values");
         
         var existingProduct = context.Products.Any(p => p.Name == dto.Name);
         if (existingProduct) return Conflict("Product name already exists");
         
+        var allDbCategoryIds = await context.Categories.Select(c => c.Id).ToListAsync();
+        var categoriesExist = dto.CategoryIds.All(id => allDbCategoryIds.Contains(id));
+            
+        if (!categoriesExist) return BadRequest("Category IDs provided does not exist");
+        
+        // Begin transaction
         await using var transaction = await context.Database.BeginTransactionAsync();
-    
         try
         {
             var product = mapper.Map<Product>(dto);
@@ -42,39 +54,26 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
             
-            if (dto.CategoryIds.Count > 0)
+            foreach (var categoryId in dto.CategoryIds)
             {
-                var allDbCategoryIds = await context.Categories.Select(c => c.Id).ToListAsync();
-                var allCategoriesExist = dto.CategoryIds.All(id => allDbCategoryIds.Contains(id));
-                
-                if (!allCategoriesExist) return BadRequest("Category IDs provided does not exist");
-                
-                foreach (var categoryId in dto.CategoryIds)
+                var productCategory = new ProductCategory
                 {
-                    var productCategory = new ProductCategory
-                    {
-                        FkProductId = product.Id,
-                        FkCategoryId = categoryId
-                    };
+                    FkProductId = product.Id,
+                    FkCategoryId = categoryId
+                };
 
-                    await context.ProductCategories.AddAsync(productCategory);
-                }
-
-                await context.SaveChangesAsync();
-            }
-            else
-            {
-                return BadRequest("No category IDs provided");
+                await context.ProductCategories.AddAsync(productCategory);
             }
 
+            await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            return StatusCode(201);
+            return Created();
         }
         catch
         {
             await transaction.RollbackAsync();
-            return StatusCode(500); // 500 Internal Server Error, you can provide more details in exception handler.
+            return StatusCode(500);
         }
     }
 }
