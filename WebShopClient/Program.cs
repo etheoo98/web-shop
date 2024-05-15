@@ -12,9 +12,7 @@ namespace WebShopClient
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.           
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();            
 
             /****************************************** IDENTITY USER - DBCONTEXT ****************************************
             **************************************************************************************************************
@@ -31,12 +29,25 @@ namespace WebShopClient
 
             builder.Services.AddHttpClient("API Client", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7190");
+                client.BaseAddress = new Uri("https://localhost:7190/api/");
             });
 
-            builder.Services.AddScoped<ApiServices>();
+            builder.Services.AddScoped<ApiService>();
 
             builder.Services.AddRazorPages();
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            builder.Services.AddSession(options =>
+            {
+                //options.Cookie.Name = ".ShoppingCart.Session";
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -53,17 +64,17 @@ namespace WebShopClient
             }
 
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.MapRazorPages();
 
             app.Run();
