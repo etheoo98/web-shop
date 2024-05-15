@@ -31,10 +31,12 @@ namespace WebShopClient
 
             builder.Services.AddHttpClient("API Client", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7190");
+                client.BaseAddress = new Uri("https://localhost:7190/api/");
             });
 
             builder.Services.AddScoped<ApiServices>();
+            builder.Services.AddScoped<ProductServices>();
+
 
             builder.Services.AddRazorPages();
 
