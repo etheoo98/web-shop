@@ -30,9 +30,20 @@
 
 								</div>
 								<div class="product-info">
-									<h6 class="product-category"><a href="#">@item.Categories</a></h6>
+									@if (item.Categories != null && item.Categories.Any())
+									{
+										<h6 class="product-category">
+											@foreach (var category in item.Categories)
+											{
+												<a href="#">@category.Name</a>
+												if (!category.Equals(item.Categories.Last()))
+												{
+													<span>,</span> 
+												}
+											}
+										</h6>
+									}
 									<h6 class="product-title text-truncate"><a href="#">@item.Name</a></h6>
-
 									<div class="d-flex flex-wrap justify-content-between align-items-center py-2">
 										<div class="d-flex price">
 											<div class="old-price">€20</div>
