@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebShopClient.Models.ResponseVMs;
+using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers

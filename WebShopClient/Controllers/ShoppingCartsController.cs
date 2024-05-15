@@ -14,9 +14,9 @@ namespace WebShopClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddToCart(int productId, int quantity)
+        public IActionResult AddToCart(int productId, string productName, decimal price, int quantity)
         {
-            _shoppingCartService.AddToCart(productId, quantity);
+            _shoppingCartService.AddToCart(productId, productName, price, quantity);
 
             return RedirectToAction("Index", "Products");
         }
@@ -28,6 +28,8 @@ namespace WebShopClient.Controllers
             return View(cartItems);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult RemoveCartItem(int productId)
         {
             _shoppingCartService.RemoveCartItem(productId);

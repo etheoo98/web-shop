@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebShopClient.Models.ResponseVMs;
+using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Models.RequestModels
 {

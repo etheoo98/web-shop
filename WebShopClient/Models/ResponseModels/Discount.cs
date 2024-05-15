@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseVMs
+namespace WebShopClient.Models.ResponseModels
 {
-    public class Discount   
+    public class Discount
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
