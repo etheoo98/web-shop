@@ -8,10 +8,10 @@ public class Product
 {
     public int Id { get; set; }
     
-    [StringLength(100, MinimumLength = 5)]
+    [MaxLength(100)]
     public string Name { get; set; }
     
-    [StringLength(100, MinimumLength = 5)]
+    [MaxLength(100)]
     public string Description { get; set; }
     
     public decimal Price { get; set; }

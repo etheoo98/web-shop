@@ -12,6 +12,9 @@ namespace WebShop.Controllers;
 [ApiController]
 public class CustomersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
+    //
+    // Fetches all Customers
+    //
     [HttpGet]
     public async Task<IActionResult> Get()
     {

@@ -6,7 +6,7 @@ public class Customer
 {
     public int Id { get; set; }
     
-    [StringLength(100, MinimumLength = 5)]
+    [MaxLength(100)]
     public string Email { get; set; }
     
     [StringLength(100, MinimumLength = 5)]
@@ -19,5 +19,5 @@ public class Customer
     public string LastName { get; set; }
     
     // Navigational Properties
-    public ICollection<CustomerOrder> CustomerOrders { get; set; }
+    public ICollection<CustomerOrder>? CustomerOrders { get; set; }
 }
