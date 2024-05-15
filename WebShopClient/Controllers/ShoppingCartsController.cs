@@ -12,20 +12,27 @@ namespace WebShopClient.Controllers
             _shoppingCartService = shoppingCartService;
         }
 
-        //public async Task<IActionResult> ViewCart(int productId, int quantity)
-        //{
-        //    var cartItems = _shoppingCartService.GetCartItemsAsync();
-
-        //    return View(cartItems);
-        //}            
-
-        public IActionResult Index()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(int productId, int quantity)
         {
-            
+            _shoppingCartService.AddToCart(productId, quantity);
 
-                
+            return RedirectToAction("Index", "Products");
+        }
 
-            return View();
+        public IActionResult GetCartItems()
+        {
+            var cartItems = _shoppingCartService.GetCartItems();
+
+            return View(cartItems);
+        }
+
+        public IActionResult RemoveCartItem(int productId)
+        {
+            _shoppingCartService.RemoveCartItem(productId);
+
+            return RedirectToAction("GetCartItems");
         }
     }
 }

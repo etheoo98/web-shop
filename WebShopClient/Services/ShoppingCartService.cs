@@ -8,12 +8,6 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    //public interface IShoppingCartService
-    //{
-    //    IEnumerable<ShoppingCartItem> GetCartItemsAsync();
-    //    void AddToCartAsync(int productId, int quantity);
-    //    void RemoveFromCartAsync(int productId);
-    //}
     public class ShoppingCartService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,14 +15,59 @@ namespace WebShopClient.Services
         public ShoppingCartService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-        }      
+        }
 
-        public IEnumerable<ShoppingCartItem> GetCartItems()
+        public void AddToCart(int productId, int quantity)
+        {
+            var session = GetSession();
+            var cart = GetCartItems();
+
+            var existingItem = cart.FirstOrDefault(item => item.Id == productId);
+
+            if (existingItem != null)
+            {
+                existingItem.Quantity += quantity;
+            }
+            else
+            {
+                cart.Add(new ShoppingCartItem
+                {
+                    Id = productId,
+                    Quantity = quantity
+                });
+            }
+
+            session.SetString("cart", JsonConvert.SerializeObject(cart));
+        }
+
+        public List<ShoppingCartItem> GetCartItems()
         {
             var session = GetSession();
 
+            var cartJson = session.GetString("cart");
 
-            var productId = session.GetInt32("productId");                            
+            if (cartJson != null)
+            {
+                return JsonConvert.DeserializeObject<List<ShoppingCartItem>>(cartJson);
+            }
+            else
+            {
+                return new List<ShoppingCartItem>();
+            }
+        }
+
+        public void RemoveCartItem(int productId)
+        {
+            var session = GetSession();
+            var cart = GetCartItems();
+            var itemToRemove = cart.FirstOrDefault(item => item.Id == productId);
+
+            if(itemToRemove != null)
+            {
+                cart.Remove(itemToRemove);
+
+                session.SetString("cart", JsonConvert.SerializeObject(cart));
+            }            
         }
 
         private ISession GetSession()

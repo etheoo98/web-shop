@@ -1,0 +1,16 @@
+﻿@model List<WebShopClient.Models.ResponseModels.ShoppingCartItem>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container-fluid text-center">
+    <h2>Shopping Cart</h2>
+
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>@item.ProductName - @item.Price | X @item.Quantity</li>
+        }
+    </ul>
+</div>
