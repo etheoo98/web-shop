@@ -23,6 +23,6 @@ namespace WebShopClient.Models.ResponseVMs
         public Address Address { get; set; }
 
         [JsonPropertyName("orders")]
-        public ICollection<Order> Orders { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }
