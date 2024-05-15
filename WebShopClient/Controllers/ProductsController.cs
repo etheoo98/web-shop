@@ -24,5 +24,6 @@ namespace WebShopClient.Controllers
 
             return View(products);
         }
-	}
+
+    }
 }
