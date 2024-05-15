@@ -32,6 +32,26 @@ namespace WebShopClient.Services
                 return new List<Product>();
             }
         }
+
+        public async Task<Product?> GetProductAsync(int id)
+        {
+            try
+            {
+                var response = await _client.GetAsync($"Products/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var product = JsonConvert.DeserializeObject<Product>(jsonString);
+                return product;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }
 
