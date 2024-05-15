@@ -29,6 +29,6 @@ namespace WebShopClient.Models.ResponseVMs
         public Discount Discount { get; set; }
 
         [JsonPropertyName("categories")]
-        public ICollection<Category> Categories { get; set; }
+        public ICollection<Category> Categories { get; set; }        
     }
 }

@@ -19,5 +19,5 @@ public class Customer
     public string LastName { get; set; }
     
     // Navigational Properties
-    public ICollection<CustomerOrder>? CustomerOrders { get; set; }
+    public ICollection<CustomerOrder> CustomerOrders { get; set; }
 }
