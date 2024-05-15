@@ -1,0 +1,53 @@
+﻿@model List<WebShopClient.Models.ResponseVMs.Product>
+
+@{
+    ViewData["Title"] = "Products Page";
+}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/home.css">
+</head>
+
+<!-- Product Section - Start -->
+<section>
+    <div class="container">
+        <div class="row g-4 py-5">
+            <div class="row g-4 py-5">
+	            <!-- Detta ska loopas per produkt - Start -->
+                @if (Model.Any())
+	            {
+					@foreach (var item in Model)
+					{
+						<div class="col-md-3">
+							<div class="product-single-card">
+								<div class="product-top-area">
+									<div class="product-discount text-danger">
+										10%
+									</div>
+									<div class="product-img">
+										<img src="./assets/img/placeholder/dummy3.png" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
+									</div>
+
+								</div>
+								<div class="product-info">
+									<h6 class="product-category"><a href="#">@item.Categories</a></h6>
+									<h6 class="product-title text-truncate"><a href="#">@item.Name</a></h6>
+
+									<div class="d-flex flex-wrap justify-content-between align-items-center py-2">
+										<div class="d-flex price">
+											<div class="old-price">€20</div>
+											<div class="new-price">@item.Price</div>
+										</div>
+										<button type="button" class="btn btn-primary">Add to cart</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Loop - End -->
+					}
+	            }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Product Section - End -->
