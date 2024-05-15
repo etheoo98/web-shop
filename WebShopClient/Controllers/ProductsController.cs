@@ -13,7 +13,8 @@ namespace WebShopClient.Controllers
             _api = api;
         }
 
-        public async Task<IActionResult> Index()
+        // GET: Products
+		public async Task<IActionResult> Index()
         {
             var products = await _api.GetProductsAsync();
             if (products == null || !products.Any())
@@ -23,6 +24,5 @@ namespace WebShopClient.Controllers
 
             return View(products);
         }
-
-    }
+	}
 }
