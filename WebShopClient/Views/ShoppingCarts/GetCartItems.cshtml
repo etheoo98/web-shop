@@ -6,11 +6,20 @@
 
 <div class="container-fluid text-center">
     <h2>Shopping Cart</h2>
+    <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Products">Back to Shopping</a>
+    <hr />
 
-    <ul>
-        @foreach (var item in Model)
-        {
-            <li>@item.ProductName - @item.Price | X @item.Quantity</li>
-        }
-    </ul>
+    @if (Model.Count != 0)
+    {
+        <ul class="list-group">
+            @foreach (var item in Model)
+            {
+                <li class="list-group-item">@item.ProductName - @item.Price | X @item.Quantity || Total price: @item.TotalPrice</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div>You currently have no items in your cart.</div>
+    }
 </div>

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using WebShopClient.Models.ResponseVMs;
 
 namespace WebShopClient.Models.ResponseModels
 {

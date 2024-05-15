@@ -32,8 +32,10 @@ namespace WebShopClient
                 client.BaseAddress = new Uri("https://localhost:7190/api/");
             });
 
-            builder.Services.AddScoped<ApiService>();
+            builder.Services.AddScoped<ApiServices>();
+            builder.Services.AddScoped<ProductServices>();
             builder.Services.AddScoped<ShoppingCartService>();
+            builder.Services.AddScoped<CustomerService>();
 
             builder.Services.AddRazorPages();
             builder.Services.AddControllersWithViews();

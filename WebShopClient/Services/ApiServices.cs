@@ -2,11 +2,11 @@
 
 namespace WebShopClient.Services
 {
-    public class ApiService
+    public class ApiServices
     {
         private readonly HttpClient _client;
 
-        public ApiService(IHttpClientFactory clientFactory)
+        public ApiServices(IHttpClientFactory clientFactory)
         {
             _client = clientFactory.CreateClient("API Client");
         }

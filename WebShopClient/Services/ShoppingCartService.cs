@@ -17,7 +17,7 @@ namespace WebShopClient.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public void AddToCart(int productId, int quantity)
+        public void AddToCart(int productId, string productName, decimal price, int quantity)
         {
             var session = GetSession();
             var cart = GetCartItems();
@@ -33,6 +33,8 @@ namespace WebShopClient.Services
                 cart.Add(new ShoppingCartItem
                 {
                     Id = productId,
+                    ProductName = productName,
+                    Price = price,                    
                     Quantity = quantity
                 });
             }
