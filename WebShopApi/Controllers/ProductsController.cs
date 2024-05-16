@@ -30,7 +30,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     }
     
     //
-    // Fetches Products that matches specific Categories
+    // Fetches Products belonging to specific Categories
     //
     [HttpGet("Filter")]
     public async Task<IActionResult> Get([FromQuery(Name = "category")] string[] categories)
