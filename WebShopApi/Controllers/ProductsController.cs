@@ -27,6 +27,23 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         
         return Ok(productDtos);
     }
+    
+    //
+    // Fetch a specific Product
+    //
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var products = await context.Products
+            .Where(p => p.Id == id)
+            .Include(p => p.ProductCategories)
+            .ThenInclude(pc => pc.Category)
+            .FirstOrDefaultAsync();
+        
+        var productDto = mapper.Map<ProductDto>(products);
+        
+        return Ok(productDto);
+    }
 
     //
     // Creates a new Product
