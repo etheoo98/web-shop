@@ -20,9 +20,9 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
         // Validation
         if (!ModelState.IsValid) return BadRequest("Missing property values");
 
-        var productExists = await context.Products.AnyAsync(p => p.Id == dto.ProductId);
-        if (!productExists) return BadRequest($"Product with id \"{dto.ProductId}\" does not exist");
-
+        var product = await context.Products.FirstOrDefaultAsync(p => p.Id == dto.ProductId);
+        if (product == null) return BadRequest($"Product with id \"{dto.ProductId}\" does not exist");
+        if (product.FkDiscountId.HasValue) return BadRequest($"Product with id \"{dto.ProductId}\" already has a discount");
         if (dto.Percent is < 5 or > 95) return BadRequest($"Percent value \"{dto.Percent}\" must be \"5\" or greater and \"95\" or less"); 
         
         // Begin transaction
@@ -31,13 +31,12 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
         {
             var discount = mapper.Map<Discount>(dto);
 
-            context.Discounts.Add(discount);
+            await context.Discounts.AddAsync(discount);
             await context.SaveChangesAsync();
 
-            var product = await context.Products.FindAsync(dto.ProductId);
-            if (product != null) product.FkDiscountId = discount.Id;
+            product.FkDiscountId = discount.Id;
+            
             await context.SaveChangesAsync();
-
             await transaction.CommitAsync();
 
             return Ok();

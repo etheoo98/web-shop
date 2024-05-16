@@ -21,6 +21,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         var products = await context.Products
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
             .ToListAsync();
         
         var productDtos = mapper.Map<List<ProductDto>>(products);
@@ -38,6 +39,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
             .FirstOrDefaultAsync();
         
         var productDto = mapper.Map<ProductDto>(products);
