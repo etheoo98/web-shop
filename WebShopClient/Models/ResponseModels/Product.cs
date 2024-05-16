@@ -26,7 +26,7 @@ namespace WebShopClient.Models.ResponseModels
         public bool IsDiscontinued { get; set; }
 
         [JsonPropertyName("discount")]
-        public Discount Discount { get; set; }
+        public Discount? Discount { get; set; }
 
         [JsonPropertyName("categories")]
         public ICollection<Category> Categories { get; set; }

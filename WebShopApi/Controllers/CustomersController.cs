@@ -25,7 +25,22 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
 
         return Ok(customerDtos);
     }
-    
+
+    // Fetches Customer by Id
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var customer = await context.Customers.FindAsync(id);
+
+        if (customer == null)
+        {
+            return NotFound();
+        }
+
+        var customerDto = mapper.Map<CustomerDto>(customer);
+        return Ok(customerDto);
+    }
+
     //
     // Creates a new Customer
     //
@@ -45,4 +60,42 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
 
         return Created();
     }
+
+    // Update an Customer
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(int id, [FromBody] UpdateCustomerDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid data");
+        }
+
+        var customer = await context.Customers.FindAsync(id);
+        if (customer == null)
+        {
+            return NotFound();
+        }
+
+        mapper.Map(dto, customer);
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!context.Customers.Any(e => e.Id == id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
 }
+
