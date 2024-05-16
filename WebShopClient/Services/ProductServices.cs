@@ -33,7 +33,7 @@ namespace WebShopClient.Services
             }
         }
 
-        public async Task<Product?> GetProductAsync(int id)
+        public async Task<Product?> GetProductAsync(int? id)
         {
             try
             {
