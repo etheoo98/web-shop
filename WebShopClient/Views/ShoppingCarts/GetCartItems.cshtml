@@ -11,12 +11,53 @@
 
     @if (Model.Count != 0)
     {
-        <ul class="list-group">
-            @foreach (var item in Model)
-            {
-                <li class="list-group-item">@item.ProductName - @item.Price | X @item.Quantity || Total price: @item.TotalPrice</li>
-            }
-        </ul>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price/Product</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>                    
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @foreach (var product in Model)
+                    {
+                        <td class="align-middle">@product.ProductName</td>
+                        <td class="align-middle">@product.Price</td>
+                        <td class="align-middle">
+                            <form method="post" asp-action="UpdateItemQuantity">
+                                <input type="hidden" name="productId" value="@product.ProductId" />
+                                <select name="quantity" onchange="this.form.submit();">
+                                    @for (int i = 1; i <= 20; i++)
+                                    {                                       
+                                        @if (i == product.Quantity)
+                                        {
+                                            <option value="@i" selected>@i</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    }
+                                </select>
+                            </form>
+                        </td>
+                        <td class="align-middle">@product.TotalPrice</td>                        
+                        <td>
+                            <form method="post" asp-action="RemoveCartItem">
+                                <input hidden asp-for="@product.ProductId" />
+                                <button type="submit" class="btn btn-light">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+                        </td>
+                    }
+                </tr>
+            </tbody>
+        </table>
     }
     else
     {

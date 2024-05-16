@@ -68,13 +68,12 @@
                                                 <div class="price">@($"{item.Price}kr")</div>
                                             }
                                         </div>
-                                        <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
-                                            <input hidden asp-for="@item.Id" name="productId" />
-                                            <input hidden asp-for="@item.Name" name="productName" />
-                                            <input hidden asp-for="@finalPrice" name="price" />
-                                            <input hidden asp-for="@item.Quantity" name="quantity" />
-                                            <button type="submit" class="btn btn-primary">Add to cart</button>
-                                        </form>
+                                     			<form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
+											                        <input hidden asp-for="@item.Id" name="productId"/>										
+											                        <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
+											                        <input hidden name="returnUrl" value="" />
+											                        <button type="submit" class="btn btn-primary">Add to cart</button>
+										                    </form>	
                                     </div>
                                 </div>
                             </div>
