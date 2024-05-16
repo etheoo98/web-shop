@@ -15,10 +15,11 @@ namespace WebShopClient.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // Redirects to Products for now
+	        return RedirectToAction("Index", "Products");
         }
 
-        public IActionResult Privacy()
+		public IActionResult Privacy()
         {
             return View();
         }
