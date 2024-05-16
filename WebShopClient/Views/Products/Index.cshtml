@@ -13,7 +13,7 @@
     <div class="container">
         <div class="row g-4 py-5">
             <div class="row g-4 py-5">
-	            <!-- Detta ska loopas per produkt - Start -->
+                <!-- Detta ska loopas per produkt - Start -->
                 @if (Model.Any())
                 {
                     @foreach (var item in Model)
@@ -68,12 +68,12 @@
                                                 <div class="price">@($"{item.Price}kr")</div>
                                             }
                                         </div>
-                                     			<form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
-											                        <input hidden asp-for="@item.Id" name="productId"/>										
-											                        <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
-											                        <input hidden name="returnUrl" value="" />
-											                        <button type="submit" class="btn btn-primary">Add to cart</button>
-										                    </form>	
+                                        <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
+                                            <input hidden asp-for="@item.Id" name="productId" />
+                                            <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
+                                            <input hidden name="returnUrl" value="" />
+                                            <button type="submit" class="btn btn-primary">Add to cart</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
