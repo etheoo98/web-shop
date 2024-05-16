@@ -50,10 +50,9 @@
 											<div class="old-price">1499:-</div>
 										</div>
 										<form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
-											<input hidden asp-for="@item.Id" name="productId"/>
-											<input hidden asp-for="@item.Name" name="productName" />
-											<input hidden asp-for="@item.Price" name="price" />
-											<input hidden asp-for="@item.Quantity" name="quantity" />
+											<input hidden asp-for="@item.Id" name="productId"/>										
+											<input hidden asp-for="@item.Quantity" name="quantity" value="1" />
+											<input hidden name="returnUrl" value="" />
 											<button type="submit" class="btn btn-primary">Add to cart</button>
 										</form>										
 									</div>

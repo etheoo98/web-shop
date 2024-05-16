@@ -7,6 +7,9 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
+        [JsonPropertyName("product-id")]
+        public int ProductId { get; set; }
+
         [JsonPropertyName("product-name")]
         public string ProductName { get; set; }
 

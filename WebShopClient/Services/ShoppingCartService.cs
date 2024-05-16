@@ -8,73 +8,90 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    public class ShoppingCartService
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+	public class ShoppingCartService
+	{
+		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly ProductServices _productServices;
 
-        public ShoppingCartService(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+		public ShoppingCartService(IHttpContextAccessor httpContextAccessor, ProductServices productServices)
+		{
+			_httpContextAccessor = httpContextAccessor;
+			_productServices = productServices;
+		}
 
-        public void AddToCart(int productId, string productName, decimal price, int quantity)
-        {
-            var session = GetSession();
-            var cart = GetCartItems();
+		public async Task AddToCartAsync(int productId, int quantity)
+		{
+			var session = GetSession();
+			var cart = GetCartItems();
+			var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
 
-            var existingItem = cart.FirstOrDefault(item => item.Id == productId);
+			if (existingItem != null)
+			{
+				existingItem.Quantity += quantity;
+			}
+			else
+			{
+				var product = await _productServices.GetProductAsync(productId);
 
-            if (existingItem != null)
-            {
-                existingItem.Quantity += quantity;
-            }
-            else
-            {
-                cart.Add(new ShoppingCartItem
-                {
-                    Id = productId,
-                    ProductName = productName,
-                    Price = price,                    
-                    Quantity = quantity
-                });
-            }
+				if (product != null)
+				{
+					cart.Add(new ShoppingCartItem
+					{
+						ProductId = product.Id,
+						ProductName = product.Name,
+						Price = product.Price,
+						Quantity = quantity
+					});
+				}
+			}
 
-            session.SetString("cart", JsonConvert.SerializeObject(cart));
-        }
+			session.SetString("cart", JsonConvert.SerializeObject(cart));
+		}
 
-        public List<ShoppingCartItem> GetCartItems()
-        {
-            var session = GetSession();
+		public List<ShoppingCartItem> GetCartItems()
+		{
+			var session = GetSession();
+			var cartJson = session.GetString("cart");
 
-            var cartJson = session.GetString("cart");
+			if (cartJson != null)
+			{
+				return JsonConvert.DeserializeObject<List<ShoppingCartItem>>(cartJson);
+			}
+			else
+			{
+				return new List<ShoppingCartItem>();
+			}
+		}
 
-            if (cartJson != null)
-            {
-                return JsonConvert.DeserializeObject<List<ShoppingCartItem>>(cartJson);
-            }
-            else
-            {
-                return new List<ShoppingCartItem>();
-            }
-        }
+		public void UpdateItemQuantity(int productId, int quantity)
+		{
+			var session = GetSession();
+			var cart = GetCartItems();
+			var item = cart.FirstOrDefault(item => item.ProductId == productId);
 
-        public void RemoveCartItem(int productId)
-        {
-            var session = GetSession();
-            var cart = GetCartItems();
-            var itemToRemove = cart.FirstOrDefault(item => item.Id == productId);
+			if (item != null)
+			{
+				item.Quantity = quantity;
+				session.SetString("cart", JsonConvert.SerializeObject(cart));
+			}
+		}
 
-            if(itemToRemove != null)
-            {
-                cart.Remove(itemToRemove);
+		public void RemoveCartItem(int productId)
+		{
+			var session = GetSession();
+			var cart = GetCartItems();
+			var itemToRemove = cart.FirstOrDefault(item => item.Id == productId);
 
-                session.SetString("cart", JsonConvert.SerializeObject(cart));
-            }            
-        }
+			if (itemToRemove != null)
+			{
+				cart.Remove(itemToRemove);
+				session.SetString("cart", JsonConvert.SerializeObject(cart));
+			}
+		}
 
-        private ISession GetSession()
-        {
-            return _httpContextAccessor.HttpContext.Session;
-        }
-    }
+		private ISession GetSession()
+		{
+			return _httpContextAccessor.HttpContext.Session;
+		}
+	}
 }
