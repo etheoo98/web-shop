@@ -23,8 +23,8 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .ThenInclude(pc => pc.Category)
             .Include(p => p.Discount)
             .ToListAsync();
-        
-        var productDtos = mapper.Map<List<ProductDto>>(products);
+
+		var productDtos = mapper.Map<List<ProductDto>>(products);
         
         return Ok(productDtos);
     }
