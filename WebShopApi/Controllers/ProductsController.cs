@@ -30,6 +30,26 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     }
     
     //
+    // Fetches Products that matches specific Categories
+    //
+    [HttpGet("Filter")]
+    public async Task<IActionResult> Get([FromQuery(Name = "category")] string[] categories)
+    {
+        categories = categories.Select(c => c.ToLower()).ToArray();
+        
+        var products = await context.Products
+            .Where(p => p.ProductCategories.Any(pc => categories.Contains(pc.Category.Name.ToLower())))
+            .Include(p => p.ProductCategories)
+            .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
+            .ToListAsync();
+        
+        var productDtos = mapper.Map<List<ProductDto>>(products);
+
+        return Ok(productDtos);
+    }
+    
+    //
     // Fetch a specific Product
     //
     [HttpGet("{id:int}")]
