@@ -19,8 +19,15 @@ namespace WebShopClient.Services
 
 			return await response.Content.ReadFromJsonAsync<ICollection<Customer>>();
 		}
+        public async Task<Customer> GetCustomerByIdAsync(int id)
+        {
+            var response = await _apiServices.GetHttpClient().GetAsync($"customers/{id}");
+            response.EnsureSuccessStatusCode();
 
-		public async Task<bool> CreateCustomerAsync(CreateCustomer createCustomer)
+            return await response.Content.ReadFromJsonAsync<Customer>();
+        }
+
+        public async Task<bool> CreateCustomerAsync(CreateCustomer createCustomer)
 		{
 			var response = await _apiServices.GetHttpClient().PostAsJsonAsync("customers", createCustomer);
 			return response.IsSuccessStatusCode;
