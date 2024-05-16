@@ -25,13 +25,5 @@ namespace WebShopClient.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var product = await _api.GetProductAsync(id);
-
-            if (product == null) throw new NotImplementedException();
-
-            return View(product);
-        }
     }
 }
