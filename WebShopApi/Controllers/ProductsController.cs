@@ -29,20 +29,18 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     }
     
     //
-    // Fetches specific Product
+    // Fetch a specific Product
     //
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        var product = await context.Products
+        var products = await context.Products
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
             .FirstOrDefaultAsync();
-
-        if (product == null) return NotFound($"Product with id \"{id}\" not found.");
         
-        var productDto = mapper.Map<ProductDto>(product);
+        var productDto = mapper.Map<ProductDto>(products);
         
         return Ok(productDto);
     }
