@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebShopClient.Models.ResponseVMs;
+using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
@@ -25,22 +25,5 @@ namespace WebShopClient.Controllers
             return View(products);
         }
 
-        // GET: Product
-        public async Task<IActionResult> Details(int? id)
-        {
-	        if (id == null)
-	        {
-		        return NotFound();
-	        }
-
-	        var product = await _api.GetProductAsync(id);
-	        if (product == null)
-	        {
-		        return NotFound();
-	        }
-
-	        return View(product);
-        }
-
-	}
+    }
 }

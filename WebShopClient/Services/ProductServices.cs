@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using WebShopClient.Models.ResponseVMs;
+using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {

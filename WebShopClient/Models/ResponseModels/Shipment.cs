@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseVMs
+namespace WebShopClient.Models.ResponseModels
 {
     public class Shipment
     {

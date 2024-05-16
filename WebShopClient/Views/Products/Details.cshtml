@@ -1,4 +1,55 @@
-@model WebShopClient.Models.ResponseVMs.Product
+@model WebShopClient.Models.ResponseModels.Product
 
-<h1>@Model.Name</h1>
-<h1>@Model.Description</h1>
+@{
+ViewData["Title"] = Model.Name;
+}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/product-details.css">
+</head>
+
+<div class="container mt-5 mb-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="images p-3">
+                            <div class="text-center p-4"> <img id="main-image" src="https://i.ibb.co/qpB9ZCZ/placeholder.png" width="250" /> </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="product p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <a href="../" class="text-black text-decoration-none">Back</a>
+                                </div>
+                            </div>
+                            <div class="mt-4 mb-3">
+                                <h6>
+                                    In 
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <a href="#" class="text-black text-decoration-none">@category.Name</a>
+                                        if (!category.Equals(Model.Categories.Last()))
+                                        {
+                                            <span>, </span>
+                                        }
+                                    }
+                                </h6>
+                                <h5 class="text-uppercase">@Model.Name</h5>
+                                <div class="price d-flex flex-row align-items-center gap-2">
+                                    <span class="act-price">€@Model.Price</span>
+                                    <small class="text-decoration-line-through">€59</small>
+                                    <span>40% OFF</span>
+                                </div>
+                            </div>
+                            <p class="about">@Model.Description</p>
+                            <div class="cart mt-4 align-items-center"> <button class="btn btn-primary mr-2 px-4">Add to cart</button> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

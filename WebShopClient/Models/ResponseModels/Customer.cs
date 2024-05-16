@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseVMs
+namespace WebShopClient.Models.ResponseModels
 {
     public class Customer
     {
@@ -23,6 +23,6 @@ namespace WebShopClient.Models.ResponseVMs
         public Address Address { get; set; }
 
         [JsonPropertyName("orders")]
-        public ICollection<Order>? Orders { get; set; }
+        public ICollection<Order> Orders { get; set; }
     }
 }

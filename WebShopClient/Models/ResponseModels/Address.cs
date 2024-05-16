@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseVMs
+namespace WebShopClient.Models.ResponseModels
 {
     public class Address
     {
@@ -20,6 +20,6 @@ namespace WebShopClient.Models.ResponseVMs
         public string PostalCode { get; set; }
 
         [JsonPropertyName("country")]
-        public string Country { get; set; }        
+        public string Country { get; set; }
     }
 }

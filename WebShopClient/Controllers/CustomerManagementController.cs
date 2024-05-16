@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebShopClient.Services;
 using WebShopClient.Models.RequestModels;
-using WebShopClient.Models.ResponseVMs;
 
 namespace WebShopClient.Controllers
 {
     public class CustomerManagementController : Controller
     {
-        private readonly ApiServices _apiServices;
+        private readonly CustomerService _customerService;
 
-        public CustomerManagementController(ApiServices apiServices)
+        public CustomerManagementController(CustomerService customerService)
         {
-            _apiServices = apiServices;
+            _customerService = customerService;
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            var customers = await _apiServices.GetCustomersAsync();
+            var customers = await _customerService.GetCustomersAsync();
             return View(customers);
         }
 
@@ -34,7 +33,7 @@ namespace WebShopClient.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _apiServices.CreateCustomerAsync(createCustomer);
+                var result = await _customerService.CreateCustomerAsync(createCustomer);
                 if (result)
                 {
                     return RedirectToAction(nameof(Index));
