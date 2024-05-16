@@ -25,7 +25,22 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
 
         return Ok(customerDtos);
     }
-    
+
+    // Fetches Customer by Id
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        var customer = await context.Customers.FindAsync(id);
+
+        if (customer == null)
+        {
+            return NotFound();
+        }
+
+        var customerDto = mapper.Map<CustomerDto>(customer);
+        return Ok(customerDto);
+    }
+
     //
     // Creates a new Customer
     //
