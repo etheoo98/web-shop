@@ -20,6 +20,20 @@ namespace WebShopClient.Controllers
             return View(customers);
         }
 
+        // GET: CustomerManagement/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var customer = await _customerService.GetCustomerByIdAsync(id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return View(customer);
+        }
+
+
         // GET: /Create
         public IActionResult Create()
         {
