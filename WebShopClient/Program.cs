@@ -47,7 +47,7 @@ namespace WebShopClient
             builder.Services.AddSession(options =>
             {
                 //options.Cookie.Name = ".ShoppingCart.Session";
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(120);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
