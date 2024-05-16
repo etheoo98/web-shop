@@ -32,5 +32,11 @@ namespace WebShopClient.Services
 			var response = await _apiServices.GetHttpClient().PostAsJsonAsync("customers", createCustomer);
 			return response.IsSuccessStatusCode;
 		}
-	}
+        public async Task<bool> UpdateCustomerAsync(int id, UpdateCustomer updateCustomer)
+        {
+            var response = await _apiServices.GetHttpClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
+            return response.IsSuccessStatusCode;
+        }
+
+    }
 }
