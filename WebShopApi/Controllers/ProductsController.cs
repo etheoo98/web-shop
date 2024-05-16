@@ -115,4 +115,56 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             return StatusCode(500);
         }
     }
+    
+    //
+    // Edit a Product
+    //
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Put(int id, EditProductDto dto)
+    {
+        // Validation
+        if (!ModelState.IsValid) return BadRequest("Missing property values");
+
+        var product = await context.Products
+            .Where(p => p.Id == id)
+            .Include(p => p.ProductCategories)
+            .FirstOrDefaultAsync();
+        
+        if (product == null) return NotFound();
+
+        product.Name = dto.Name;
+        product.Description = dto.Description;
+        product.Quantity = dto.Quantity;
+        product.ProductCategories.Clear();
+        
+        foreach (var categoryId in dto.CategoryIds)
+        {
+            var productCategory = new ProductCategory
+            {
+                FkProductId = product.Id,
+                FkCategoryId = categoryId
+            };
+            
+            product.ProductCategories.Add(productCategory);
+        }
+
+        await context.SaveChangesAsync();
+
+        return Ok();
+    }
+    
+    //
+    // Discontinue a Product
+    //
+    [HttpPut("{id:int}/discontinue")]
+    public async Task<IActionResult> Discontinue(int id)
+    {
+        var product = await context.Products.FindAsync(id);
+        if (product == null) return NotFound();
+
+        product.IsDiscontinued = true;
+        await context.SaveChangesAsync();
+
+        return Ok();
+    }
 }
