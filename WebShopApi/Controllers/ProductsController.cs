@@ -21,10 +21,31 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         var products = await context.Products
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
             .ToListAsync();
         
         var productDtos = mapper.Map<List<ProductDto>>(products);
         
+        return Ok(productDtos);
+    }
+    
+    //
+    // Fetches Products belonging to specific Categories
+    //
+    [HttpGet("Filter")]
+    public async Task<IActionResult> Get([FromQuery(Name = "category")] string[] categories)
+    {
+        categories = categories.Select(c => c.ToLower()).ToArray();
+        
+        var products = await context.Products
+            .Where(p => p.ProductCategories.Any(pc => categories.Contains(pc.Category.Name.ToLower())))
+            .Include(p => p.ProductCategories)
+            .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
+            .ToListAsync();
+        
+        var productDtos = mapper.Map<List<ProductDto>>(products);
+
         return Ok(productDtos);
     }
     
@@ -38,6 +59,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
+            .Include(p => p.Discount)
             .FirstOrDefaultAsync();
         
         var productDto = mapper.Map<ProductDto>(products);
