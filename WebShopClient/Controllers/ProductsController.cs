@@ -4,6 +4,7 @@ using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
 {
+
     public class ProductsController : Controller
     {
         private readonly ProductServices _api;
@@ -34,5 +35,23 @@ namespace WebShopClient.Controllers
 
 	        return View(product);
         }
-	}
+
+        // GET: products by category
+        public async Task<IActionResult> Category(string category="phones")
+        {
+            if (string.IsNullOrEmpty(category))
+            {
+                return BadRequest("Category cannot be null or empty.");
+            }
+
+            var products = await _api.GetProductsByCategoryAsync(category);
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound("No products found for the specified category.");
+            }
+
+            return View(products);
+        }
+    }
 }

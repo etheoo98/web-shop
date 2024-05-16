@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
@@ -50,6 +51,25 @@ namespace WebShopClient.Services
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+        public async Task<List<Product>> GetProductsByCategoryAsync(string category)
+        {
+            try
+            {
+                var response = await _client.GetAsync($"Products/Filter?category={category}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Product>();
+                }
+                var jsonstring = await response.Content.ReadAsStringAsync();
+                var products = JsonConvert.DeserializeObject<List<Product>>(jsonstring);
+                return products;
+
+            }
+            catch (Exception ex)
+            {
+                return new List<Product>();
             }
         }
     }
