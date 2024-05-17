@@ -57,7 +57,7 @@ namespace WebShopClient.Services
         {
             try
             {
-                var response = await _client.GetAsync($"Products/Filter?category={category}");
+				var response = await _client.GetAsync($"Products/Filter?category={category}");
                 if (!response.IsSuccessStatusCode)
                 {
                     return new List<Product>();

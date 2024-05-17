@@ -37,7 +37,7 @@ namespace WebShopClient.Controllers
         }
 
         // GET: products by category
-        public async Task<IActionResult> Category(string category="phones")
+        public async Task<IActionResult> Category(string category)
         {
             if (string.IsNullOrEmpty(category))
             {

@@ -30,7 +30,7 @@ ViewData["Title"] = Model.Name;
                                     In 
                                     @foreach (var category in Model.Categories)
                                     {
-                                        <a href="products/Filter?category=@category.Name" class="text-black text-decoration-none">@category.Name</a>
+                                        <a href="/category=@category.Name" class="text-black text-decoration-none">@category.Name</a>
                                         if (!category.Equals(Model.Categories.Last()))
                                         {
                                             <span>, </span>
