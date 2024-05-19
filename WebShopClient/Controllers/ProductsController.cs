@@ -14,7 +14,7 @@ namespace WebShopClient.Controllers
         }
 
         // GET: Products
-		public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var products = await _api.GetProductsAsync();
             if (products == null || !products.Any())
@@ -26,13 +26,24 @@ namespace WebShopClient.Controllers
         }
 
         // GET: Product
-		public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-	        var product = await _api.GetProductAsync(id);
+            var product = await _api.GetProductAsync(id);
 
-	        if (product == null) throw new NotImplementedException();
+            if (product == null) throw new NotImplementedException();
 
-	        return View(product);
+            return View(product);
         }
-	}
+
+        // GET: Products/Search
+        public async Task<IActionResult> Search(string searchString)
+        {
+            var products = await _api.GetProductsAsync();
+            var filteredProducts = products
+                .Where(p => p.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                .Select(p => new { p.Id, p.Name, p.Price })
+                .ToList();
+            return Json(filteredProducts);
+        }
+    }
 }
