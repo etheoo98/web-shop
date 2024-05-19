@@ -12,7 +12,8 @@ namespace WebShopClient
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.           
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();            
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();      
+            
 
             /****************************************** IDENTITY USER - DBCONTEXT ****************************************
             **************************************************************************************************************
@@ -51,6 +52,7 @@ namespace WebShopClient
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
 
             var app = builder.Build();
 
