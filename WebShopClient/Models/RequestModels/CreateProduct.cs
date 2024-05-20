@@ -6,12 +6,12 @@ namespace WebShopClient.Models.RequestModels
     public class CreateProduct
     {
         [Required(ErrorMessage = "Product name is required.")]
-        [StringLength(100, MinimumLength = 5, ErrorMessage = "Product name must be between {2} and {1] characters.")]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "Product name must be between {2} and {1} characters.")]
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Product description is required.")]
-        [StringLength(100, MinimumLength = 5, ErrorMessage = "Product description must be between {2} and {1] characters.")]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "Product description must be between {2} and {1} characters.")]
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
