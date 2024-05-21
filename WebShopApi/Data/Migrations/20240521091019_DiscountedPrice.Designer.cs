@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Data;
 
@@ -10,9 +11,11 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240521091019_DiscountedPrice")]
+    partial class DiscountedPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -53,8 +56,7 @@ namespace WebShop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FkCustomerId")
-                        .IsUnique();
+                    b.HasIndex("FkCustomerId");
 
                     b.ToTable("Addresses");
                 });
@@ -161,12 +163,6 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("FkShipmentId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsPaid")
                         .HasColumnType("INTEGER");
 
@@ -177,8 +173,6 @@ namespace WebShop.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -193,9 +187,6 @@ namespace WebShop.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("FkProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -278,63 +269,21 @@ namespace WebShop.Data.Migrations
                     b.Property<int>("FkOrderId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("FkShippingAddressId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("ShippedDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FkOrderId")
-                        .IsUnique();
-
-                    b.HasIndex("FkShippingAddressId");
+                    b.HasIndex("FkOrderId");
 
                     b.ToTable("Shipments");
-                });
-
-            modelBuilder.Entity("WebShop.Models.DbModels.ShippingAddress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ShippingAddresses");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Address", b =>
                 {
                     b.HasOne("WebShop.Models.DbModels.Customer", "Customer")
-                        .WithOne("Address")
-                        .HasForeignKey("WebShop.Models.DbModels.Address", "FkCustomerId")
+                        .WithMany()
+                        .HasForeignKey("FkCustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -358,15 +307,6 @@ namespace WebShop.Data.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("WebShop.Models.DbModels.Order", b =>
-                {
-                    b.HasOne("WebShop.Models.DbModels.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
-
-                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.OrderProducts", b =>
@@ -419,20 +359,12 @@ namespace WebShop.Data.Migrations
             modelBuilder.Entity("WebShop.Models.DbModels.Shipment", b =>
                 {
                     b.HasOne("WebShop.Models.DbModels.Order", "Order")
-                        .WithOne("ShipmentDetails")
-                        .HasForeignKey("WebShop.Models.DbModels.Shipment", "FkOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebShop.Models.DbModels.ShippingAddress", "ShippingAddress")
-                        .WithMany("Shipments")
-                        .HasForeignKey("FkShippingAddressId")
+                        .WithMany()
+                        .HasForeignKey("FkOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
-
-                    b.Navigation("ShippingAddress");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Category", b =>
@@ -442,8 +374,6 @@ namespace WebShop.Data.Migrations
 
             modelBuilder.Entity("WebShop.Models.DbModels.Customer", b =>
                 {
-                    b.Navigation("Address");
-
                     b.Navigation("CustomerOrders");
                 });
 
@@ -452,8 +382,6 @@ namespace WebShop.Data.Migrations
                     b.Navigation("CustomerOrders");
 
                     b.Navigation("OrderProducts");
-
-                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Product", b =>
@@ -461,11 +389,6 @@ namespace WebShop.Data.Migrations
                     b.Navigation("OrderProducts");
 
                     b.Navigation("ProductCategories");
-                });
-
-            modelBuilder.Entity("WebShop.Models.DbModels.ShippingAddress", b =>
-                {
-                    b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618
         }

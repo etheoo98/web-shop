@@ -12,7 +12,8 @@ namespace WebShopClient
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.           
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();            
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();      
+            
 
             /****************************************** IDENTITY USER - DBCONTEXT ****************************************
             **************************************************************************************************************
@@ -33,9 +34,10 @@ namespace WebShopClient
             });
 
             builder.Services.AddScoped<ApiServices>();
-            builder.Services.AddScoped<ProductServices>();
+            builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<ShoppingCartService>();
             builder.Services.AddScoped<CustomerService>();
+            builder.Services.AddScoped<DiscountService>();
             builder.Services.AddScoped<OrderService>();
 
             builder.Services.AddRazorPages();
@@ -52,6 +54,7 @@ namespace WebShopClient
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
 
             var app = builder.Build();
 

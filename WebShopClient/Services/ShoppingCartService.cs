@@ -11,9 +11,9 @@ namespace WebShopClient.Services
 	public class ShoppingCartService
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		private readonly ProductServices _productServices;
+		private readonly ProductService _productServices;
 
-		public ShoppingCartService(IHttpContextAccessor httpContextAccessor, ProductServices productServices)
+		public ShoppingCartService(IHttpContextAccessor httpContextAccessor, ProductService productServices)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_productServices = productServices;
