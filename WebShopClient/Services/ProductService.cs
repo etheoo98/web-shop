@@ -4,11 +4,11 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    public class ProductServices
+    public class ProductService
     {
         private readonly HttpClient _client;
 
-        public ProductServices(IHttpClientFactory clientFactory)
+        public ProductService(IHttpClientFactory clientFactory)
         {
             _client = clientFactory.CreateClient("API Client");
         }

@@ -1,0 +1,63 @@
+﻿@model WebShopClient.Models.RequestModels.CreateDiscount
+
+@{
+    ViewData["Title"] = "Create Discount";
+}
+
+<h2>Create Discount</h2>
+
+<form asp-action="CreateDiscount" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="ProductId" class="control-label"></label>
+        <input asp-for="ProductId" class="form-control" />
+        <span asp-validation-for="ProductId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Percent" class="control-label"></label>
+        <input asp-for="Percent" class="form-control" />
+        <span asp-validation-for="Percent" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="StartDate" class="control-label"></label>
+        <input asp-for="StartDate" class="form-control" type="date" id="startDate" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EndDate" class="control-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" id="endDate" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="period" class="control-label">Select Period</label>
+        <select id="period" class="form-control">
+            <option value="">-- Select Period --</option>
+            <option value="7">1 Week</option>
+            <option value="14">2 Weeks</option>
+            <option value="28">4 Weeks</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@* Script for selecting time period  *@
+@section Scripts {
+	<script>
+        document.getElementById('period').addEventListener('change', function () {
+            var period = this.value;
+            var startDate = document.getElementById('startDate').value;
+            if (startDate && period) {
+                var start = new Date(startDate);
+                var end = new Date(start);
+                end.setDate(start.getDate() + parseInt(period));
+                var endDateField = document.getElementById('endDate');
+                endDateField.value = end.toISOString().split('T')[0];
+            }
+        });
+    </script>
+    
+	@{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

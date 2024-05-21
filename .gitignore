@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/WebShopApi/database.sqlite-shm
+/WebShopApi/database.sqlite-wal
+/WebShopApi/database.sqlite

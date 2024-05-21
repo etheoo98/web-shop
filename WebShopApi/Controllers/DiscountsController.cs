@@ -63,4 +63,36 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
 
         return Ok(discountDtos);
     }
+
+    //
+    // Deletes a Discount by Id
+    //
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        // Begin transaction
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var discount = await context.Discounts.FindAsync(id);
+            if (discount == null) return NotFound($"Discount with id \"{id}\" does not exist");
+
+            var product = await context.Products.FirstOrDefaultAsync(p => p.FkDiscountId == id);
+            if (product != null)
+            {
+                product.FkDiscountId = null;
+            }
+
+            context.Discounts.Remove(discount);
+            await context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return Ok();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            return StatusCode(500);
+        }
+    }
 }
