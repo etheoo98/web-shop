@@ -1,0 +1,84 @@
+﻿body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.card-body {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.chart-container {
+    width: 100%;
+    height: 40vh;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.stat-card {
+    color: #343a40;
+    border-left: 4px solid;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+    .stat-card.orders {
+        border-color: #332d44;
+    }
+
+    .stat-card.customers {
+        border-color: #332d44;
+    }
+
+    .stat-card.revenue {
+        border-color: #332d44;
+    }
+
+    .stat-card.products {
+        border-color: #332d44;
+    }
+
+    .stat-card h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+        margin-bottom: 0;
+    }
+
+.icon-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
+    .icon-container i {
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+
+.card-header {
+    background-color: #fff;
+    border-bottom: none;
+    font-size: 1rem;
+    font-weight: 500;
+}

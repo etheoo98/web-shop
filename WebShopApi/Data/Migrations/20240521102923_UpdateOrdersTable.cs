@@ -5,25 +5,25 @@
 namespace WebShop.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class RemoveDiscountActiveProperty : Migration
+    public partial class UpdateOrdersTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsActive",
-                table: "Discounts");
+                name: "FkShipmentId",
+                table: "Orders");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsActive",
-                table: "Discounts",
+            migrationBuilder.AddColumn<int>(
+                name: "FkShipmentId",
+                table: "Orders",
                 type: "INTEGER",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
     }
 }

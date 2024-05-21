@@ -18,14 +18,6 @@
                 {
                     @foreach (var item in Model)
                     {
-                        decimal discountedPrice = item.Price;
-                        @if (item.Discount != null)
-                        {
-                            discountedPrice = item.Price - (item.Discount.Percent * item.Price / 100);
-                        }
-
-                        decimal finalPrice = discountedPrice;
-
                         <div class="col-md-3">
                             <div class="product-single-card">
                                 <div class="product-top-area">
@@ -59,7 +51,7 @@
                                             @if (item.Discount != null)
                                             {
                                                 <div class="new-price text-danger">
-                                                    @($"{discountedPrice}")
+                                                    @($"{item.Discount.DiscountedPrice}")
                                                 </div>
                                                 <div class="old-price">@($"{item.Price}kr")</div>
                                             }

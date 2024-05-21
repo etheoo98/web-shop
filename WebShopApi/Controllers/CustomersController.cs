@@ -20,7 +20,9 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     {
         if (!ModelState.IsValid) return BadRequest("Missing property values");
         
-        var customers = await context.Customers.ToListAsync();
+        var customers = await context.Customers
+            .Include(c => c.Address)
+            .ToListAsync();
         var customerDtos = mapper.Map<List<CustomerDto>>(customers);
 
         return Ok(customerDtos);
@@ -30,7 +32,11 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var customer = await context.Customers.FindAsync(id);
+        //var customer = await context.Customers.FindAsync(id);
+
+        var customer = await context.Customers
+            .Include(c => c.Address)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (customer == null)
         {
