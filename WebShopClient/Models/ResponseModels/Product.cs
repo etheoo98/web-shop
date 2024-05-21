@@ -20,13 +20,13 @@ namespace WebShopClient.Models.ResponseModels
         public int Quantity { get; set; }
 
         [JsonPropertyName("add-date")]
-        public DateTime AddDate { get; set; } = DateTime.UtcNow;
+        public DateTime AddDate { get; set; }
 
         [JsonPropertyName("is-discontinued")]
         public bool IsDiscontinued { get; set; }
 
         [JsonPropertyName("discount")]
-        public Discount Discount { get; set; }
+        public Discount? Discount { get; set; }
 
         [JsonPropertyName("categories")]
         public ICollection<Category> Categories { get; set; }

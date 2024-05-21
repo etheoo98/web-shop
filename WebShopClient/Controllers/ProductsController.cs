@@ -7,15 +7,15 @@ namespace WebShopClient.Controllers
 
     public class ProductsController : Controller
     {
-        private readonly ProductServices _api;
+        private readonly ProductService _api;
 
-        public ProductsController(ProductServices api)
+        public ProductsController(ProductService api)
         {
             _api = api;
         }
 
         // GET: Products
-		public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var products = await _api.GetProductsAsync();
             if (products == null || !products.Any())
@@ -27,13 +27,13 @@ namespace WebShopClient.Controllers
         }
 
         // GET: Product
-		public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-	        var product = await _api.GetProductAsync(id);
+            var product = await _api.GetProductAsync(id);
 
-	        if (product == null) throw new NotImplementedException();
+            if (product == null) throw new NotImplementedException();
 
-	        return View(product);
+            return View(product);
         }
 
         // GET: products by category

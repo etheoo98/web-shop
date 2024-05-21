@@ -14,27 +14,37 @@ namespace WebShopClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddToCart(int productId, string productName, decimal price, int quantity)
+        public async Task<IActionResult> AddToCart(int productId, int quantity, string returnUrl)
         {
-            _shoppingCartService.AddToCart(productId, productName, price, quantity);
+            await _shoppingCartService.AddToCartAsync(productId, quantity);            
 
-            return RedirectToAction("Index", "Products");
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                return RedirectToAction("Index", "Products");
+            }
+            return Redirect(returnUrl);
         }
 
         public IActionResult GetCartItems()
         {
-            var cartItems = _shoppingCartService.GetCartItems();
-
+            var cartItems = _shoppingCartService.GetCartItems();            
             return View(cartItems);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateItemQuantity(int productId, int quantity)
+        {
+            _shoppingCartService.UpdateItemQuantity(productId, quantity);            
+            return RedirectToAction("GetCartItems");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveCartItem(int productId)
         {
-            _shoppingCartService.RemoveCartItem(productId);
-
+            _shoppingCartService.RemoveCartItem(productId);            
             return RedirectToAction("GetCartItems");
-        }
+        }      
     }
 }

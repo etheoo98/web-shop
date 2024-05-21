@@ -20,3 +20,41 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.search-results {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    width: calc(100% - 30px);
+    z-index: 1000;
+    left: 15px;
+    top: 40px; 
+}
+
+    .search-results .result-item {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+        .search-results .result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-results .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-results .result-item img {
+            max-width: 50px;
+            margin-right: 10px;
+        }
+
+        .search-results .result-item .text-danger {
+            margin-left: auto;
+        }
