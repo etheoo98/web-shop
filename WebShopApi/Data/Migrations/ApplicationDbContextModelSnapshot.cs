@@ -107,6 +107,8 @@ namespace WebShop.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Email");
+
                     b.ToTable("Customers");
                 });
 
@@ -138,7 +140,7 @@ namespace WebShop.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("DiscountedPrice")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("TEXT");
