@@ -27,32 +27,6 @@
 </head>
 
 <!-- Product Section - Start -->
-<div>
-	@if (Model.Any(c => c.Categories != null && c.Categories.Any()))
-	{
-		<div>
-			@{
-				var renderedCategories = new HashSet<string>();
-			}
-
-			@foreach (var c in Model.Where(c => c.Categories != null))
-			{
-				@foreach (var category in c.Categories)
-				{
-					if (!renderedCategories.Contains(category.Name))
-					{
-						renderedCategories.Add(category.Name);
-						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="checkbox" id="checkbox_@category.Name" value="@category.Name">
-							<label class="form-check-label" for="checkbox_@category.Name">@category.Name</label>
-						</div>
-					}
-				}
-			}
-		</div>
-		<button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
-	}
-</div>
 <section>
     <div class="container">
         <div class="row g-4 py-5">
@@ -116,53 +90,6 @@
                         </div>
                     }
                 }
-	            {
-					@foreach (var item in Model)
-					{
-						<div class="col-md-3">
-							<div class="product-single-card">
-								<div class="product-top-area">
-									<div class="product-discount text-danger">
-										10%
-									</div>
-									<div class="product-img">
-										<img src="./assets/img/placeholder/dummy3.png" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
-									</div>
-								</div>
-								<div class="product-info">
-									@if (item.Categories != null && item.Categories.Any())
-									{
-										<h6 class="product-category">
-											@foreach (var category in item.Categories)
-											{
-												<a asp-action="Details" asp-route-id="@category.Id">@category.Name</a>
-												if (!category.Equals(item.Categories.Last()))
-												{
-													<span>,</span> 
-												}
-											}
-										</h6>
-									}
-									<h6 class="product-title text-truncate"><a asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h6>
-									<div class="d-flex flex-wrap justify-content-between align-items-center py-2">
-										<div class="d-flex price">
-											<div class="new-price text-danger">@item.Price</div>
-											<div class="old-price">1499:-</div>
-										</div>
-										<form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
-											<input hidden asp-for="@item.Id" name="productId"/>
-											<input hidden asp-for="@item.Name" name="productName" />
-											<input hidden asp-for="@item.Price" name="price" />
-											<input hidden asp-for="@item.Quantity" name="quantity" />
-											<button type="submit" class="btn btn-primary">Add to cart</button>
-										</form>										
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- Loop - End -->
-					}
-	            }
             </div>
         </div>
     </div>
