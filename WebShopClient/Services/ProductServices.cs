@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Newtonsoft.Json;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 
@@ -86,7 +85,7 @@ namespace WebShopClient.Services
                     return new List<Category>();
                 }
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var categories = JsonConvert.DeserializeObject<List<Category>>(jsonString);
+                var categories = JsonSerializer.Deserialize<List<Category>>(jsonString);
                 return categories;
             }
             catch (Exception ex)
