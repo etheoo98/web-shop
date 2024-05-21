@@ -54,6 +54,7 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
         if (emailInUse) return BadRequest("Email is already in use");
         
         var customer = mapper.Map<Customer>(dto);
+        customer.Role = Role.Customer.ToString();
         
         await context.Customers.AddAsync(customer);
         await context.SaveChangesAsync();
