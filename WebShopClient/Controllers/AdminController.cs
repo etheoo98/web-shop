@@ -8,12 +8,15 @@ namespace WebShopClient.Controllers
     public class AdminController : Controller
     {
         private readonly CustomerService _customerService;
-        private readonly ProductServices _productServices;
+        private readonly ProductService _productService;
+        private readonly DiscountService _discountService;
 
-        public AdminController(CustomerService customerService, ProductServices productServices)
+
+        public AdminController(CustomerService customerService, ProductService productService, DiscountService discountService)
         {
             _customerService = customerService;
-            _productServices = productServices;
+            _productService = productService;
+            _discountService = discountService;
         }
 
         public async Task<IActionResult> Dashboard()
@@ -21,7 +24,7 @@ namespace WebShopClient.Controllers
             var customers = await _customerService.GetCustomersAsync();
             ViewBag.CustomerCount = customers.Count;
 
-            var products = await _productServices.GetProductsAsync();
+            var products = await _productService.GetProductsAsync();
             ViewBag.ProductsCount = products.Count;
 
             // Sorterar produkterna efter datum och visar dom tre senaste
@@ -34,7 +37,7 @@ namespace WebShopClient.Controllers
         // GET: /Admin/CreateProduct
         public async Task<IActionResult> CreateProduct()
         {
-            var categories = await _productServices.GetCategoriesAsync();
+            var categories = await _productService.GetCategoriesAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View();
         }
@@ -46,13 +49,13 @@ namespace WebShopClient.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _productServices.CreateProductAsync(createProduct);
+                var result = await _productService.CreateProductAsync(createProduct);
                 if (result)
                 {
                     return RedirectToAction(nameof(Dashboard));
                 }
             }
-            var categories = await _productServices.GetCategoriesAsync();
+            var categories = await _productService.GetCategoriesAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(createProduct);
         }
@@ -60,14 +63,14 @@ namespace WebShopClient.Controllers
         // GET: /Admin/ManageProducts
         public async Task<IActionResult> ManageProducts()
         {
-            var products = await _productServices.GetProductsAsync();
+            var products = await _productService.GetProductsAsync();
             return View(products);
         }
 
         // GET: /Admin/EditProduct/5
         public async Task<IActionResult> EditProduct(int id)
         {
-            var product = await _productServices.GetProductAsync(id);
+            var product = await _productService.GetProductAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -94,13 +97,39 @@ namespace WebShopClient.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _productServices.UpdateProductAsync(editProduct);
+                var result = await _productService.UpdateProductAsync(editProduct);
                 if (result)
                 {
                     return RedirectToAction(nameof(ManageProducts));
                 }
             }
             return View(editProduct);
+        }
+
+        // GET: /Admin/CreateDiscount
+        public async Task<IActionResult> CreateDiscount()
+        {
+            var products = await _productService.GetProductsAsync();
+            ViewBag.Products = new SelectList(products, "Id", "Name");
+            return View();
+        }
+
+        // POST: /Admin/CreateDiscount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDiscount(CreateDiscount createDiscount)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _discountService.CreateDiscountAsync(createDiscount);
+                if (result)
+                {
+                    return RedirectToAction(nameof(Dashboard));
+                }
+            }
+            var products = await _productService.GetProductsAsync();
+            ViewBag.Products = new SelectList(products, "Id", "Name");
+            return View(createDiscount);
         }
     }
 }
