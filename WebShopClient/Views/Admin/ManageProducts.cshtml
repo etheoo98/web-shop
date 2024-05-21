@@ -25,7 +25,8 @@
                 <td>@product.Price</td>
                 <td>@product.Quantity</td>
                 <td>
-                    <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
+	                <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
+	                <a asp-action="CreateDiscount" asp-route-id="@product.Id" class="btn btn-danger">Add campaign</a>
                 </td>
             </tr>
         }
