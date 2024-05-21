@@ -15,4 +15,7 @@ public class CreateDiscountDto
     
     [JsonPropertyName("end-date")]
     public DateTime EndDate { get; set; }
+
+    [JsonPropertyName("discounted-price")]
+    public decimal DiscountedPrice { get; set; }
 }

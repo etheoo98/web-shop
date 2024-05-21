@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
 using WebShop.Models.DbModels;
 using WebShop.Models.RequestDTOs;
+using WebShop.Models.ResponseDTOs;
 
 namespace WebShop.Controllers;
 
@@ -29,7 +30,10 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
         await using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
+
             var discount = mapper.Map<Discount>(dto);
+
+            discount.DiscountedPrice = Math.Round(product.Price - (discount.Percent * product.Price / 100), 1);
 
             await context.Discounts.AddAsync(discount);
             await context.SaveChangesAsync();
@@ -46,5 +50,17 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
             await transaction.RollbackAsync();
             return StatusCode(500);
         }
+    }
+
+    //
+    // Fetches all Discounts
+    //
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var discounts = await context.Discounts.ToListAsync();
+        var discountDtos = mapper.Map<List<DiscountDto>>(discounts);
+
+        return Ok(discountDtos);
     }
 }

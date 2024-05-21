@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
@@ -22,12 +22,18 @@ namespace WebShopClient.Services
                 {
                     return new List<Product>();
                 }
+
                 var jsonstring = await response.Content.ReadAsStringAsync();
-                var products = JsonConvert.DeserializeObject<List<Product>>(jsonstring);
+
+                //// Debugging
+                //Console.WriteLine("JSON Response: " + jsonstring);
+
+                var products = JsonSerializer.Deserialize<List<Product>>(jsonstring);
+
                 return products;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new List<Product>();
             }
@@ -43,11 +49,14 @@ namespace WebShopClient.Services
                     return null;
                 }
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var product = JsonConvert.DeserializeObject<Product>(jsonString);
+                var product = JsonSerializer.Deserialize<Product>(jsonString); // Bytte till System Json
+
+                //var product = JsonConvert.DeserializeObject<Product>(jsonString); <-- Gamla
+
                 return product;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
