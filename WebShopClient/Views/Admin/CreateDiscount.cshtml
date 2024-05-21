@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create Discount";
+    var discountOptions = new int[] { 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90 };
 }
 
 <h2>Create Discount</h2>
@@ -9,23 +10,24 @@
 <form asp-action="CreateDiscount" method="post" class="form-horizontal">
     <div class="form-group">
         <label asp-for="ProductId" class="control-label"></label>
-        <input asp-for="ProductId" class="form-control" />
+        <select asp-for="ProductId" class="form-control" asp-items="ViewBag.Products">-- Select Product --</select>
         <span asp-validation-for="ProductId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Percent" class="control-label"></label>
-        <input asp-for="Percent" class="form-control" />
-        <span asp-validation-for="Percent" class="text-danger"></span>
+	    <label asp-for="Percent" class="control-label">Select Discount</label>
+	    <select asp-for="Percent" class="form-control">
+		    <option value="">-- Select Discount --</option>
+		    @foreach (var discount in discountOptions)
+		    {
+			    <option value="@discount">@discount%</option>
+		    }
+	    </select>
+	    <span asp-validation-for="Percent" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="StartDate" class="control-label"></label>
         <input asp-for="StartDate" class="form-control" type="date" id="startDate" />
         <span asp-validation-for="StartDate" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="EndDate" class="control-label"></label>
-        <input asp-for="EndDate" class="form-control" type="date" id="endDate" />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="period" class="control-label">Select Period</label>
@@ -37,13 +39,24 @@
         </select>
     </div>
     <div class="form-group">
+        <label asp-for="EndDate" class="control-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" id="endDate" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
         <button type="submit" class="btn btn-primary">Create</button>
     </div>
 </form>
 
-@* Script for selecting time period  *@
 @section Scripts {
-	<script>
+    <script>
+        // Set the start date to today's date by default
+        document.addEventListener('DOMContentLoaded', function () {
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        });
+
+        // Adjusts the EndDate depending on selected time period.
         document.getElementById('period').addEventListener('change', function () {
             var period = this.value;
             var startDate = document.getElementById('startDate').value;
@@ -56,8 +69,8 @@
             }
         });
     </script>
-    
-	@{
+
+    @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
