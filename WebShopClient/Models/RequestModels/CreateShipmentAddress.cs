@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace WebShopClient.Models.RequestModels
 {
-    public class CreateAddress  
-    {      
+    public class CreateShipmentAddress
+    {
         [Required(ErrorMessage = "Phone number is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Phone number must be between {2} and {1} characters.")]
         [JsonPropertyName("phone")]
-        public string Phone { get; set; }        
+        public string Phone { get; set; }
 
         [Required(ErrorMessage = "Street is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Street must be between {2} and {1} characters.")]
