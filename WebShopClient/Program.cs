@@ -36,6 +36,7 @@ namespace WebShopClient
             builder.Services.AddScoped<ProductServices>();
             builder.Services.AddScoped<ShoppingCartService>();
             builder.Services.AddScoped<CustomerService>();
+            builder.Services.AddScoped<OrderService>();
 
             builder.Services.AddRazorPages();
             builder.Services.AddControllersWithViews();

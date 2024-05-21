@@ -1,0 +1,166 @@
+﻿@model WebShopClient.ViewModels.CheckoutViewModel
+
+@{
+    // ViewData["Title"] = "Checkout";
+    string customerFullName = $"{Model.Customer.FirstName} {Model.Customer.LastName}";
+    // string zipAndCity = $"{Model.Customer.Address.PostalCode} {Model.Customer.Address.City}";
+    var address = Model.Customer?.Address;
+}
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Checkout</h2>
+    </div>
+
+    <div class="row g-5">
+        <form method="post" asp-action="PlaceOrder" asp-controller="Orders">
+            <input hidden asp-for="@Model.Customer.Id" />
+            <div class="row g-5">
+                <div class="col-md-5 col-lg-4 order-md-last">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Your cart</span>
+                        <a class="link-offset-2 link-offset-3-hover link-underline-secondary link-underline-opacity-0 link-underline-opacity-75-hover"
+                           asp-controller="ShoppingCarts"
+                           asp-action="GetCartItems">
+                            <span class="text-secondary">Edit</span>
+                        </a>
+                    </h4>
+                    <ul class="list-group mb-3">
+                        @if (Model.CartItems == null || Model.CartItems.Count == 0)
+                        {
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                    <h6 class="my-0">Your cart is empty</h6>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            @foreach (var product in Model.CartItems)
+                            {
+                                <input type="hidden" name="CartItems[@Model.CartItems.IndexOf(product)].ProductId" value="@product.ProductId" />
+                                <input type="hidden" name="CartItems[@Model.CartItems.IndexOf(product)].Quantity" value="@product.Quantity" />
+                                <li class="list-group-item d-flex justify-content-between lh-sm">
+                                    <div>
+                                        <h6 class="my-0">
+                                            <span class="text-body-secondary">@(@product.Quantity)x</span> @product.ProductName
+                                        </h6>
+                                        @if (product.Quantity > 1)
+                                        {
+                                            <small class="text-body-secondary">$@(@product.Price)/each</small>
+                                        }
+                                    </div>
+                                    <span class="text-body-secondary">$@(@product.Price * @product.Quantity)</span>
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <h6 class="my-0">Shippment cost</h6>
+                                <span class="text-body-secondary">$5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <h5>Total (USD)</h5>
+                                <h5>$@Model.TotalSum</h5>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        Address
+                        <button type="button" class="btn btn-light" id="editAddressBtn">                      
+                            <i class="bi bi-pencil-square align-middle"></i>                          
+                        </button>
+                    </h4>
+                    <div class="row g-3 mb-5">
+                        <ul class="list-group mb-3" id="addressDisplay">
+                            <li class="list-group-item lh-sm">@customerFullName</li>
+                            <li class="list-group-item lh-sm">
+                                @(address != null && !string.IsNullOrEmpty(address?.Street)
+                                    ? address.Street
+                                    : "Tegelvägen 3C")
+                            </li>
+                            <li class="list-group-item lh-sm">
+                                @(address != null && !string.IsNullOrEmpty(address?.PostalCode)
+                                    ? address.PostalCode
+                                    : "791 35")
+                                @(address != null && !string.IsNullOrEmpty(address?.City)
+                                    ? address.City
+                                    : "Falun")
+                            </li>
+                            <li class="list-group-item lh-sm">
+                                @(address != null && !string.IsNullOrEmpty(address?.Country)
+                                    ? address.Country
+                                    : "Sweden")
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="addressForm" style="display: none;">
+                        <div class="row g-3 mb-3">
+                            <div class="form-floating col-12 col-lg-6">
+                                <input class="form-control" asp-for="@Model.Customer.FirstName" type="text" value="@Model.Customer.FirstName" />
+                                <label class="form-label">First name</label>
+                                <div class="invalid-feedback">Please enter a valid first name.</div>
+                            </div>
+
+                            <div class="form-floating col-12 col-lg-6">
+                                <input class="form-control" asp-for="@Model.Customer.LastName" type="text" value="@Model.Customer.LastName" />
+                                <label class="form-label">Last name</label>
+                                <div class="invalid-feedback">Please enter a valid last name.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3 col-12">
+                            <input type="email" class="form-control" asp-for="@Model.Customer.Email" value="@Model.Customer.Email" />
+                            <label class="form-label">Email</label>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+
+                        <div class="form-floating mb-3 col-12">                            
+                            <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Phone" value="@Model.ShipmentDetails.ShippingAddress.Phone" />
+                            <label class="form-label">Phone number</label>
+                            <div class="invalid-feedback">Please enter a valid phone number.</div>
+                        </div>
+
+                        <div class="form-floating mb-3 col-12">
+                            <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Street" value="@Model.ShipmentDetails.ShippingAddress.Street" />
+                            <label class="form-label">Street</label>
+                            <div class="invalid-feedback">Please enter a valid street.</div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="form-floating col-6">
+                                <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.PostalCode" value="@Model.ShipmentDetails.ShippingAddress.PostalCode" />
+                                <label class="form-label">Postal code</label>
+                                <div class="invalid-feedback">Please enter a valid postal code.</div>
+                            </div>
+
+                            <div class="form-floating col-6">
+                                <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.City" value="@Model.ShipmentDetails.ShippingAddress.City" />
+                                <label class="form-label">City</label>
+                                <div class="invalid-feedback">Please enter a valid city.</div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3 col-12">
+                            <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Country" value="@Model.ShipmentDetails.ShippingAddress.Country" />
+                            <label class="form-label">Country</label>
+                            <div class="invalid-feedback">Please enter a valid country.</div>                            
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <button class="w-100 btn btn-primary btn-lg" type="submit">BUY NOW</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+´<script>
+     document.getElementById("editAddressBtn").addEventListener("click", function () {
+         document.getElementById("addressDisplay").style.display = "none";
+         document.getElementById("addressForm").style.display = "block";
+     });
+</script>

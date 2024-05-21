@@ -1,20 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using WebShopClient.Models.ResponseModels;
 
-namespace WebShopClient.Models.ResponseModels
+namespace WebShopClient.Models.RequestModels
 {
-    public class Shipment
+    public class CreateShipment
     {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
         [JsonPropertyName("shipped-date")]
-        public DateTime ShippedDate { get; set; }
+        public DateTime? ShippedDate { get; set; }
 
         [JsonPropertyName("delivery-date")]
         public DateTime? DeliveryDate { get; set; }
 
+        [Required]
         [JsonPropertyName("shipping-address")]
-        public ShippingAddress ShippingAddress { get; set; }
+        public CreateShipmentAddress ShippingAddress { get; set; }
     }
 }

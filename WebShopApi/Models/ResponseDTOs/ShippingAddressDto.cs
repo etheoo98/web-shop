@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseModels
+namespace WebShop.Models.ResponseDTOs
 {
-    public class Address
+    public class ShippingAddressDto
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -13,13 +13,13 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("street")]
         public string Street { get; set; }
 
-        [JsonPropertyName("city")]
-        public string City { get; set; }
-
         [JsonPropertyName("postal-code")]
         public string PostalCode { get; set; }
 
+        [JsonPropertyName("city")]
+        public string City { get; set; }     
+
         [JsonPropertyName("country")]
-        public string Country { get; set; }   
+        public string Country { get; set; }
     }
 }

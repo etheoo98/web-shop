@@ -1,22 +1,17 @@
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebShop.Models.DbModels;
-
-//
-// Junction Table for Customer and Order
-//
-public class CustomerOrder
+namespace WebShop.Models.DbModels
 {
-    public int Id { get; set; }
-    
-    // Foreign Keys
-    [ForeignKey("Customer")]
-    public int FkCustomerId { get; set; }
-    
-    [ForeignKey("Order")]
-    public int FkOrderId { get; set; }
+    public class CustomerOrder
+    {
+        public int Id { get; set; }
 
-    // Navigational Properties
-    public Customer Customer { get; set; }
-    public Order Order { get; set; }
+        [ForeignKey("Customer")]
+        public int FkCustomerId { get; set; }
+        public Customer Customer { get; set; }
+
+        [ForeignKey("Order")]
+        public int FkOrderId { get; set; }
+        public Order Order { get; set; }
+    }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Data;
 
@@ -10,9 +11,11 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240521094727_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -111,27 +114,6 @@ namespace WebShop.Data.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("WebShop.Models.DbModels.CustomerOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FkCustomerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FkOrderId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FkCustomerId");
-
-                    b.HasIndex("FkOrderId");
-
-                    b.ToTable("CustomerOrders");
-                });
-
             modelBuilder.Entity("WebShop.Models.DbModels.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -158,10 +140,10 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int>("FkCustomerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("FkShipmentId")
+                    b.Property<int>("FkShipmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPaid")
@@ -175,7 +157,7 @@ namespace WebShop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("FkCustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -338,30 +320,13 @@ namespace WebShop.Data.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebShop.Models.DbModels.CustomerOrder", b =>
-                {
-                    b.HasOne("WebShop.Models.DbModels.Customer", "Customer")
-                        .WithMany("CustomerOrders")
-                        .HasForeignKey("FkCustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebShop.Models.DbModels.Order", "Order")
-                        .WithMany("CustomerOrders")
-                        .HasForeignKey("FkOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("WebShop.Models.DbModels.Order", b =>
                 {
                     b.HasOne("WebShop.Models.DbModels.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .WithMany("Orders")
+                        .HasForeignKey("FkCustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -441,13 +406,11 @@ namespace WebShop.Data.Migrations
                 {
                     b.Navigation("Address");
 
-                    b.Navigation("CustomerOrders");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Order", b =>
                 {
-                    b.Navigation("CustomerOrders");
-
                     b.Navigation("OrderProducts");
 
                     b.Navigation("ShipmentDetails");
