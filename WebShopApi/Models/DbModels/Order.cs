@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using WebShop.Models.ResponseDTOs;
 
 namespace WebShop.Models.DbModels;
 

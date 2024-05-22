@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using WebShop.Models.ResponseDTOs;
 
 namespace WebShop.Models.RequestDTOs
 {

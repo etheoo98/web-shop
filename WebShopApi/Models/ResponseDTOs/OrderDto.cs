@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using WebShop.Models.DbModels;
 
 namespace WebShop.Models.ResponseDTOs;
 
