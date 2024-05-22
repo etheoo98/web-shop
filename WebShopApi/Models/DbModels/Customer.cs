@@ -21,7 +21,5 @@ public class Customer
     
     // Navigational Properties
     public Address? Address { get; set; }
-
-    [ForeignKey("FkCustomerId")]
     public ICollection<CustomerOrder> CustomerOrders { get; set; }     
 }

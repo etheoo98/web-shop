@@ -17,15 +17,12 @@ public class OrderDto
     [JsonPropertyName("is-paid")]
     public bool IsPaid { get; set; }
 
-    [JsonPropertyName("shipment-id")]
-    public int? ShipmentId { get; set; }
+    [JsonPropertyName("customer-id")]
+    public int CustomerId { get; set; }
 
     [JsonPropertyName("shipment-details")]
     public ShipmentDto? ShipmentDetails { get; set; }
 
-    [JsonPropertyName("customer-orders")]
-    public ICollection<CustomerOrderDto> CustomerOrders { get; set; }   
-
-    [JsonPropertyName("order-products")]
-    public ICollection<OrderProductDto> OrderProductDtos { get; set; }
+    [JsonPropertyName("products")]
+    public ICollection<ProductDto> ProductDtos { get; set; } 
 }

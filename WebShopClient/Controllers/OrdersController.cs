@@ -62,7 +62,7 @@ namespace WebShopClient.Controllers
         {             
             if (ModelState.IsValid)
             {
-                var orderItems = viewModel.CartItems.Select(item => new OrderItem
+                var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity

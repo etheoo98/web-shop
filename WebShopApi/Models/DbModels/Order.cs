@@ -12,13 +12,10 @@ public class Order
 
     // Foreign Keys   
     [ForeignKey("Shipment")]
-    public int? FkShipmentId { get; set; } 
+    public int FkShipmentId { get; set; } 
 
-    // Navigational Properties
-    public Customer? Customer { get; set; }
-    public Shipment? ShipmentDetails { get; set; }
-
-    [ForeignKey("FkOrderId")]
+    // Navigational Properties    
+    public Shipment ShipmentDetails { get; set; }
     public ICollection<CustomerOrder> CustomerOrders { get; set; }
-    public ICollection<OrderProducts>? OrderProducts { get; set; }      
+    public ICollection<OrderProducts> OrderProducts { get; set; }      
 }

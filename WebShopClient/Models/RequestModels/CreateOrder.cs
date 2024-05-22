@@ -11,7 +11,7 @@ namespace WebShopClient.Models.RequestModels
         public int CustomerId { get; set; }
 
         [JsonPropertyName("order-items")]
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<CreateOrderItem> OrderItems { get; set; }
 
         [JsonPropertyName("shipment-details")]
         public Shipment ShipmentDetails { get; set; }

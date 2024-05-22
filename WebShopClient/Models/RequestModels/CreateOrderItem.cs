@@ -2,7 +2,7 @@
 
 namespace WebShopClient.Models.RequestModels
 {
-    public class OrderItem
+    public class CreateOrderItem
     {
         [JsonPropertyName("product-id")]
         public int ProductId { get; set; }

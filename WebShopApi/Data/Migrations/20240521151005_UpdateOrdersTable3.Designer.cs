@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Data;
 
@@ -10,9 +11,11 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240521151005_UpdateOrdersTable3")]
+    partial class UpdateOrdersTable3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -161,7 +164,7 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("FkShipmentId")
+                    b.Property<int?>("FkShipmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPaid")
@@ -439,8 +442,7 @@ namespace WebShop.Data.Migrations
 
                     b.Navigation("OrderProducts");
 
-                    b.Navigation("ShipmentDetails")
-                        .IsRequired();
+                    b.Navigation("ShipmentDetails");
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Product", b =>
