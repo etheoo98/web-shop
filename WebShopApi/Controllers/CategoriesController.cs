@@ -30,7 +30,7 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
     [HttpPost]
     public async Task<IActionResult> Post(CreateCategoryDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var alreadyExists = context.Categories.Any(c => c.Name == dto.Name);
 

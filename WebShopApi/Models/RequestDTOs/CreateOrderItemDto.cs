@@ -5,11 +5,11 @@ namespace WebShop.Models.RequestDTOs
 {
     public class CreateOrderItemDto
     {
-        [Required]
+        [Required(ErrorMessage = "\'product-id\' is required.")]
         [JsonPropertyName("product-id")]
         public int ProductId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "\'quantity\' is required.")]
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
     }

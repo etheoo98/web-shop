@@ -19,12 +19,11 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
     public async Task<IActionResult> Post(CreateDiscountDto dto)
     {
         // Validation
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var product = await context.Products.FirstOrDefaultAsync(p => p.Id == dto.ProductId);
         if (product == null) return BadRequest($"Product with id \"{dto.ProductId}\" does not exist");
         if (product.FkDiscountId.HasValue) return BadRequest($"Product with id \"{dto.ProductId}\" already has a discount");
-        if (dto.Percent is < 5 or > 95) return BadRequest($"Percent value \"{dto.Percent}\" must be \"5\" or greater and \"95\" or less"); 
         
         // Begin transaction
         await using var transaction = await context.Database.BeginTransactionAsync();
@@ -65,9 +64,9 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
     }
 
     //
-    // Deletes a Discount by Id
+    // Deletes a Discount by ID
     //
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         // Begin transaction

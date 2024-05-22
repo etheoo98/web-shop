@@ -12,6 +12,9 @@ namespace WebShopClient.Models.ResponseModels
 
         [JsonPropertyName("password")]
         public string? Password { get; set; }
+        
+        [JsonPropertyName("role")]
+        public string Role { get; set; }
 
         [JsonPropertyName("first-name")]
         public string? FirstName { get; set; }
