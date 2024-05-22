@@ -23,7 +23,7 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
+			var existingItem = cart.Find(item => item.ProductId == productId);
 
 			if (existingItem != null)
 			{
@@ -67,7 +67,7 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var item = cart.FirstOrDefault(item => item.ProductId == productId);
+			var item = cart.Find(item => item.ProductId == productId);
 
 			if (item != null)
 			{
@@ -80,13 +80,19 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var itemToRemove = cart.FirstOrDefault(item => item.Id == productId);
+			var itemToRemove = cart.Find(item => item.ProductId == productId);
 
 			if (itemToRemove != null)
 			{
 				cart.Remove(itemToRemove);
 				session.SetString("cart", JsonConvert.SerializeObject(cart));
 			}
+		}
+
+		public void EmptyCart()
+		{
+			var session = GetSession();
+			session.Remove("cart");	
 		}
 
 		private ISession GetSession()

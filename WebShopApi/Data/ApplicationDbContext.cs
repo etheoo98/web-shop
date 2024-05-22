@@ -7,12 +7,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Customer> Customers { get; set; }
-    public DbSet<CustomerOrder> CustomerOrders { get; set; }
+    public DbSet<Customer> Customers { get; set; }    
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<CustomerOrder> CustomerOrders { get; set; }
     public DbSet<OrderProducts> OrderProducts { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<ProductCategory> ProductCategories { get; set; }
+    public DbSet<ProductCategory> ProductCategories { get; set; }    
     public DbSet<Shipment> Shipments { get; set; }
+    public DbSet<ShippingAddress> ShippingAddresses { get; set; }
 }
