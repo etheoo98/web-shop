@@ -21,4 +21,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<Customer>()
             .HasAlternateKey(c => c.Email);
     }
+    public DbSet<ShippingAddress> ShippingAddresses { get; set; }
 }

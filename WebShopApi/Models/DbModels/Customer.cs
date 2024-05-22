@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Models.DbModels;
 
@@ -28,5 +29,6 @@ public class Customer
     public string LastName { get; set; }
     
     // Navigational Properties
-    public ICollection<CustomerOrder> CustomerOrders { get; set; }
+    public Address? Address { get; set; }
+    public ICollection<CustomerOrder> CustomerOrders { get; set; }     
 }
