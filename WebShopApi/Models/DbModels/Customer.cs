@@ -16,16 +16,16 @@ public class Customer
     [MaxLength(100)]
     public string Email { get; set; }
     
-    [StringLength(100, MinimumLength = 5)]
+    [MaxLength(100)]
     public string Password { get; set; }
     
     [MaxLength(100)]
     public string Role { get; set;}
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string FirstName { get; set; }
     
-    [StringLength(100, MinimumLength = 2)]
+    [MaxLength(100)]
     public string LastName { get; set; }
     
     // Navigational Properties
