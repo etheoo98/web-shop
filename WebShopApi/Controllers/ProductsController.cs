@@ -74,7 +74,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     public async Task<IActionResult> Post(CreateProductDto dto)
     {
         // Validation
-        if (!ModelState.IsValid || dto.CategoryIds.Count == 0) return BadRequest("Missing property values");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         
         var existingProduct = context.Products.Any(p => p.Name == dto.Name);
         if (existingProduct) return Conflict("Product name already exists");
@@ -120,7 +120,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     // Edit a Product
     //
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Put(int id, EditProductDto dto)
+    public async Task<IActionResult> Put(int id, UpdateProductDto dto)
     {
         // Validation
         if (!ModelState.IsValid) return BadRequest("Missing property values");

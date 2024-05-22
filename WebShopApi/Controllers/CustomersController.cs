@@ -18,32 +18,28 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
-        
         var customers = await context.Customers
             .Include(c => c.Address)
             .ToListAsync();
+        
         var customerDtos = mapper.Map<List<CustomerDto>>(customers);
 
         return Ok(customerDtos);
     }
-
-    // Fetches Customer by Id
-    [HttpGet("{id}")]
+    //
+    // Fetches Customer by ID
+    //
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        //var customer = await context.Customers.FindAsync(id);
-
         var customer = await context.Customers
             .Include(c => c.Address)
             .FirstOrDefaultAsync(c => c.Id == id);
 
-        if (customer == null)
-        {
-            return NotFound();
-        }
+        if (customer == null) return NotFound();
 
         var customerDto = mapper.Map<CustomerDto>(customer);
+        
         return Ok(customerDto);
     }
 
@@ -53,11 +49,11 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpPost]
     public async Task<IActionResult> Post(CreateCustomerDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var emailInUse = context.Customers.Any(c => c.Email == dto.Email);
 
-        if (emailInUse) return BadRequest("Email is already in use");
+        if (emailInUse) return Conflict("Email is already in use");
         
         var customer = mapper.Map<Customer>(dto);
         customer.Role = Role.Customer.ToString();
@@ -68,15 +64,13 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
         return Created();
     }
 
-    // Update an Customer
-
-    [HttpPut("{id}")]
+    //
+    // Update a Customer
+    //
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Put(int id, [FromBody] UpdateCustomerDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest("Invalid data");
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var customer = await context.Customers.FindAsync(id);
         if (customer == null)

@@ -48,6 +48,8 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Co
     [HttpPost]
     public async Task<IActionResult> Post(CreateOrderDto createdOrderDto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
         try
         {
             // Validation
