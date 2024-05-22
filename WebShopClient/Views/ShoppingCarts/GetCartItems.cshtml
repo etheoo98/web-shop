@@ -31,10 +31,29 @@
             <tbody>
                 @foreach (var product in Model)
                 {
-                    totalSum += product.Price * product.Quantity;
+                    if (product.DiscountedPrice != 0)
+                    {
+                        totalSum += product.DiscountedPrice * product.Quantity;
+                    }
+                    else
+                    {
+                        totalSum += product.Price * product.Quantity;
+                    }                    
                     <tr>
                         <td class="align-middle">@product.ProductName</td>
-                        <td class="align-middle">@product.Price</td>
+                        <td class="align-middle">
+                            @if (@product.DiscountedPrice != 0)
+                            {
+                                <div>
+                                    <span class="text-danger">@product.DiscountedPrice</span>
+                                    <span class="text-decoration-line-through">@product.Price</span>
+                                </div>
+                            }
+                            else
+                            {
+                                @product.Price
+                            }
+                        </td>
                         <td class="align-middle">
                             <form method="post" asp-action="UpdateItemQuantity">
                                 <input type="hidden" name="productId" value="@product.ProductId" />

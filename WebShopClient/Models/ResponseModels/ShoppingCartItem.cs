@@ -19,10 +19,10 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 
-        [JsonPropertyName("percent-discount")]
-        public int PercentDiscount { get; set; }
+        [JsonPropertyName("discounted-price")]
+        public decimal DiscountedPrice { get; set; }
 
         [JsonPropertyName("total-price")]
-        public decimal TotalPrice => Price * Quantity;
+        public decimal TotalPrice => DiscountedPrice != 0 ? DiscountedPrice * Quantity : Price * Quantity;
     }
 }
