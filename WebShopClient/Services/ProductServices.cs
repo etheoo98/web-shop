@@ -84,6 +84,26 @@ namespace WebShopClient.Services
                 return new List<Category>();
             }
         }
+
+        public async Task<List<Product>> GetProductsByCategoryAsync(string category)
+        {
+            try
+            {
+                var response = await _client.GetAsync($"Products/Filter?category={category}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Product>();
+                }
+                var jsonstring = await response.Content.ReadAsStringAsync();
+                var products = JsonConvert.DeserializeObject<List<Product>>(jsonstring);
+                return products;
+
+            }
+            catch (Exception ex)
+            {
+                return new List<Product>();
+            }
+        }
     }
 }
 

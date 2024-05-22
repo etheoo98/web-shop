@@ -27,10 +27,10 @@ ViewData["Title"] = Model.Name;
                             </div>
                             <div class="mt-4 mb-3">
                                 <h6>
-                                    In 
+                                    In
                                     @foreach (var category in Model.Categories)
                                     {
-                                        <a href="#" class="text-black text-decoration-none">@category.Name</a>
+                                        <a asp-controller="Products" asp-action="Category" asp-route-category="@category.Name" class="text-black text-decoration-none">@category.Name</a>
                                         if (!category.Equals(Model.Categories.Last()))
                                         {
                                             <span>, </span>
