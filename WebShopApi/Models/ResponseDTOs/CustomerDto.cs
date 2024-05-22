@@ -21,8 +21,7 @@ public class CustomerDto
 
     [JsonPropertyName("address")]
     public AddressDto AddressDto { get; set; }
-    
-    //[JsonPropertyName("orders")]
-    [JsonIgnore]
+
+    [JsonPropertyName("orders")]
     public ICollection<OrderDto> OrderDtos { get; set; } = [];
 }

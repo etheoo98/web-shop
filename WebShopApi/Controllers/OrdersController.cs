@@ -11,17 +11,8 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class OrdersController : ControllerBase
-{
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public OrdersController(ApplicationDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
-
+public class OrdersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+{   
     //
     // Fetches all Orders
     //
@@ -30,20 +21,18 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var customerOrders = await _context.CustomerOrders
-                .Include(co => co.Order)
-                .ThenInclude(o => o.Customer)
-                .Include(co => co.Order)
-                .ThenInclude(o => o.OrderProducts)
+            var orders = await context.Orders
+                .Include(o => o.CustomerOrders)
+                .ThenInclude(co => co.Customer)
+                .Include(o => o.OrderProducts)
                 .ThenInclude(op => op.Product)
                 .ThenInclude(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
-                .Include(co => co.Order)
-                .ThenInclude(o => o.ShipmentDetails)
+                .Include(o => o.ShipmentDetails)
                 .ThenInclude(sd => sd.ShippingAddress)
                 .ToListAsync();
 
-            var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(customerOrders.Select(co => co.Order));
+            var orderDtos = mapper.Map<IEnumerable<OrderDto>>(orders);
 
             return Ok(orderDtos);
         }
@@ -52,7 +41,6 @@ public class OrdersController : ControllerBase
             return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
         }    
     }
-
 
     //
     // Creates a new Order
@@ -66,34 +54,34 @@ public class OrdersController : ControllerBase
             if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
                 return BadRequest("Missing or invalid property values");
             
-            var order = _mapper.Map<Order>(createdOrderDto);
+            var order = mapper.Map<Order>(createdOrderDto);
             
-            await _context.Orders.AddAsync(order);
-            await _context.SaveChangesAsync();
+            await context.Orders.AddAsync(order);
+            await context.SaveChangesAsync();
 
             var customerOrder = new CustomerOrder
             {
                 FkCustomerId = createdOrderDto.CustomerId,
                 FkOrderId = order.Id
             };
-            await _context.CustomerOrders.AddAsync(customerOrder);
-            await _context.SaveChangesAsync();
+            await context.CustomerOrders.AddAsync(customerOrder);
+            await context.SaveChangesAsync();
 
             // If there are order items, map and save them to the database
             if (createdOrderDto.OrderItems != null && createdOrderDto.OrderItems.Count != 0)
             {
-                var orderProducts = _mapper.Map<List<OrderProducts>>(createdOrderDto.OrderItems);
+                var orderProducts = mapper.Map<List<OrderProducts>>(createdOrderDto.OrderItems);
                 orderProducts.ForEach(op => op.FkOrderId = order.Id);
-                await _context.OrderProducts.AddRangeAsync(orderProducts);
-                await _context.SaveChangesAsync();
+                await context.OrderProducts.AddRangeAsync(orderProducts);
+                await context.SaveChangesAsync();
             }
 
             // If shipment details are provided, map and save them to the database
             if (createdOrderDto.ShipmentDetails?.ShippingAddress != null)
             {
-                var shippingAddress = _mapper.Map<ShippingAddress>(createdOrderDto.ShipmentDetails.ShippingAddress);
-                await _context.ShippingAddresses.AddAsync(shippingAddress);
-                await _context.SaveChangesAsync();
+                var shippingAddress = mapper.Map<ShippingAddress>(createdOrderDto.ShipmentDetails.ShippingAddress);
+                await context.ShippingAddresses.AddAsync(shippingAddress);
+                await context.SaveChangesAsync();
 
                 var shipment = new Shipment
                 {
@@ -102,8 +90,8 @@ public class OrdersController : ControllerBase
                     ShippedDate = createdOrderDto.ShipmentDetails.ShippedDate ?? DateTime.Now,
                     DeliveryDate = createdOrderDto.ShipmentDetails.DeliveryDate
                 };
-                await _context.Shipments.AddAsync(shipment);
-                await _context.SaveChangesAsync();           
+                await context.Shipments.AddAsync(shipment);
+                await context.SaveChangesAsync();           
             }
 
             return Created();
