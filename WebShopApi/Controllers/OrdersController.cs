@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 using WebShop.Data;
 using WebShop.Models.DbModels;
 using WebShop.Models.RequestDTOs;
