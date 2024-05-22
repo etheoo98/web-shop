@@ -13,6 +13,9 @@ public class CustomerDto
     [JsonPropertyName("password")]
     public string Password { get; set; }
     
+    [JsonPropertyName("role")]
+    public string Role { get; set; }
+    
     [JsonPropertyName("first-name")]
     public string FirstName { get; set; }
     
