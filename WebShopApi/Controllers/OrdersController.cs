@@ -12,7 +12,7 @@ namespace WebShop.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class OrdersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
-{   
+{
     //
     // Fetches all Orders
     //
@@ -39,7 +39,7 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Co
         catch (Exception ex)
         {
             return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
-        }    
+        }
     }
 
     //
@@ -48,57 +48,81 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Co
     [HttpPost]
     public async Task<IActionResult> Post(CreateOrderDto createdOrderDto)
     {
-        try
+        // Validation
+        if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
+            return BadRequest("Missing or invalid property values");
+
+        using (var transaction = await context.Database.BeginTransactionAsync())
         {
-            // Validation
-            if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
-                return BadRequest("Missing or invalid property values");
-            
-            var order = mapper.Map<Order>(createdOrderDto);
-            
-            await context.Orders.AddAsync(order);
-            await context.SaveChangesAsync();
-
-            var customerOrder = new CustomerOrder
+            try
             {
-                FkCustomerId = createdOrderDto.CustomerId,
-                FkOrderId = order.Id
-            };
-            await context.CustomerOrders.AddAsync(customerOrder);
-            await context.SaveChangesAsync();
-
-            // If there are order items, map and save them to the database
-            if (createdOrderDto.OrderItems != null && createdOrderDto.OrderItems.Count != 0)
-            {
-                var orderProducts = mapper.Map<List<OrderProducts>>(createdOrderDto.OrderItems);
-                orderProducts.ForEach(op => op.FkOrderId = order.Id);
-                await context.OrderProducts.AddRangeAsync(orderProducts);
-                await context.SaveChangesAsync();
-            }
-
-            // If shipment details are provided, map and save them to the database
-            if (createdOrderDto.ShipmentDetails?.ShippingAddress != null)
-            {
-                var shippingAddress = mapper.Map<ShippingAddress>(createdOrderDto.ShipmentDetails.ShippingAddress);
-                await context.ShippingAddresses.AddAsync(shippingAddress);
+                var order = mapper.Map<Order>(createdOrderDto);
+                await context.Orders.AddAsync(order);
                 await context.SaveChangesAsync();
 
-                var shipment = new Shipment
+                var customerOrder = new CustomerOrder
                 {
-                    FkOrderId = order.Id,
-                    FkShippingAddressId = shippingAddress.Id,
-                    ShippedDate = createdOrderDto.ShipmentDetails.ShippedDate ?? DateTime.Now,
-                    DeliveryDate = createdOrderDto.ShipmentDetails.DeliveryDate
+                    FkCustomerId = createdOrderDto.CustomerId,
+                    FkOrderId = order.Id
                 };
-                await context.Shipments.AddAsync(shipment);
-                await context.SaveChangesAsync();           
-            }
+                await context.CustomerOrders.AddAsync(customerOrder);
+                await context.SaveChangesAsync();
 
-            return Created();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
+                // If there are order items, map and save them to the database
+                if (createdOrderDto.OrderItems != null && createdOrderDto.OrderItems.Count != 0)
+                {
+                    foreach (var item in createdOrderDto.OrderItems)
+                    {
+                        var product = context.Products.Find(item.ProductId);
+
+                        if (product == null)
+                        {
+                            throw new Exception("Product not found");
+                        }
+
+                        if (product.Quantity < item.Quantity)
+                        {
+                            throw new Exception($"Insufficient stock for product: ID {product.Id} - {product.Name}");
+                        }
+
+                        product.Quantity -= item.Quantity;
+                        context.Products.Update(product);
+                    }
+
+                    await context.SaveChangesAsync();
+
+                    var orderProducts = mapper.Map<List<OrderProducts>>(createdOrderDto.OrderItems);
+                    orderProducts.ForEach(op => op.FkOrderId = order.Id);
+                    await context.OrderProducts.AddRangeAsync(orderProducts);
+                    await context.SaveChangesAsync();
+                }
+
+                // If shipment details are provided, map and save them to the database
+                if (createdOrderDto.ShipmentDetails?.ShippingAddress != null)
+                {
+                    var shippingAddress = mapper.Map<ShippingAddress>(createdOrderDto.ShipmentDetails.ShippingAddress);
+                    await context.ShippingAddresses.AddAsync(shippingAddress);
+                    await context.SaveChangesAsync();
+
+                    var shipment = new Shipment
+                    {
+                        FkOrderId = order.Id,
+                        FkShippingAddressId = shippingAddress.Id,
+                        ShippedDate = createdOrderDto.ShipmentDetails.ShippedDate ?? DateTime.Now,
+                        DeliveryDate = createdOrderDto.ShipmentDetails.DeliveryDate
+                    };
+                    await context.Shipments.AddAsync(shipment);
+                    await context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+                return Created();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
+            }
         }
     }
 }

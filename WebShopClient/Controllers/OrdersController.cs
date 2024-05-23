@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
@@ -24,8 +25,8 @@ namespace WebShopClient.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Checkout() 
-        {                 
+        public async Task<IActionResult> Checkout()
+        {
             var cartItems = _shoppingCartService.GetCartItems();
 
             if (cartItems == null || cartItems.Count == 0)
@@ -44,71 +45,61 @@ namespace WebShopClient.Controllers
                 {
                     ShippingAddress = new ShippingAddressViewModel
                     {
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        Email = customer.Email,
                         Phone = customer.Address.Phone,
                         Street = customer.Address.Street,
                         PostalCode = customer.Address.PostalCode,
                         City = customer.Address.City,
                         Country = customer.Address.Country
                     }
-                }           
-            };            
+                }
+            };
 
-            return View(viewModel); 
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(CheckoutViewModel viewModel)
-        {             
+        {
             if (ModelState.IsValid)
             {
                 var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity
-                }).ToList();                          
-
-                var isNewShippingAddress = false;
-                var customer = await _customService.GetCustomerByIdAsync(viewModel.Customer.Id);
-                var currentShippingAddress = new ShippingAddressViewModel
-                {
-                    Phone = customer.Address.Phone,
-                    Street = customer.Address.Street,
-                    PostalCode = customer.Address.PostalCode,
-                    City = customer.Address.City,
-                    Country = customer.Address.Country
-                };
-
-                if (!viewModel.ShipmentDetails.ShippingAddress.Equals(currentShippingAddress))
-                {
-                    isNewShippingAddress = true;
-                }
+                }).ToList();
 
                 var shipmentDetails = new Shipment
                 {
                     ShippedDate = DateTime.Now,
                     ShippingAddress = new ShippingAddress
                     {
+                        FirstName = viewModel.ShipmentDetails.ShippingAddress.FirstName,
+                        LastName = viewModel.ShipmentDetails.ShippingAddress.LastName,
+                        Email = viewModel.ShipmentDetails.ShippingAddress.Email,
                         Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
                         Street = viewModel.ShipmentDetails.ShippingAddress.Street,
                         PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
                         City = viewModel.ShipmentDetails.ShippingAddress.City,
                         Country = viewModel.ShipmentDetails.ShippingAddress.Country
                     }
-                };              
+                };
 
                 var order = new CreateOrder
                 {
                     CustomerId = viewModel.Customer.Id,
                     OrderItems = orderItems,
-                    ShipmentDetails = isNewShippingAddress ?  shipmentDetails : null
+                    ShipmentDetails = shipmentDetails
                 };
 
                 var result = await _orderService.CreateOrderAsync(order);
 
                 if (result)
                 {
-                    return RedirectToAction("OrderConfirmation");
+                    return RedirectToAction("OrderConfirmation", order);
                 }
                 else
                 {
@@ -119,9 +110,12 @@ namespace WebShopClient.Controllers
             return View("Checkout", viewModel);
         }
 
-        public IActionResult OrderConfirmation()
-        {
+        public async Task<IActionResult> OrderConfirmation(int orderId)
+        {           
+            //var order = await _orderService.GetOrderByIdAsync(orderId);
+
             _shoppingCartService.EmptyCart();
+
             return View();
         }
 
