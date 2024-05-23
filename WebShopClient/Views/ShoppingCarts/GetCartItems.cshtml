@@ -38,7 +38,7 @@
                     else
                     {
                         totalSum += product.Price * product.Quantity;
-                    }                    
+                    }
                     <tr>
                         <td class="align-middle">@product.ProductName</td>
                         <td class="align-middle">
@@ -58,7 +58,7 @@
                             <form method="post" asp-action="UpdateItemQuantity">
                                 <input type="hidden" name="productId" value="@product.ProductId" />
                                 <select name="quantity" onchange="this.form.submit();">
-                                    @for (int i = 1; i <= 20; i++)
+                                    @for (int i = 1; i <= (product.StockQuantity > 20 ? 20 : product.StockQuantity); i++)
                                     {
                                         @if (i == product.Quantity)
                                         {
@@ -68,7 +68,7 @@
                                         {
                                             <option value="@i">@i</option>
                                         }
-                                    }
+                                    }                                 
                                 </select>
                             </form>
                         </td>

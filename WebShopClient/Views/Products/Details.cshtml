@@ -50,7 +50,14 @@ ViewData["Title"] = Model.Name;
                                     <input hidden asp-for="@Model.Id" name="productId" />
                                     <input hidden asp-for="@Model.Quantity" name="quantity" value="1" />
                                     <input hidden name="returnUrl" value="/products/details/@Model.Id" />
-                                    <button type="submit" class="btn btn-primary mr-2 px-4">Add to cart</button>
+                                    @if (Model.Quantity > 0)
+                                    {
+                                        <button type="submit" class="btn btn-primary">Add to cart</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" disabled class="btn btn-danger">Out of stock</button>
+                                    }                                    
                                 </form>                                
                                 <i class="fa fa-heart text-muted"></i> 
                                 <i class="fa fa-share-alt text-muted"></i> 

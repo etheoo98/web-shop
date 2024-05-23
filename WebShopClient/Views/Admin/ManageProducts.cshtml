@@ -23,7 +23,16 @@
                 <td>@product.Name</td>
                 <td>@product.Description</td>
                 <td>@product.Price</td>
-                <td>@product.Quantity</td>
+                @if (product.Quantity > 0)
+                {
+                    <td>@product.Quantity</td>
+                }                
+                else
+                {
+                    <td>
+                        <span class="text-danger">Out of stock!</span>
+                    </td>
+                }
                 <td>
 	                <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
 	                <a asp-action="CreateDiscount" asp-route-id="@product.Id" class="btn btn-danger">Add campaign</a>
