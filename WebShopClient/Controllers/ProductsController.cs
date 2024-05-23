@@ -47,14 +47,14 @@ namespace WebShopClient.Controllers
         }
 
         // GET: products by category
-        public async Task<IActionResult> Category(string category)
+        public async Task<IActionResult> Category(string[] category)
         {
-            if (string.IsNullOrEmpty(category))
+            if (category == null || category.Length == 0)
             {
                 return BadRequest("Category cannot be null or empty.");
             }
 
-            var products = await _api.GetProductsByCategoryAsync(category);
+            var products = await _api.GetProductsByCategoryAsync(category.ToList());
 
             if (products == null || products.Count == 0)
             {
