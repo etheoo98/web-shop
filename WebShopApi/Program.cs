@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,13 +40,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Customer", policy =>
     {
-        policy.RequireClaim("Role", "Customer");
+        policy.RequireClaim(ClaimTypes.Role, "Customer");
     });
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("Admin", policy =>
     {
-        policy.RequireClaim("Role", "Admin");
+        policy.RequireClaim(ClaimTypes.Role, "Admin");
     });
 
 builder.Services.AddSwaggerGen(options =>
@@ -83,8 +84,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors(options => 
+{ 
+    options.WithOrigins("http://localhost:7064")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials(); 
+});
+
 app.UseHttpsRedirection();
 app.MapControllers();
 

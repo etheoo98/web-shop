@@ -31,7 +31,7 @@ public class AuthenticatorsController(ApplicationDbContext context) : Controller
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
-            new Claim("Role", customer.Role)
+            new Claim(ClaimTypes.Role, customer.Role)
         };
 
         var token = new JwtSecurityToken(Environment.GetEnvironmentVariable("VALID_ISSUER"), Environment.GetEnvironmentVariable("VALID_AUDIENCE"),
