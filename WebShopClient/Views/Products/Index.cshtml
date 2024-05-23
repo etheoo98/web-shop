@@ -64,7 +64,14 @@
                                             <input hidden asp-for="@item.Id" name="productId" />
                                             <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
                                             <input hidden name="returnUrl" value="" />
-                                            <button type="submit" class="btn btn-primary">Add to cart</button>
+                                            @if (item.Quantity > 0)
+                                            {
+                                                <button type="submit" class="btn btn-primary">Add to cart</button>
+                                            }                                            
+                                            else
+                                            {
+                                                <button type="button" disabled class="btn btn-danger">Out of stock</button>
+                                            }
                                         </form>
                                     </div>
                                 </div>
