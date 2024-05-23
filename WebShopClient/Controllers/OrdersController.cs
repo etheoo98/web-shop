@@ -124,5 +124,6 @@ namespace WebShopClient.Controllers
             _shoppingCartService.EmptyCart();
             return View();
         }
+
     }
 }

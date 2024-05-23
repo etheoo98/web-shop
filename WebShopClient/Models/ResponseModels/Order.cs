@@ -28,7 +28,7 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("shipment-details")]
         public Shipment? Shipment { get; set; }
 
-        [JsonPropertyName("order-products")]
-        public ICollection<OrderProduct> OrderProducts { get; set; }
+        [JsonPropertyName("products")]
+        public ICollection<Product> Products { get; set; }
     }
 }
