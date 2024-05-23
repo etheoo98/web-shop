@@ -44,6 +44,6 @@ namespace WebShopClient.Controllers
                 .Select(p => new { p.Id, p.Name, p.Price })
                 .ToList();
             return Json(filteredProducts);
-        }
+        }  
     }
 }
