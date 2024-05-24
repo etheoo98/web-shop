@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Azure;
+using System.Text.Json;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 
@@ -72,8 +73,29 @@ namespace WebShopClient.Services
         public async Task<bool> UpdateProductAsync(EditProduct editProduct)
         {
             var response = await _client.PutAsJsonAsync($"Products/{editProduct.Id}", editProduct);
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error: {response.StatusCode}, Content: {content}");
+            }
+
             return response.IsSuccessStatusCode;
         }
+        //Delete Product
+        public async Task<bool> DeleteProductAsync(int id)
+        {
+            try
+            {
+                var response = await _client.DeleteAsync($"Products/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting product {ex.Message}");
+                return false;
+            }
+        }
+
         //GET Categories
         public async Task<List<Category>> GetCategoriesAsync()
         {

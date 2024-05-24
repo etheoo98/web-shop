@@ -123,19 +123,25 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     public async Task<IActionResult> Put(int id, EditProductDto dto)
     {
         // Validation
-        if (!ModelState.IsValid) return BadRequest("Missing property values");
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
         var product = await context.Products
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
+            .ThenInclude(pc => pc.Category)
             .FirstOrDefaultAsync();
 
         if (product == null) return NotFound();
 
         product.Name = dto.Name;
         product.Description = dto.Description;
+        product.Price = dto.Price;
         product.Quantity = dto.Quantity;
-        product.ProductCategories.Clear();
+
+        context.Products.Update(product);
 
         foreach (var categoryId in dto.CategoryIds)
         {
@@ -147,7 +153,6 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
 
             product.ProductCategories.Add(productCategory);
         }
-
         await context.SaveChangesAsync();
 
         return Ok();
@@ -166,5 +171,42 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         await context.SaveChangesAsync();
 
         return Ok();
+    }
+
+    //
+    // Delete a Product
+    //
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        try
+        {
+
+            var product = await context.Products
+                .Include(p => p.ProductCategories)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null) return NotFound();
+
+
+            if (product.ProductCategories != null)
+            {
+                context.ProductCategories.RemoveRange(product.ProductCategories);
+            }
+
+            context.Products.Remove(product);
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return StatusCode(500, "An error ocurred while deleting the product.");
+        }
     }
 }

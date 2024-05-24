@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Options;
+using Newtonsoft.Json.Linq;
+using System;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Services;
 
@@ -29,7 +32,7 @@ namespace WebShopClient.Controllers
 
             // Sorterar produkterna efter datum och visar dom tre senaste
             var latestProducts = products.OrderByDescending(p => p.AddDate).Take(3).ToList();
-            ViewBag.LatestProducts = latestProducts;           
+            ViewBag.LatestProducts = latestProducts;
 
             return View();
         }
@@ -75,13 +78,18 @@ namespace WebShopClient.Controllers
             {
                 return NotFound();
             }
+
+            var categories = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
             return View(new EditProduct
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity
+                Quantity = product.Quantity,
+                CategoryIds = product.Categories.Select(c => c.Id).ToList()
             });
         }
 
@@ -95,15 +103,34 @@ namespace WebShopClient.Controllers
                 return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _productService.UpdateProductAsync(editProduct);
-                if (result)
-                {
-                    return RedirectToAction(nameof(ManageProducts));
-                }
+                var categories = await _productService.GetCategoriesAsync();
+                ViewBag.Categories = new SelectList(categories, "Id", "Name");
+                return View(editProduct);
             }
+            var result = await _productService.UpdateProductAsync(editProduct);
+            if (result)
+            {
+                return RedirectToAction(nameof(ManageProducts));
+            }
+
             return View(editProduct);
+        }
+
+        // DELETE: 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var result = await _productService.DeleteProductAsync(id);
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            TempData["SuccessMessage"] = "Product deleted successfully.";
+            return RedirectToAction(nameof(ManageProducts));
         }
 
         // GET: /Admin/CreateDiscount

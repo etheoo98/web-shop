@@ -14,9 +14,14 @@ public class EditProductDto
     [StringLength(100, MinimumLength = 2)]
     [JsonPropertyName("description")]
     public string Description { get; set; }
-    
+
     [Required]
-    [Range(0, 1000000)]
+    [Range(1, int.MaxValue)]
+    [JsonPropertyName("price")]
+    public decimal Price { get; set; }
+
+    [Required]
+    [Range(0, int.MaxValue)]
     [JsonPropertyName("quantity")]
     public int Quantity { get; set; }
     
