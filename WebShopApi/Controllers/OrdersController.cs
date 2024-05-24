@@ -43,6 +43,41 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Co
     }
 
     //
+    // Fetches order by id
+    //
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        try
+        {
+            var order = await context.Orders
+                .Where(o => o.Id == id)
+                .Include(o => o.CustomerOrders)
+                .ThenInclude(co => co.Customer)
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .Include(o => o.ShipmentDetails)
+                .ThenInclude(sd => sd.ShippingAddress)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                return NotFound($"Order with ID {id} was not found.");
+            }
+
+            var orderDto = mapper.Map<OrderDto>(order);
+
+            return Ok(orderDto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error ocurred while processing the request: {ex.Message}");
+        }
+    }
+
+    //
     // Creates a new Order
     //    
     [HttpPost]

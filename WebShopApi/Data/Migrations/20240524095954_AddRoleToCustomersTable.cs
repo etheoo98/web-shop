@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebShop.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddRoleToCustomersTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,12 +33,14 @@ namespace WebShop.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Role = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.UniqueConstraint("AK_Customers_Email", x => x.Email);
                 });
 
             migrationBuilder.CreateTable(
@@ -48,6 +50,7 @@ namespace WebShop.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Percent = table.Column<int>(type: "INTEGER", nullable: false),
+                    DiscountedPrice = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     EndDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -57,11 +60,30 @@ namespace WebShop.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TotalSum = table.Column<decimal>(type: "TEXT", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsPaid = table.Column<bool>(type: "INTEGER", nullable: false),
+                    FkShipmentId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShippingAddresses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Phone = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Street = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     PostalCode = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
@@ -98,29 +120,6 @@ namespace WebShop.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TotalSum = table.Column<decimal>(type: "TEXT", nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsPaid = table.Column<bool>(type: "INTEGER", nullable: false),
-                    FkCustomerId = table.Column<int>(type: "INTEGER", nullable: false),
-                    FkShipmentId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_Customers_FkCustomerId",
-                        column: x => x.FkCustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -142,6 +141,32 @@ namespace WebShop.Data.Migrations
                         column: x => x.FkDiscountId,
                         principalTable: "Discounts",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FkCustomerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FkOrderId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomerOrders_Customers_FkCustomerId",
+                        column: x => x.FkCustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomerOrders_Orders_FkOrderId",
+                        column: x => x.FkOrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -232,6 +257,16 @@ namespace WebShop.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CustomerOrders_FkCustomerId",
+                table: "CustomerOrders",
+                column: "FkCustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerOrders_FkOrderId",
+                table: "CustomerOrders",
+                column: "FkOrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderProducts_FkOrderId",
                 table: "OrderProducts",
                 column: "FkOrderId");
@@ -240,11 +275,6 @@ namespace WebShop.Data.Migrations
                 name: "IX_OrderProducts_FkProductId",
                 table: "OrderProducts",
                 column: "FkProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_FkCustomerId",
-                table: "Orders",
-                column: "FkCustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_FkCategoryId",
@@ -280,6 +310,9 @@ namespace WebShop.Data.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
+                name: "CustomerOrders");
+
+            migrationBuilder.DropTable(
                 name: "OrderProducts");
 
             migrationBuilder.DropTable(
@@ -287,6 +320,9 @@ namespace WebShop.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Shipments");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "Categories");
@@ -302,9 +338,6 @@ namespace WebShop.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Discounts");
-
-            migrationBuilder.DropTable(
-                name: "Customers");
         }
     }
 }
