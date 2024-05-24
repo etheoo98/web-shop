@@ -48,7 +48,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<UpdateCustomerDto, Customer>();
         CreateMap<CreateDiscountDto, Discount>();
-        CreateMap<EditProductDto, Product>();
+        CreateMap<UpdateProductDto, Product>();
         CreateMap<CreateShipmentDetailsDto, Shipment>();
         CreateMap<AddressDto, Address>();
         CreateMap<CreateShippingAddressDto, ShippingAddress>();

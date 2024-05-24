@@ -120,7 +120,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     // Edit a Product
     //
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Put(int id, EditProductDto dto)
+    public async Task<IActionResult> Put(int id, UpdateProductDto dto)
     {
         // Validation
         if (!ModelState.IsValid)

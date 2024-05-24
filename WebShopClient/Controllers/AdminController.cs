@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using WebShopClient.Models.RequestModels;
+using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
@@ -13,13 +14,15 @@ namespace WebShopClient.Controllers
         private readonly CustomerService _customerService;
         private readonly ProductService _productService;
         private readonly DiscountService _discountService;
+        private readonly OrderService _orderService;
 
 
-        public AdminController(CustomerService customerService, ProductService productService, DiscountService discountService)
+        public AdminController(OrderService orderService, CustomerService customerService, ProductService productService, DiscountService discountService)
         {
             _customerService = customerService;
             _productService = productService;
             _discountService = discountService;
+            _orderService = orderService;
         }
 
         public async Task<IActionResult> Dashboard()
@@ -29,6 +32,9 @@ namespace WebShopClient.Controllers
 
             var products = await _productService.GetProductsAsync();
             ViewBag.ProductsCount = products.Count;
+
+            var orders = await _orderService.GetOrdersAsync();
+            ViewBag.OrdersCount = orders.Count;
 
             // Sorterar produkterna efter datum och visar dom tre senaste
             var latestProducts = products.OrderByDescending(p => p.AddDate).Take(3).ToList();
@@ -157,6 +163,18 @@ namespace WebShopClient.Controllers
             var products = await _productService.GetProductsAsync();
             ViewBag.Products = new SelectList(products, "Id", "Name");
             return View(createDiscount);
+        }
+
+        // GET: Orders
+        public async Task<IActionResult> GetOrders()
+        {
+            var orders = await _orderService.GetOrdersAsync();
+            if (orders == null || !orders.Any())
+            {
+                return View(new List<Order>());
+            }
+
+            return View(orders);
         }
     }
 }
