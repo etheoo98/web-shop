@@ -31,6 +31,7 @@ public class AuthenticatorsController(ApplicationDbContext context) : Controller
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
+            new Claim("user-id", customer.Id.ToString()),
             new Claim(ClaimTypes.Role, customer.Role)
         };
 
