@@ -11,7 +11,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthenticatorsController(ApplicationDbContext context) : ControllerBase
+public class AuthenticatorsController(ApplicationDbContext context) : BaseController
 {
     //
     // Attempt Login and return JWT token upon success
