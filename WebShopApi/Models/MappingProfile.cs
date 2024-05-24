@@ -34,7 +34,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.OrderDtos, opt => opt.MapFrom(src => src.Order));
 
         CreateMap<OrderProducts, OrderDto>()
-            .ForMember(dest => dest.ProductDtos, opt => opt.MapFrom(src => src.Product));
+            .ForMember(dest => dest.ProductDtos, opt => opt.MapFrom(src => src.Product));      
 
         CreateMap<ProductCategory, ProductDto>()
             .ForMember(dest => dest.CategoryDtos, opt => opt.MapFrom(src => src.Category));
@@ -45,7 +45,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<UpdateCustomerDto, Customer>();
         CreateMap<CreateDiscountDto, Discount>();
-        CreateMap<UpdateProductDto, Product>();
+        CreateMap<EditProductDto, Product>();
         CreateMap<CreateShipmentDetailsDto, Shipment>();
         CreateMap<AddressDto, Address>();
         CreateMap<CreateShippingAddressDto, ShippingAddress>();

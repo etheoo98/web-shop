@@ -26,18 +26,32 @@
                 @if (product.Quantity > 0)
                 {
                     <td>@product.Quantity</td>
-                }                
+                }
                 else
                 {
                     <td>
                         <span class="text-danger">Out of stock!</span>
                     </td>
                 }
-                <td>
-	                <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-warning">Edit</a>
-	                <a asp-action="CreateDiscount" asp-route-id="@product.Id" class="btn btn-danger">Add campaign</a>
+                <td class="d-flex gap-2">                    
+                    <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="CreateDiscount" asp-route-id="@product.Id" class="btn btn-info btn-sm">Add campaign</a>
+                    <form method="post" asp-action="DeleteProduct" asp-route-id="@product.Id">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this product?');">
+                            Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
