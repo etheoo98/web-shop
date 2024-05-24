@@ -42,7 +42,7 @@ namespace WebShopClient.Services
 						Price = product.Price,
 						Quantity = quantity,	
 						StockQuantity = product.Quantity,
-						DiscountedPrice = product.Discount.DiscountedPrice
+						DiscountedPrice = product.Discount?.DiscountedPrice != null ? product.Discount.DiscountedPrice : 0
 					});
 				}
 			}
