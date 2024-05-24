@@ -11,7 +11,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class OrdersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+public class OrdersController(ApplicationDbContext context, IMapper mapper) : BaseController
 {
     //
     // Fetches all Orders

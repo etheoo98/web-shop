@@ -11,7 +11,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthenticatorsController(ApplicationDbContext context) : ControllerBase
+public class AuthenticatorsController(ApplicationDbContext context) : BaseController
 {
     //
     // Attempt Login and return JWT token upon success
@@ -31,6 +31,7 @@ public class AuthenticatorsController(ApplicationDbContext context) : Controller
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
+            new Claim("user-id", customer.Id.ToString()),
             new Claim(ClaimTypes.Role, customer.Role)
         };
 

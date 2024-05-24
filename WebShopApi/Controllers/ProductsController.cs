@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+public class ProductsController(ApplicationDbContext context, IMapper mapper) : BaseController
 {
     //
     // Fetches all Products
