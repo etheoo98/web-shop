@@ -13,24 +13,24 @@
 
     <div>
         <h3>Order Details</h3>
-        <p><strong>Order Number:</strong></p>
-        <p><strong>Order Date:</strong></p>
-        <p><strong>Total Sum:</strong></p>
+        <p><strong>Order Number:</strong>@Model.OrderId</p>
+        <p><strong>Order Date:</strong>@Model.OrderDate.ToString("f")</p>
+        <p><strong>Total Sum:</strong>@Model.TotalSum</p>
 
         <h4>Products Purchased</h4>
         <ul>
-            @* @foreach(var item in Model.OrderItems)
+            @foreach(var product in Model.OrderItems)
             {                
-                <li>@item.ProductName (x(@item.Quantity)) | @item.Price</li>
-            }   *@          
+                <li>@product.ProductName (x(@product.Quantity)) | @product.Price</li>
+            }            
         </ul>
 
         <h4>Delivery Information</h4>
         <p><strong>Shipping Address:</strong></p>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
+        <p>@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName</p>
+        <p>@Model.ShippingAddress.Street</p>
+        <p>@Model.ShippingAddress.PostalCode @Model.ShippingAddress.City</p>
+        <p>@Model.ShippingAddress.Country</p>
         <br />
         <p><strong>Estimated Delivery Date:</strong></p>
     </div>
