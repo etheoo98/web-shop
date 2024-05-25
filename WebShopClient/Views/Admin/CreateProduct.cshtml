@@ -6,7 +6,7 @@
 
 <h2>Create Product</h2>
 
-<form asp-action="CreateProduct" method="post" class="form-horizontal">
+<form asp-action="CreateProduct" method="post" class="form-horizontal" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -26,6 +26,16 @@
         <label asp-for="Quantity" class="control-label"></label>
         <input asp-for="Quantity" class="form-control" />
         <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FileName" class="control-label"></label>
+        <input asp-for="FileName" class="form-control" />
+        <span asp-validation-for="FileName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageFile" class="control-label"></label>
+        <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="CategoryIds" class="control-label"></label>
