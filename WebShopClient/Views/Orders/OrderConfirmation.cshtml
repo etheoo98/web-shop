@@ -1,0 +1,41 @@
+﻿@model WebShopClient.ViewModels.OrderConfirmationViewModel
+
+@{
+    ViewData["Title"] = "Order Confirmation";    
+}
+
+<div class="container">
+    <h2>Order Confirmation</h2>
+
+    <div>
+        <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+    </div>
+
+    <div>
+        <h3>Order Details</h3>
+        <p><strong>Order Number:</strong>@Model.OrderId</p>
+        <p><strong>Order Date:</strong>@Model.OrderDate.ToString("f")</p>
+        <p><strong>Total Sum:</strong>@Model.TotalSum</p>
+
+        <h4>Products Purchased</h4>
+        <ul>
+            @foreach(var product in Model.OrderItems)
+            {                
+                <li>@product.ProductName (x(@product.Quantity)) | @product.Price</li>
+            }            
+        </ul>
+
+        <h4>Delivery Information</h4>
+        <p><strong>Shipping Address:</strong></p>
+        <p>@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName</p>
+        <p>@Model.ShippingAddress.Street</p>
+        <p>@Model.ShippingAddress.PostalCode @Model.ShippingAddress.City</p>
+        <p>@Model.ShippingAddress.Country</p>
+        <br />
+        <p><strong>Estimated Delivery Date:</strong></p>
+    </div>
+
+    <div>
+        <a asp-action="Index" asp-controller="Products">Back to Shopping</a>
+    </div>
+</div>

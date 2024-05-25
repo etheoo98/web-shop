@@ -11,7 +11,7 @@ namespace WebShopClient.Models.ResponseModels
         public int ProductId { get; set; }
 
         [JsonPropertyName("product-name")]
-        public string ProductName { get; set; }
+        public string? ProductName { get; set; }
 
         [JsonPropertyName("price")]
         public decimal Price { get; set; }
@@ -19,10 +19,13 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 
-        [JsonPropertyName("percent-discount")]
-        public int PercentDiscount { get; set; }
+        [JsonPropertyName("stock-quantity")]
+        public int StockQuantity { get; set; }
+
+        [JsonPropertyName("discounted-price")]
+        public decimal DiscountedPrice { get; set; }
 
         [JsonPropertyName("total-price")]
-        public decimal TotalPrice => Price * Quantity;
+        public decimal TotalPrice => DiscountedPrice != 0 ? DiscountedPrice * Quantity : Price * Quantity;
     }
 }

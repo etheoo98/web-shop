@@ -45,105 +45,124 @@
 
     <!-- Modal -->
     <div class="container">
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Filter</h5>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h5>Kategori</h5>
-                        @if (Model.Any(c => c.Categories != null && c.Categories.Any()))
-                        {
-                            <div>
-                                @{
-                                    var renderedCategories = new HashSet<string>();
-                                }
+         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="exampleModalLabel">Filter</h5>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <h5>Kategori</h5>
+                 @if (Model.Any(c => c.Categories != null && c.Categories.Any()))
+                 {
+                     <div>
+                         @{
+                             var renderedCategories = new HashSet<string>();
+                         }
 
-                                @foreach (var c in Model.Where(c => c.Categories != null))
-                                {
-                                    @foreach (var category in c.Categories)
-                                    {
-                                        if (!renderedCategories.Contains(category.Name))
-                                        {
-                                            renderedCategories.Add(category.Name);
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox" id="checkbox_@category.Name" value="@category.Name">
-                                                <label class="form-check-label" for="checkbox_@category.Name">@category.Name</label>
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        }
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
-                        <button type="button" class="btn btn-primary" onclick="applyFilter()">Filtrera</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                         @foreach (var c in Model.Where(c => c.Categories != null))
+                         {
+                             @foreach (var category in c.Categories)
+                             {
+                                 if (!renderedCategories.Contains(category.Name))
+                                 {
+                                     renderedCategories.Add(category.Name);
+                                     <div class="form-check form-check-inline">
+                                         <input class="form-check-input" type="checkbox" id="checkbox_@category.Name" value="@category.Name">
+                                         <label class="form-check-label" for="checkbox_@category.Name">@category.Name</label>
+                                     </div>
+                                 }
+                             }
+                         }
+                     </div>
+                 }
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+                 <button type="button" class="btn btn-primary" onclick="applyFilter()">Filtrera</button>
+             </div>
+         </div>
+     </div>
+ </div>
         <div class="row g-4 py-5">
-            @if (Model.Any())
-            {
-                @foreach (var item in Model)
+            <div class="row g-4 py-5">
+                <!-- Detta ska loopas per produkt - Start -->
+                @if (Model.Any())
                 {
-                    <div class="col-md-3">
-                        <div class="product-single-card">
-                            <div class="product-top-area">
-                                @if (item.Discount != null)
-                                {
-                                    <div class="product-discount text-danger">
-                                        @($"{item.Discount.Percent}%")
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-3">
+                            <div class="product-single-card">
+                                <div class="product-top-area">
+                                    @if (item.Discount != null)
+                                    {
+                                        <div class="product-discount text-danger">
+                                            @($"{item.Discount.Percent}%")
+                                        </div>
+                                    }
+                                    <div class="product-img">
+                                        <img src="./assets/img/placeholder/dummy3.png" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
                                     </div>
-                                }
-                                <div class="product-img">
-                                    <img src="./assets/img/placeholder/dummy3.png" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
                                 </div>
-                            </div>
-                            <div class="product-info">
-                                @if (item.Categories != null && item.Categories.Any())
-                                {
-                                    <h6 class="product-category">
-                                        @foreach (var category in item.Categories)
-                                        {
-                                            <a asp-action="Details" asp-route-id="@category.Id">@category.Name</a>
-                                            @if (!category.Equals(item.Categories.Last()))
+                                <div class="product-info">
+                                    @if (item.Categories != null && item.Categories.Any())
+                                    {
+                                        <h6 class="product-category">
+                                            @foreach (var category in item.Categories)
                                             {
-                                                <span>,</span>
+                                                <a asp-action="Details" asp-route-id="@category.Id">@category.Name</a>
+                                                if (!category.Equals(item.Categories.Last()))
+                                                {
+                                                    <span>,</span>
+                                                }
                                             }
-                                        }
-                                    </h6>
-                                }
-                                <h6 class="product-title text-truncate"><a asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h6>
-                                <div class="d-flex flex-wrap justify-content-between align-items-center py-2">
-                                    <div class="d-flex price">
-                                        @if (item.Discount != null)
-                                        {
-                                            <div class="new-price text-danger">
-@*                                                 @($"{item.Discount.DiscountedPrice}kr")
- *@                                           </div>
-                                            <div class="old-price">@($"{item.Price}kr")</div>
-                                        }
-                                        else
-                                        {
-                                            <div class="price">@($"{item.Price}kr")</div>
-                                        }
+                                        </h6>
+                                    }
+                                    <h6 class="product-title text-truncate"><a asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h6>
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center py-2">
+                                        <div class="d-flex price">
+                                            @if (item.Discount != null)
+                                            {
+                                                <div class="new-price text-danger">
+                                                    @($"{item.Discount.DiscountedPrice}")
+                                                </div>
+                                                <div class="old-price">@($"{item.Price}kr")</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="price">@($"{item.Price}kr")</div>
+                                            }
+                                        </div>
+                                        <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
+                                            <input hidden asp-for="@item.Id" name="productId" />
+                                            <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
+                                            <input hidden name="returnUrl" value="" />
+                                            @if (item.Quantity > 0)
+                                            {
+                                                <button type="submit" class="btn btn-primary">Add to cart</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" disabled class="btn btn-danger">Out of stock</button>
+                                            }
+                                        </form>
                                     </div>
-                                    <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
-                                        <input hidden asp-for="@item.Id" name="productId" />
-                                        <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
-                                        <input hidden name="returnUrl" value="" />
-                                        <button type="submit" class="btn btn-primary">Add to cart</button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        @if (TempData["AddToCartMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">                                
+                                    <i class="bi bi-check-circle"></i>
+                                    @item.Name @TempData["AddToCartMessage"] ||
+                                <a class="alert-link" asp-action="GetCartItems" asp-controller="ShoppingCarts">View shopping cart!</a>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                    }
                 }
-            }
+            </div>
         </div>
     </div>
 </section>

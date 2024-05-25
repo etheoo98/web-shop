@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WebShopClient.Models.ResponseModels
 {
@@ -12,5 +13,8 @@ namespace WebShopClient.Models.ResponseModels
 
         [JsonPropertyName("delivery-date")]
         public DateTime? DeliveryDate { get; set; }
+
+        [JsonPropertyName("shipping-address")]
+        public ShippingAddress ShippingAddress { get; set; }
     }
 }

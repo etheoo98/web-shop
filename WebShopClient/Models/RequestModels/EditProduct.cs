@@ -19,13 +19,16 @@ namespace WebShopClient.Models.RequestModels
 
         [Required(ErrorMessage = "Price is required.")]
         [JsonPropertyName("price")]
-        [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Price must be a positive value.")]        
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
         [JsonPropertyName("quantity")]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]
         public int Quantity { get; set; }
-    }
 
+        [Required]
+        [JsonPropertyName("category-ids")]
+        public ICollection<int> CategoryIds { get; set; }
+    }
 }

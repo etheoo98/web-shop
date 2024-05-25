@@ -1,0 +1,154 @@
+﻿@model WebShopClient.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";      
+    decimal totalSum = 0;
+}
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Checkout</h2>
+    </div>
+
+    <div class="row g-5">
+        <form method="post" asp-action="PlaceOrder" asp-controller="Orders">            
+            <input hidden asp-for="@Model.Customer.Id" />
+            <input hidden asp-for="@Model.Customer.Role" />
+
+            <div class="row g-5">
+                <div class="col-md-5 col-lg-4 order-md-last">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Your cart</span>
+                        <a class="link-offset-2 link-offset-3-hover link-underline-secondary link-underline-opacity-0 link-underline-opacity-75-hover"
+                           asp-controller="ShoppingCarts"
+                           asp-action="GetCartItems">
+                            <span class="text-secondary">Edit</span>
+                        </a>
+                    </h4>
+                    <ul class="list-group mb-3">
+                        @if (Model.CartItems == null || Model.CartItems.Count == 0)
+                        {
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                    <h6 class="my-0">Your cart is empty</h6>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            @foreach (var product in Model.CartItems)
+                            {
+                                if (product.DiscountedPrice != 0)
+                                {
+                                    totalSum += product.DiscountedPrice * product.Quantity;
+                                }
+                                else
+                                {
+                                    totalSum += product.Price * product.Quantity;
+                                }
+                                <input type="hidden" name="CartItems[@Model.CartItems.IndexOf(product)].ProductId" value="@product.ProductId" />
+                                <input type="hidden" name="CartItems[@Model.CartItems.IndexOf(product)].Quantity" value="@product.Quantity" />
+
+                                <li class="list-group-item d-flex justify-content-between lh-sm">
+                                    @if (product.DiscountedPrice != 0)
+                                    {
+                                        <div>
+                                            <h6 class="my-0">
+                                                <span class="text-body-secondary">@(@product.Quantity)x</span> @product.ProductName
+                                            </h6>
+                                            @if (product.Quantity > 1)
+                                            {
+                                                <small class="text-body-secondary">$@(@product.DiscountedPrice)/each</small>
+                                            }
+                                        </div>
+                                        <span class="text-body-secondary">$@(@product.DiscountedPrice * @product.Quantity)</span>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <h6 class="my-0">
+                                                <span class="text-body-secondary">@(@product.Quantity)x</span> @product.ProductName
+                                            </h6>
+                                            @if (product.Quantity > 1)
+                                            {
+                                                <small class="text-body-secondary">$@(@product.Price)/each</small>
+                                            }
+                                        </div>
+                                        <span class="text-body-secondary">$@(@product.Price * @product.Quantity)</span>
+                                    }
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <h6 class="my-0">Shippment cost</h6>
+                                <span class="text-body-secondary">$5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <h5>Total (USD)</h5>
+                                <h5>$@totalSum</h5>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">Shipping Address</h4>
+
+                    <div class="row g-3 mb-3">
+                        <div class="form-floating col-12 col-lg-6">
+                            <input class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.FirstName" type="text" value="@Model.ShipmentDetails.ShippingAddress.FirstName" />
+                            <label class="form-label">First name</label>
+                            <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating col-12 col-lg-6">
+                            <input class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.LastName" type="text" value="@Model.ShipmentDetails.ShippingAddress.LastName" />
+                            <label class="form-label">Last name</label>
+                            <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3 col-12">
+                        <input type="email" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Email" value="@Model.ShipmentDetails.ShippingAddress.Email" />
+                        <label class="form-label">Email</label>
+                        <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3 col-12">
+                        <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Phone" value="@Model.ShipmentDetails.ShippingAddress.Phone" />
+                        <label class="form-label">Phone number</label>
+                        <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3 col-12">
+                        <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Street" value="@Model.ShipmentDetails.ShippingAddress.Street" />
+                        <label class="form-label">Street</label>
+                        <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.Street" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="form-floating col-6">
+                            <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.PostalCode" value="@Model.ShipmentDetails.ShippingAddress.PostalCode" />
+                            <label class="form-label">Postal code</label>
+                            <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.PostalCode" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating col-6">
+                            <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.City" value="@Model.ShipmentDetails.ShippingAddress.City" />
+                            <label class="form-label">City</label>
+                            <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.City" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3 col-12">
+                        <input type="text" class="form-control" asp-for="@Model.ShipmentDetails.ShippingAddress.Country" value="@Model.ShipmentDetails.ShippingAddress.Country" />
+                        <label class="form-label">Country</label>
+                        <span asp-validation-for="@Model.ShipmentDetails.ShippingAddress.Country" class="text-danger"></span>
+                    </div>             
+
+                    <hr class="my-4" />
+
+                    <button class="w-100 btn btn-primary btn-lg" type="submit">BUY NOW</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

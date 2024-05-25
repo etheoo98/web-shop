@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using WebShopClient.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using WebShopClient.Handlers;
 using WebShopClient.Services;
 
 namespace WebShopClient
@@ -34,9 +34,11 @@ namespace WebShopClient
             });
 
             builder.Services.AddScoped<ApiServices>();
-            builder.Services.AddScoped<ProductServices>();
+            builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<ShoppingCartService>();
             builder.Services.AddScoped<CustomerService>();
+            builder.Services.AddScoped<DiscountService>();
+            builder.Services.AddScoped<OrderService>();
 
             builder.Services.AddRazorPages();
             builder.Services.AddControllersWithViews();
@@ -52,7 +54,13 @@ namespace WebShopClient
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            
+            builder.Services.AddAuthentication("CustomAuth")
+                .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomAuth", null);
 
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
 
             var app = builder.Build();
 
@@ -71,12 +79,12 @@ namespace WebShopClient
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSession();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseSession();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

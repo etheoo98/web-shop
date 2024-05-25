@@ -16,11 +16,16 @@ namespace WebShopClient.Models.RequestModels
         [JsonPropertyName("street")]
         public string Street { get; set; }
 
-        [Required(ErrorMessage = "Postal code ist required.")]
+        [Required(ErrorMessage = "Postal code is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Postal code must be between {2} and {1} characters.")]
         [DisplayName("Postal code")]
         [JsonPropertyName("postal-code")]
         public string PostalCode { get; set; }
+
+        [Required(ErrorMessage = "City is required.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "City must be between {2} and {1} characters.")]
+        [JsonPropertyName("city")]
+        public string City { get; set; }
 
         [Required(ErrorMessage = "Country is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Country must be between {2} and {1} characters.")]
