@@ -16,7 +16,7 @@ public class Product
     
     public decimal Price { get; set; }
     public int Quantity { get; set; }
-    public DateTime AddDate { get; set; } = DateTime.Now;
+    public DateTime AddDate { get; set; } = DateTime.UtcNow;
     public bool IsDiscontinued { get; set; }
     
     // Foreign Keys
@@ -24,7 +24,7 @@ public class Product
     public int? FkDiscountId { get; set; }
     
     // Navigational Properties
-    public Discount? Discount { get; set; }
-    public ICollection<OrderProducts>? OrderProducts { get; set; }
-    public ICollection<ProductCategory>? ProductCategories { get; set; }
+    public Discount Discount { get; set; }
+    public ICollection<OrderProducts> OrderProducts { get; set; }
+    public ICollection<ProductCategory> ProductCategories { get; set; }
 }

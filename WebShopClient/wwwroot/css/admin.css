@@ -70,14 +70,12 @@
     height: 50px;
     margin-right: 15px;
 }
-    .icon-container i:hover{
-        color: #2b2e32;
-    } 
 
     .icon-container i {
         font-size: 1.5rem;
         color: #6c757d;
     }
+
 .card-header {
     background-color: #fff;
     border-bottom: none;

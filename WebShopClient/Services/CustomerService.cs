@@ -1,5 +1,4 @@
-﻿using System.Net;
-using WebShopClient.Models.RequestModels;
+﻿using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
@@ -7,12 +6,10 @@ namespace WebShopClient.Services
     public class CustomerService
 	{
 		private readonly ApiServices _apiServices;
-		private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CustomerService(ApiServices apiServices, IHttpContextAccessor httpContextAccessor)
+        public CustomerService(ApiServices apiServices)
         {
             _apiServices = apiServices;
-            _httpContextAccessor = httpContextAccessor;
         }
 
 		public async Task<ICollection<Customer>> GetCustomersAsync()
@@ -40,19 +37,6 @@ namespace WebShopClient.Services
             var response = await _apiServices.GetHttpClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
             return response.IsSuccessStatusCode;
         }
-        
-        public async Task<bool> AttemptLogin(LoginCustomer model)
-        {
-	        var response = await _apiServices.GetHttpClient().PostAsJsonAsync("authenticators", model);
 
-	        if (!response.IsSuccessStatusCode) return false;
-	        
-	        var token = await response.Content.ReadAsStringAsync();
-	        // Store token in Session
-	        _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
-
-	        return true;
-
-        }
     }
 }

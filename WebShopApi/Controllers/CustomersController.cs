@@ -10,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomersController(ApplicationDbContext context, IMapper mapper) : BaseController
+public class CustomersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
     //
     // Fetches all Customers
@@ -18,28 +18,26 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var customers = await context.Customers
-            .Include(c => c.Address)
-            .ToListAsync();
+        if (!ModelState.IsValid) return BadRequest("Missing property values");
         
+        var customers = await context.Customers.ToListAsync();
         var customerDtos = mapper.Map<List<CustomerDto>>(customers);
 
         return Ok(customerDtos);
     }
-    //
-    // Fetches Customer by ID
-    //
-    [HttpGet("{id:int}")]
+
+    // Fetches Customer by Id
+    [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var customer = await context.Customers
-            .Include(c => c.Address)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        var customer = await context.Customers.FindAsync(id);
 
-        if (customer == null) return NotFound();
+        if (customer == null)
+        {
+            return NotFound();
+        }
 
         var customerDto = mapper.Map<CustomerDto>(customer);
-        
         return Ok(customerDto);
     }
 
@@ -49,14 +47,13 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpPost]
     public async Task<IActionResult> Post(CreateCustomerDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid) return BadRequest("Missing property values");
 
         var emailInUse = context.Customers.Any(c => c.Email == dto.Email);
 
-        if (emailInUse) return Conflict("Email is already in use");
+        if (emailInUse) return BadRequest("Email is already in use");
         
         var customer = mapper.Map<Customer>(dto);
-        customer.Role = Role.Customer.ToString();
         
         await context.Customers.AddAsync(customer);
         await context.SaveChangesAsync();
@@ -64,13 +61,15 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
         return Created();
     }
 
-    //
-    // Update a Customer
-    //
-    [HttpPut("{id:int}")]
+    // Update an Customer
+
+    [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] UpdateCustomerDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid data");
+        }
 
         var customer = await context.Customers.FindAsync(id);
         if (customer == null)

@@ -6,9 +6,9 @@ namespace WebShopClient.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ProductService _api;
+        private readonly ProductServices _api;
 
-        public ProductsController(ProductService api)
+        public ProductsController(ProductServices api)
         {
             _api = api;
         }

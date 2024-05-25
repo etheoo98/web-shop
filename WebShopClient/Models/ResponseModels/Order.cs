@@ -10,9 +10,6 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("customer-id")]
         public int CustomerId { get; set; }
 
-        [JsonPropertyName("shipping-id")]
-        public int ShippingId { get; set; }
-
         [JsonPropertyName("total-sum")]
         public decimal TotalSum { get; set; }
 
@@ -21,9 +18,6 @@ namespace WebShopClient.Models.ResponseModels
 
         [JsonPropertyName("is-paid")]
         public bool IsPaid { get; set; }
-
-        [JsonPropertyName("customer")]
-        public Customer Customer { get; set; }
 
         [JsonPropertyName("shipment-details")]
         public Shipment? Shipment { get; set; }

@@ -20,6 +20,6 @@ namespace WebShopClient.Models.ResponseModels
         public string PostalCode { get; set; }
 
         [JsonPropertyName("country")]
-        public string Country { get; set; }   
+        public string Country { get; set; }
     }
 }

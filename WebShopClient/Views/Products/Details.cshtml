@@ -50,29 +50,13 @@ ViewData["Title"] = Model.Name;
                                     <input hidden asp-for="@Model.Id" name="productId" />
                                     <input hidden asp-for="@Model.Quantity" name="quantity" value="1" />
                                     <input hidden name="returnUrl" value="/products/details/@Model.Id" />
-                                    @if (Model.Quantity > 0)
-                                    {
-                                        <button type="submit" class="btn btn-primary">Add to cart</button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" disabled class="btn btn-danger">Out of stock</button>
-                                    }                                    
+                                    <button type="submit" class="btn btn-primary mr-2 px-4">Add to cart</button>
                                 </form>                                
                                 <i class="fa fa-heart text-muted"></i> 
                                 <i class="fa fa-share-alt text-muted"></i> 
                             </div>
                         </div>
                     </div>
-                    @if (TempData["AddToCartMessage"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="bi bi-check-circle"></i>
-                            @Model.Name @TempData["AddToCartMessage"] ||
-                            <a class="alert-link" asp-action="GetCartItems" asp-controller="ShoppingCarts">View shopping cart!</a>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
                 </div>
             </div>
         </div>

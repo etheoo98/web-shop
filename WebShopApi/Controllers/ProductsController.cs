@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController(ApplicationDbContext context, IMapper mapper) : BaseController
+public class ProductsController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
     //
     // Fetches all Products
@@ -25,11 +24,11 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Include(p => p.Discount)
             .ToListAsync();
 
-        var productDtos = mapper.Map<List<ProductDto>>(products);
-
+		var productDtos = mapper.Map<List<ProductDto>>(products);
+        
         return Ok(productDtos);
     }
-
+    
     //
     // Fetches Products belonging to specific Categories
     //
@@ -37,19 +36,19 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     public async Task<IActionResult> Get([FromQuery(Name = "category")] string[] categories)
     {
         categories = categories.Select(c => c.ToLower()).ToArray();
-
+        
         var products = await context.Products
             .Where(p => p.ProductCategories.Any(pc => categories.Contains(pc.Category.Name.ToLower())))
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
             .Include(p => p.Discount)
             .ToListAsync();
-
+        
         var productDtos = mapper.Map<List<ProductDto>>(products);
 
         return Ok(productDtos);
     }
-
+    
     //
     // Fetch a specific Product
     //
@@ -62,9 +61,9 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .ThenInclude(pc => pc.Category)
             .Include(p => p.Discount)
             .FirstOrDefaultAsync();
-
+        
         var productDto = mapper.Map<ProductDto>(products);
-
+        
         return Ok(productDto);
     }
 
@@ -76,24 +75,24 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     {
         // Validation
         if (!ModelState.IsValid || dto.CategoryIds.Count == 0) return BadRequest("Missing property values");
-
+        
         var existingProduct = context.Products.Any(p => p.Name == dto.Name);
         if (existingProduct) return Conflict("Product name already exists");
-
+        
         var allDbCategoryIds = await context.Categories.Select(c => c.Id).ToListAsync();
         var categoriesExist = dto.CategoryIds.All(id => allDbCategoryIds.Contains(id));
-
+            
         if (!categoriesExist) return BadRequest("Category IDs provided does not exist");
-
+        
         // Begin transaction
         await using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
             var product = mapper.Map<Product>(dto);
-
+            
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
-
+            
             foreach (var categoryId in dto.CategoryIds)
             {
                 var productCategory = new ProductCategory
@@ -116,7 +115,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             return StatusCode(500);
         }
     }
-
+    
     //
     // Edit a Product
     //
@@ -124,26 +123,20 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     public async Task<IActionResult> Put(int id, EditProductDto dto)
     {
         // Validation
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest("Missing property values");
 
         var product = await context.Products
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
-            .ThenInclude(pc => pc.Category)
             .FirstOrDefaultAsync();
-
+        
         if (product == null) return NotFound();
 
         product.Name = dto.Name;
         product.Description = dto.Description;
-        product.Price = dto.Price;
         product.Quantity = dto.Quantity;
-
-        context.Products.Update(product);
-
+        product.ProductCategories.Clear();
+        
         foreach (var categoryId in dto.CategoryIds)
         {
             var productCategory = new ProductCategory
@@ -151,14 +144,15 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
                 FkProductId = product.Id,
                 FkCategoryId = categoryId
             };
-
+            
             product.ProductCategories.Add(productCategory);
         }
+
         await context.SaveChangesAsync();
 
         return Ok();
     }
-
+    
     //
     // Discontinue a Product
     //
@@ -172,42 +166,5 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         await context.SaveChangesAsync();
 
         return Ok();
-    }
-
-    //
-    // Delete a Product
-    //
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await using var transaction = await context.Database.BeginTransactionAsync();
-
-        try
-        {
-
-            var product = await context.Products
-                .Include(p => p.ProductCategories)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (product == null) return NotFound();
-
-
-            if (product.ProductCategories != null)
-            {
-                context.ProductCategories.RemoveRange(product.ProductCategories);
-            }
-
-            context.Products.Remove(product);
-
-            await context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return StatusCode(500, "An error ocurred while deleting the product.");
-        }
     }
 }

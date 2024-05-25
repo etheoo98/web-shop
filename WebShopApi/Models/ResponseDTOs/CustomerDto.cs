@@ -13,9 +13,6 @@ public class CustomerDto
     [JsonPropertyName("password")]
     public string Password { get; set; }
     
-    [JsonPropertyName("role")]
-    public string Role { get; set; }
-    
     [JsonPropertyName("first-name")]
     public string FirstName { get; set; }
     
@@ -24,7 +21,7 @@ public class CustomerDto
 
     [JsonPropertyName("address")]
     public AddressDto AddressDto { get; set; }
-
+    
     [JsonPropertyName("orders")]
     public ICollection<OrderDto> OrderDtos { get; set; } = [];
 }

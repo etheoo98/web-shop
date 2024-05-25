@@ -12,7 +12,4 @@ public class ShipmentDto
     
     [JsonPropertyName("delivery-date")]
     public DateTime? DeliveryDate { get; set; }
-
-    [JsonPropertyName("shipping-address")]
-    public ShippingAddressDto ShippingAddress { get; set; }
 }

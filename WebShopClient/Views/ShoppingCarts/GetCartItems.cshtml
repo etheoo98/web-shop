@@ -2,64 +2,37 @@
 
 @{
     ViewData["Title"] = "Shopping Cart";
-    decimal totalSum = 0;
 }
 
-<div class="container text-center">
-    <h2 class="mb-3">Shopping Cart</h2>
-    <div class="d-flex">
-        <a class="btn btn-outline-light text-black h4"
-           asp-action="Index"
-           asp-controller="Products">
-            <i class="bi bi-rewind"></i> Continue Shopping
-        </a>
-    </div>
+<div class="container-fluid text-center">
+    <h2>Shopping Cart</h2>
+    <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Products">Back to Shopping</a>
     <hr />
 
     @if (Model.Count != 0)
     {
-        <table class="table flex-column">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Product</th>
                     <th>Price/Product</th>
                     <th>Quantity</th>
-                    <th>Total Price</th>
+                    <th>Total Price</th>                    
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var product in Model)
-                {
-                    if (product.DiscountedPrice != 0)
+                <tr>
+                    @foreach (var product in Model)
                     {
-                        totalSum += product.DiscountedPrice * product.Quantity;
-                    }
-                    else
-                    {
-                        totalSum += product.Price * product.Quantity;
-                    }
-                    <tr>
                         <td class="align-middle">@product.ProductName</td>
-                        <td class="align-middle">
-                            @if (@product.DiscountedPrice != 0)
-                            {
-                                <div>
-                                    <span class="text-danger">@product.DiscountedPrice</span>
-                                    <span class="text-decoration-line-through">@product.Price</span>
-                                </div>
-                            }
-                            else
-                            {
-                                @product.Price
-                            }
-                        </td>
+                        <td class="align-middle">@product.Price</td>
                         <td class="align-middle">
                             <form method="post" asp-action="UpdateItemQuantity">
                                 <input type="hidden" name="productId" value="@product.ProductId" />
                                 <select name="quantity" onchange="this.form.submit();">
-                                    @for (int i = 1; i <= (product.StockQuantity > 20 ? 20 : product.StockQuantity); i++)
-                                    {
+                                    @for (int i = 1; i <= 20; i++)
+                                    {                                       
                                         @if (i == product.Quantity)
                                         {
                                             <option value="@i" selected>@i</option>
@@ -68,31 +41,23 @@
                                         {
                                             <option value="@i">@i</option>
                                         }
-                                    }                                 
+                                    }
                                 </select>
                             </form>
                         </td>
-                        <td class="align-middle">@product.TotalPrice</td>
+                        <td class="align-middle">@product.TotalPrice</td>                        
                         <td>
                             <form method="post" asp-action="RemoveCartItem">
-                                <input hidden name="productId" value="@product.ProductId" />
+                                <input hidden asp-for="@product.ProductId" />
                                 <button type="submit" class="btn btn-light">
                                     <i class="bi bi-trash3"></i>
                                 </button>
                             </form>
                         </td>
-                    </tr>
-                }
-                <tr>
-                    <td>
-                        <strong>Total Order Price:</strong> @totalSum
-                    </td>
+                    }
                 </tr>
             </tbody>
         </table>
-        <div class="flex-fill">
-            <a class="btn btn-primary" asp-controller="Orders" asp-action="Checkout">Proceed to checkout</a>
-        </div>
     }
     else
     {

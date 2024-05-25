@@ -10,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoriesController(ApplicationDbContext context, IMapper mapper) : BaseController
+public class CategoriesController(ApplicationDbContext context, IMapper mapper) : ControllerBase
 {
     //
     // Fetches all Categories
@@ -30,7 +30,7 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
     [HttpPost]
     public async Task<IActionResult> Post(CreateCategoryDto dto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (!ModelState.IsValid) return BadRequest("Missing property values");
 
         var alreadyExists = context.Categories.Any(c => c.Name == dto.Name);
 

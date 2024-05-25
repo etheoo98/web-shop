@@ -11,9 +11,9 @@ namespace WebShopClient.Services
 	public class ShoppingCartService
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		private readonly ProductService _productServices;
+		private readonly ProductServices _productServices;
 
-		public ShoppingCartService(IHttpContextAccessor httpContextAccessor, ProductService productServices)
+		public ShoppingCartService(IHttpContextAccessor httpContextAccessor, ProductServices productServices)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_productServices = productServices;
@@ -23,7 +23,7 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var existingItem = cart.Find(item => item.ProductId == productId);
+			var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
 
 			if (existingItem != null)
 			{
@@ -40,9 +40,7 @@ namespace WebShopClient.Services
 						ProductId = product.Id,
 						ProductName = product.Name,
 						Price = product.Price,
-						Quantity = quantity,	
-						StockQuantity = product.Quantity,
-						DiscountedPrice = product.Discount?.DiscountedPrice != null ? product.Discount.DiscountedPrice : 0
+						Quantity = quantity
 					});
 				}
 			}
@@ -69,7 +67,7 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var item = cart.Find(item => item.ProductId == productId);
+			var item = cart.FirstOrDefault(item => item.ProductId == productId);
 
 			if (item != null)
 			{
@@ -82,19 +80,13 @@ namespace WebShopClient.Services
 		{
 			var session = GetSession();
 			var cart = GetCartItems();
-			var itemToRemove = cart.Find(item => item.ProductId == productId);
+			var itemToRemove = cart.FirstOrDefault(item => item.Id == productId);
 
 			if (itemToRemove != null)
 			{
 				cart.Remove(itemToRemove);
 				session.SetString("cart", JsonConvert.SerializeObject(cart));
 			}
-		}
-
-		public void EmptyCart()
-		{
-			var session = GetSession();
-			session.Remove("cart");	
 		}
 
 		private ISession GetSession()
