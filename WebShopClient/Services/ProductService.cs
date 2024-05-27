@@ -1,7 +1,9 @@
 ﻿using Azure;
+using Newtonsoft.Json;
 using System.Text.Json;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace WebShopClient.Services
 {
@@ -113,6 +115,26 @@ namespace WebShopClient.Services
             catch (Exception ex)
             {
                 return new List<Category>();
+            }
+        }
+
+        public async Task<List<Product>> GetProductsByCategoryAsync(List<string> categories)
+        {
+            try
+            {
+                var categoryQuery = string.Join("&", categories.Select(c => $"category={Uri.EscapeDataString(c)}"));
+                var response = await _client.GetAsync($"Products/Filter?{categoryQuery}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<Product>();
+                }
+                var jsonstring = await response.Content.ReadAsStringAsync();
+                var products = JsonConvert.DeserializeObject<List<Product>>(jsonstring);
+                return products;
+            }
+            catch (Exception ex)
+            {
+                return new List<Product>();
             }
         }
     }
