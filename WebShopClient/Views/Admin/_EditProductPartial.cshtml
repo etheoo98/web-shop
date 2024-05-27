@@ -1,0 +1,40 @@
+﻿@model WebShopClient.Models.RequestModels.EditProduct
+
+<form id="editProductForm" asp-action="EditProduct" method="post" class="form-horizontal">
+	<input type="hidden" asp-for="Id" id="productId" />
+	@Html.AntiForgeryToken()
+	<div class="form-group mb-3">
+		<label asp-for="Name" class="control-label"></label>
+		<input asp-for="Name" class="form-control" id="productName" />
+		<span asp-validation-for="Name" class="text-danger"></span>
+	</div>
+	<div class="form-group mb-3">
+		<label asp-for="Description" class="control-label"></label>
+		<input asp-for="Description" class="form-control" id="productDescription" />
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+	<div class="form-group mb-3">
+		<label asp-for="Price" class="control-label"></label>
+		<input asp-for="Price" class="form-control" id="productPrice" />
+		<span asp-validation-for="Price" class="text-danger"></span>
+	</div>
+	<div class="form-group mb-3">
+		<label asp-for="Quantity" class="control-label"></label>
+		<input asp-for="Quantity" class="form-control" id="productQuantity" />
+		<span asp-validation-for="Quantity" class="text-danger"></span>
+	</div>
+	<div class="form-group mb-3">
+		<label asp-for="CategoryIds" class="control-label"></label>
+		<select asp-for="CategoryIds" class="form-control" multiple="multiple" id="productCategories">
+			@foreach (var category in ViewBag.Categories)
+			{
+				<option value="@category.Value"> @category.Text</option>
+			}
+		</select>
+		<span asp-validation-for="CategoryIds" class="text-danger"></span>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary">Save Changes</button>
+	</div>
+</form>

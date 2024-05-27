@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 using WebShop.Data;
 using WebShop.Models.DbModels;
 using WebShop.Models.RequestDTOs;
@@ -89,7 +88,7 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Ba
 
         // Validation
         if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
-            return BadRequest("Missing or invalid property values");
+            return BadRequest(ModelState);
 
         using (var transaction = await context.Database.BeginTransactionAsync())
         {
