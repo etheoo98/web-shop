@@ -32,7 +32,7 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        if (id <= 0) id = GetUserId().Value;
+        if (id <= 0) id = GetUserId();
         
         var customer = await context.Customers
             .Include(c => c.CustomerOrders)

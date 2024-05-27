@@ -6,18 +6,19 @@ namespace WebShopClient.Controllers
     public class ShoppingCartsController : Controller
     {
         private readonly ShoppingCartService _shoppingCartService;
+        private readonly ProductService _productService;
 
-        public ShoppingCartsController(ShoppingCartService shoppingCartService)
+        public ShoppingCartsController(ShoppingCartService shoppingCartService, ProductService productService)
         {
             _shoppingCartService = shoppingCartService;
+            _productService = productService;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int quantity, string returnUrl)
         {
-            await _shoppingCartService.AddToCartAsync(productId, quantity);
-            TempData["AddToCartMessage"] = "added to your cart.";
+            await _shoppingCartService.AddToCartAsync(productId, quantity);            
 
             if (string.IsNullOrEmpty(returnUrl))
             {
