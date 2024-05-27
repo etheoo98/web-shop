@@ -1,0 +1,61 @@
+@model WebShopClient.Models.ResponseModels.Customer
+
+<h1>@Model.FirstName @Model.LastName</h1>
+
+@if (Model.Orders == null || Model.Orders.Count == 0)
+{
+    <p>Du har inte gjort någon order ännu</p>
+}
+else
+{
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Datum</th>
+        <th>Ordernummer</th>
+        <th>Ordervärde</th>
+        <th>Produkt</th>
+        <th>Status</th>
+        <th>Leverans</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var order in Model.Orders)
+    {
+    <tr>
+        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+        <td>@order.Id</td>
+        <td>@order.TotalSum</td>
+        <td>
+            @if (order.Products != null && order.Products.Any())
+            {
+                <ul class="list-unstyled">
+                    @foreach (var product in order.Products)
+                    {
+                        <li>@product.Name - @product.Quantity x @product.Price kr</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No products</p>
+            }
+        </td>
+        <td>@(order.IsPaid ? "Betald" : "Obetald")</td>
+        <td>
+            @if (order.Shipment != null)
+            {
+            <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd HH:mm")</p>
+            <p>Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</p>
+            <p>Address: @order.Shipment.ShippingAddress.Street, @order.Shipment.ShippingAddress.City</p>
+            }
+            else
+            {
+            <p>Bearbetas</p>
+            }
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>
+}
