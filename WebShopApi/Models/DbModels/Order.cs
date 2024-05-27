@@ -17,5 +17,5 @@ public class Order
     // Navigational Properties    
     public Shipment ShipmentDetails { get; set; }
     public ICollection<CustomerOrder> CustomerOrders { get; set; }
-    public ICollection<OrderProducts> OrderProducts { get; set; }      
+    public ICollection<OrderProducts> OrderProducts { get; set; }
 }

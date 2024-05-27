@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Security.Claims;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
@@ -7,23 +9,24 @@ using WebShopClient.ViewModels;
 
 namespace WebShopClient.Controllers
 {
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly OrderService _orderService;
         private readonly ShoppingCartService _shoppingCartService;
         private readonly CustomerService _customService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ApiServices _apiServices;
 
         public OrdersController(
             OrderService orderService,
             ShoppingCartService shoppingCartService,
             CustomerService customerService,
-            IHttpContextAccessor httpContextAccessor)
+            ApiServices apiServices)
         {
             _orderService = orderService;
             _shoppingCartService = shoppingCartService;
             _customService = customerService;
-            _httpContextAccessor = httpContextAccessor;
+            _apiServices = apiServices;
         }
 
         public IActionResult Index()
@@ -32,7 +35,7 @@ namespace WebShopClient.Controllers
         }
 
         public async Task<IActionResult> Checkout()
-        {           
+        {
             var cartItems = _shoppingCartService.GetCartItems();
 
             if (cartItems == null || cartItems.Count == 0)
@@ -40,7 +43,17 @@ namespace WebShopClient.Controllers
                 return RedirectToAction("GetCartItems", "ShoppingCarts");
             }
 
-            var customer = await _customService.GetCustomerByIdAsync(1);
+            var userId = GetUserIdFromClaims();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var customer = await _customService.GetCustomerByIdAsync(userId.Value);
+            if (customer == null)
+            {
+                return NotFound("Customer not found.");
+            }
 
             var viewModel = new CheckoutViewModel
             {
@@ -68,8 +81,9 @@ namespace WebShopClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> PlaceOrder(CheckoutViewModel viewModel)
-        {           
+        {
             if (ModelState.IsValid)
             {
                 var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
@@ -81,6 +95,7 @@ namespace WebShopClient.Controllers
                 var shipmentDetails = new Shipment
                 {
                     ShippedDate = DateTime.Now,
+                    DeliveryDate = DateTime.Now.AddDays(5),
                     ShippingAddress = new ShippingAddress
                     {
                         FirstName = viewModel.ShipmentDetails.ShippingAddress.FirstName,
@@ -96,20 +111,17 @@ namespace WebShopClient.Controllers
 
                 var order = new CreateOrder
                 {
-                    CustomerId = viewModel.Customer.Id,
+                    IsPaid = true,
+                    TotalSum = viewModel.TotalSum,
                     OrderItems = orderItems,
                     ShipmentDetails = shipmentDetails
                 };
 
                 var orderId = await _orderService.CreateOrderAsync(order);
 
-                if (orderId.HasValue)
+                if (orderId)
                 {
-                    return RedirectToAction("OrderConfirmation", new { orderId = orderId.Value });
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "There was a problem placing the order. Please try again.");
+                    return RedirectToAction(nameof(OrderConfirmation));
                 }
             }
 
@@ -117,49 +129,59 @@ namespace WebShopClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> OrderConfirmation(int orderId)
-        {            
-            var order = await _orderService.GetOrderByIdAsync(orderId);
+        public async Task<IActionResult> OrderConfirmation()
+        {
+            var userId = GetUserIdFromClaims();
+            var customer = await _customService.GetCustomerByIdAsync(userId.Value);
 
-            if (order == null)
+            var latestOrder = customer.Orders
+                .OrderByDescending(o => o.OrderDate)
+                .FirstOrDefault();
+
+            if (latestOrder == null)
             {
                 return NotFound();
             }
 
             var viewModel = new OrderConfirmationViewModel
             {
-                OrderId = order.Id,
-                OrderDate = order.OrderDate,
-                OrderItems = order.Products.Select(p => new OrderItemViewModel
+                OrderId = latestOrder.Id,
+                OrderDate = latestOrder.OrderDate,
+                OrderItems = latestOrder.OrderProducts.Select(op => new OrderItemViewModel
                 {
-                    ProductName = p.Name,
-                    Price = p.Price,
-                    Quantity = p.Quantity
+                    ProductName = op.ProductName,
+                    Price = op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price,
+                    Quantity = op.Quantity
                 }).ToList(),
+                TotalSum = latestOrder.OrderProducts.Sum(op => op.DiscountedPrice != 0 ? op.DiscountedPrice * op.Quantity :
+                    op.Quantity * op.Product.Price),
                 ShippingAddress = new ShippingAddressViewModel
                 {
-                    FirstName = order.Shipment.ShippingAddress.FirstName,
-                    LastName = order.Shipment.ShippingAddress.LastName,
-                    Email = order.Shipment.ShippingAddress.Email,
-                    Phone = order.Shipment.ShippingAddress.Phone,
-                    Street = order.Shipment.ShippingAddress.Street,
-                    PostalCode = order.Shipment.ShippingAddress.PostalCode,
-                    City = order.Shipment.ShippingAddress.City,
-                    Country = order.Shipment.ShippingAddress.Country
+                    FirstName = latestOrder.Shipment.ShippingAddress.FirstName,
+                    LastName = latestOrder.Shipment.ShippingAddress.LastName,
+                    Email = latestOrder.Shipment.ShippingAddress.Email,
+                    Phone = latestOrder.Shipment.ShippingAddress.Phone,
+                    Street = latestOrder.Shipment.ShippingAddress.Street,
+                    PostalCode = latestOrder.Shipment.ShippingAddress.PostalCode,
+                    City = latestOrder.Shipment.ShippingAddress.City,
+                    Country = latestOrder.Shipment.ShippingAddress.Country
                 },
-                DeliveryDate = order.Shipment.DeliveryDate
+                DeliveryDate = latestOrder.Shipment.DeliveryDate
             };
 
             _shoppingCartService.EmptyCart();
 
-            return View(order);
+            return View(viewModel);
+        }
+
+        private int? GetUserIdFromClaims()
+        {
+            var userIdClaim = User.FindFirst("user-id");
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+            {
+                return null;
+            }
+            return userId;
         }
     }
 }
-
-//var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
-
-//if (string.IsNullOrEmpty(token))
-//{
-//    return RedirectToAction("Customers", "Login");
-//}

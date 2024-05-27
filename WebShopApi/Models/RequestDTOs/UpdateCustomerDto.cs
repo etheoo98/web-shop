@@ -20,7 +20,5 @@ namespace WebShop.Models.RequestDTOs
         [StringLength(100, MinimumLength = 2, ErrorMessage = "\'last-name\' must be between {2} to {1} characters.")]
         [JsonPropertyName("last-name")]
         public string LastName { get; set; }
-
     }   
-
 }

@@ -1,7 +1,7 @@
 ﻿@model WebShopClient.ViewModels.OrderConfirmationViewModel
 
 @{
-    ViewData["Title"] = "Order Confirmation";    
+    ViewData["Title"] = "Order Confirmation";
 }
 
 <div class="container">
@@ -13,27 +13,34 @@
 
     <div>
         <h3>Order Details</h3>
-        <p><strong>Order Number:</strong>@Model.OrderId</p>
-        <p><strong>Order Date:</strong>@Model.OrderDate.ToString("f")</p>
-        <p><strong>Total Sum:</strong>@Model.TotalSum</p>
+        <dl>
+            <dd><strong>Order Number:</strong> @Model.OrderId</dd>
+            <dd><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</dd>
+            <dd><strong>Total Sum:</strong> $@Model.TotalSum</dd>
+        </dl>
 
         <h4>Products Purchased</h4>
         <ul>
-            @foreach(var product in Model.OrderItems)
-            {                
-                <li>@product.ProductName (x(@product.Quantity)) | @product.Price</li>
-            }            
+            @foreach (var product in Model.OrderItems)
+            {
+                <li>@(@product.Quantity)x @product.ProductName | $@product.Price/each</li>
+            }
         </ul>
 
         <h4>Delivery Information</h4>
-        <p><strong>Shipping Address:</strong></p>
-        <p>@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName</p>
-        <p>@Model.ShippingAddress.Street</p>
-        <p>@Model.ShippingAddress.PostalCode @Model.ShippingAddress.City</p>
-        <p>@Model.ShippingAddress.Country</p>
-        <br />
-        <p><strong>Estimated Delivery Date:</strong></p>
+        <dl>
+            <dt>Shipping Address</dt>
+            <dd class="mb-0">@Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName</dd>
+            <dd class="mb-0">@Model.ShippingAddress.Street</dd>
+            <dd class="mb-0">@Model.ShippingAddress.PostalCode @Model.ShippingAddress.City</dd>
+            <dd class="mb-3">@Model.ShippingAddress.Country</dd>
+            <dd>
+                <strong>Estimated Delivery Date:</strong> @(Model.DeliveryDate?.ToString("yyyy-MM-dd") ?? "No delivery date available")
+            </dd>
+        </dl>
     </div>
+
+    <hr />
 
     <div>
         <a asp-action="Index" asp-controller="Products">Back to Shopping</a>
