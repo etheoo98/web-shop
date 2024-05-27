@@ -369,3 +369,4 @@ FodyWeavers.xsd
 /WebShopApi/database.sqlite-wal
 /WebShopApi/database.sqlite
 /WebShopApi/database.sqlite
+/WebShopClient/.config/dotnet-tools.json

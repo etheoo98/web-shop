@@ -6,6 +6,7 @@ using System;
 using Microsoft.Extensions.Hosting.Internal;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
+using WebShopClient.ViewModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
@@ -118,56 +119,82 @@ namespace WebShopClient.Controllers
         public async Task<IActionResult> ManageProducts()
         {
             var products = await _productService.GetProductsAsync();
-            return View(products);
-        }
-
-        // GET: /Admin/EditProduct/5
-        public async Task<IActionResult> EditProduct(int id)
-        {
-            var product = await _productService.GetProductAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
             var categories = await _productService.GetCategoriesAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
 
-            return View(new EditProduct
+            var model = new ManageProductsViewModel
             {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                Quantity = product.Quantity,
-                CategoryIds = product.Categories.Select(c => c.Id).ToList()
-            });
+                Products = products,
+                EditProduct = new EditProduct() 
+            };
+
+            return View(model);
         }
 
         // POST: /Admin/EditProduct/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProduct(int id, EditProduct editProduct)
+        public async Task<IActionResult> EditProduct(EditProduct editProduct)
         {
-            if (id != editProduct.Id)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
+                var products = await _productService.GetProductsAsync();
                 var categories = await _productService.GetCategoriesAsync();
                 ViewBag.Categories = new SelectList(categories, "Id", "Name");
-                return View(editProduct);
+
+                var model = new ManageProductsViewModel
+                {
+                    Products = products,
+                    EditProduct = editProduct
+                };
+
+                return View("ManageProducts", model);
             }
+
             var result = await _productService.UpdateProductAsync(editProduct);
             if (result)
             {
+                TempData["SuccessMessage"] = "Product updated successfully!";
                 return RedirectToAction(nameof(ManageProducts));
             }
 
-            return View(editProduct);
+            var productsList = await _productService.GetProductsAsync();
+            var categoriesList = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categoriesList, "Id", "Name");
+
+            var modelError = new ManageProductsViewModel
+            {
+                Products = productsList,
+                EditProduct = editProduct
+            };
+
+            return View("ManageProducts", modelError);
         }
+
+        //// POST: /Admin/EditProduct/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditProduct(int id, EditProduct editProduct)
+        //{
+        //    if (id != editProduct.Id)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var categories = await _productService.GetCategoriesAsync();
+        //        ViewBag.Categories = new SelectList(categories, "Id", "Name");
+        //        return View(editProduct);
+        //    }
+        //    var result = await _productService.UpdateProductAsync(editProduct);
+        //    if (result)
+        //    {
+        //        return RedirectToAction(nameof(ManageProducts));
+        //    }
+
+        //    return View(editProduct);
+        //}
 
         // DELETE: 
         [HttpPost]
@@ -202,7 +229,8 @@ namespace WebShopClient.Controllers
                 var result = await _discountService.CreateDiscountAsync(createDiscount);
                 if (result)
                 {
-                    return RedirectToAction(nameof(Dashboard));
+                    TempData["SuccessMessage"] = "Campaign created successfully!";
+                    return RedirectToAction(nameof(ManageProducts));
                 }
             }
             var products = await _productService.GetProductsAsync();
@@ -221,6 +249,49 @@ namespace WebShopClient.Controllers
 
             return View(orders);
         }
+
+        // Partial View for Edit Product
+        public async Task<IActionResult> EditProductPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var categories = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
+            return PartialView("_EditProductPartial", new EditProduct
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                CategoryIds = product.Categories.Select(c => c.Id).ToList()
+            });
+        }
+
+
+        // Partial View for Create Discount
+        public async Task<IActionResult> CreateDiscountPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ProductName = product.Name;
+
+			return PartialView("_CreateDiscountPartial", new CreateDiscount
+            {
+                ProductId = product.Id,
+                StartDate = DateTime.Now
+            });
+        }
+
     }
 }
 
