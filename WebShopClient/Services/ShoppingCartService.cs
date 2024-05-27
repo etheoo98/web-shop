@@ -40,8 +40,9 @@ namespace WebShopClient.Services
 						ProductId = product.Id,
 						ProductName = product.Name,
 						Price = product.Price,
-						Quantity = quantity,						
-						DiscountedPrice = product.Discount.DiscountedPrice
+						Quantity = quantity,	
+						StockQuantity = product.Quantity,
+						DiscountedPrice = product.Discount?.DiscountedPrice != null ? product.Discount.DiscountedPrice : 0
 					});
 				}
 			}

@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Options;
+using Newtonsoft.Json.Linq;
+using System;
 using Microsoft.Extensions.Hosting.Internal;
 using WebShopClient.Models.RequestModels;
+using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
@@ -11,14 +15,16 @@ namespace WebShopClient.Controllers
         private readonly CustomerService _customerService;
         private readonly ProductService _productService;
         private readonly DiscountService _discountService;
+        private readonly OrderService _orderService;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
 
-        public AdminController(CustomerService customerService, ProductService productService, DiscountService discountService,IWebHostEnvironment hostingEnvironment)
+        public AdminController(OrderService orderService, CustomerService customerService, ProductService productService, DiscountService discountService, IWebHostEnvironment hostingEnvironment)
         {
             _customerService = customerService;
             _productService = productService;
             _discountService = discountService;
+            _orderService = orderService;
             _hostingEnvironment = hostingEnvironment;
         }
 
@@ -30,9 +36,12 @@ namespace WebShopClient.Controllers
             var products = await _productService.GetProductsAsync();
             ViewBag.ProductsCount = products.Count;
 
+            var orders = await _orderService.GetOrdersAsync();
+            ViewBag.OrdersCount = orders.Count;
+
             // Sorterar produkterna efter datum och visar dom tre senaste
             var latestProducts = products.OrderByDescending(p => p.AddDate).Take(3).ToList();
-            ViewBag.LatestProducts = latestProducts;           
+            ViewBag.LatestProducts = latestProducts;
 
             return View();
         }
@@ -110,13 +119,18 @@ namespace WebShopClient.Controllers
             {
                 return NotFound();
             }
+
+            var categories = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
             return View(new EditProduct
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity
+                Quantity = product.Quantity,
+                CategoryIds = product.Categories.Select(c => c.Id).ToList()
             });
         }
 
@@ -130,15 +144,34 @@ namespace WebShopClient.Controllers
                 return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _productService.UpdateProductAsync(editProduct);
-                if (result)
-                {
-                    return RedirectToAction(nameof(ManageProducts));
-                }
+                var categories = await _productService.GetCategoriesAsync();
+                ViewBag.Categories = new SelectList(categories, "Id", "Name");
+                return View(editProduct);
             }
+            var result = await _productService.UpdateProductAsync(editProduct);
+            if (result)
+            {
+                return RedirectToAction(nameof(ManageProducts));
+            }
+
             return View(editProduct);
+        }
+
+        // DELETE: 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var result = await _productService.DeleteProductAsync(id);
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            TempData["SuccessMessage"] = "Product deleted successfully.";
+            return RedirectToAction(nameof(ManageProducts));
         }
 
         // GET: /Admin/CreateDiscount
@@ -165,6 +198,18 @@ namespace WebShopClient.Controllers
             var products = await _productService.GetProductsAsync();
             ViewBag.Products = new SelectList(products, "Id", "Name");
             return View(createDiscount);
+        }
+
+        // GET: Orders
+        public async Task<IActionResult> GetOrders()
+        {
+            var orders = await _orderService.GetOrdersAsync();
+            if (orders == null || !orders.Any())
+            {
+                return View(new List<Order>());
+            }
+
+            return View(orders);
         }
     }
 }

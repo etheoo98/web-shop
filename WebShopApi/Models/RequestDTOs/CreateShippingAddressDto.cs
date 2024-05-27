@@ -5,6 +5,15 @@ namespace WebShop.Models.RequestDTOs
 {
     public class CreateShippingAddressDto
     {
+        [JsonPropertyName("first-name")]
+        public string FirstName { get; set; }
+
+        [JsonPropertyName("last-name")]
+        public string LastName { get; set; }
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+
         [Required(ErrorMessage = "\'phone\' is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "\'phone\' must be between {2} to {1} characters.")]
         [JsonPropertyName("phone")]

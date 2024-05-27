@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 using WebShopClient.Services;
@@ -11,12 +12,18 @@ namespace WebShopClient.Controllers
         private readonly OrderService _orderService;
         private readonly ShoppingCartService _shoppingCartService;
         private readonly CustomerService _customService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrdersController(OrderService orderService, ShoppingCartService shoppingCartService, CustomerService customerService)
+        public OrdersController(
+            OrderService orderService,
+            ShoppingCartService shoppingCartService,
+            CustomerService customerService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _orderService = orderService;
             _shoppingCartService = shoppingCartService;
             _customService = customerService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Index()
@@ -24,8 +31,8 @@ namespace WebShopClient.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Checkout() 
-        {                 
+        public async Task<IActionResult> Checkout()
+        {           
             var cartItems = _shoppingCartService.GetCartItems();
 
             if (cartItems == null || cartItems.Count == 0)
@@ -44,71 +51,61 @@ namespace WebShopClient.Controllers
                 {
                     ShippingAddress = new ShippingAddressViewModel
                     {
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        Email = customer.Email,
                         Phone = customer.Address.Phone,
                         Street = customer.Address.Street,
                         PostalCode = customer.Address.PostalCode,
                         City = customer.Address.City,
                         Country = customer.Address.Country
                     }
-                }           
-            };            
+                }
+            };
 
-            return View(viewModel); 
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(CheckoutViewModel viewModel)
-        {             
+        {           
             if (ModelState.IsValid)
             {
                 var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity
-                }).ToList();                          
-
-                var isNewShippingAddress = false;
-                var customer = await _customService.GetCustomerByIdAsync(viewModel.Customer.Id);
-                var currentShippingAddress = new ShippingAddressViewModel
-                {
-                    Phone = customer.Address.Phone,
-                    Street = customer.Address.Street,
-                    PostalCode = customer.Address.PostalCode,
-                    City = customer.Address.City,
-                    Country = customer.Address.Country
-                };
-
-                if (!viewModel.ShipmentDetails.ShippingAddress.Equals(currentShippingAddress))
-                {
-                    isNewShippingAddress = true;
-                }
+                }).ToList();
 
                 var shipmentDetails = new Shipment
                 {
                     ShippedDate = DateTime.Now,
                     ShippingAddress = new ShippingAddress
                     {
+                        FirstName = viewModel.ShipmentDetails.ShippingAddress.FirstName,
+                        LastName = viewModel.ShipmentDetails.ShippingAddress.LastName,
+                        Email = viewModel.ShipmentDetails.ShippingAddress.Email,
                         Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
                         Street = viewModel.ShipmentDetails.ShippingAddress.Street,
                         PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
                         City = viewModel.ShipmentDetails.ShippingAddress.City,
                         Country = viewModel.ShipmentDetails.ShippingAddress.Country
                     }
-                };              
+                };
 
                 var order = new CreateOrder
                 {
                     CustomerId = viewModel.Customer.Id,
                     OrderItems = orderItems,
-                    ShipmentDetails = isNewShippingAddress ?  shipmentDetails : null
+                    ShipmentDetails = shipmentDetails
                 };
 
-                var result = await _orderService.CreateOrderAsync(order);
+                var orderId = await _orderService.CreateOrderAsync(order);
 
-                if (result)
+                if (orderId.HasValue)
                 {
-                    return RedirectToAction("OrderConfirmation");
+                    return RedirectToAction("OrderConfirmation", new { orderId = orderId.Value });
                 }
                 else
                 {
@@ -119,10 +116,50 @@ namespace WebShopClient.Controllers
             return View("Checkout", viewModel);
         }
 
-        public IActionResult OrderConfirmation()
-        {
+        [HttpGet]
+        public async Task<IActionResult> OrderConfirmation(int orderId)
+        {            
+            var order = await _orderService.GetOrderByIdAsync(orderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new OrderConfirmationViewModel
+            {
+                OrderId = order.Id,
+                OrderDate = order.OrderDate,
+                OrderItems = order.Products.Select(p => new OrderItemViewModel
+                {
+                    ProductName = p.Name,
+                    Price = p.Price,
+                    Quantity = p.Quantity
+                }).ToList(),
+                ShippingAddress = new ShippingAddressViewModel
+                {
+                    FirstName = order.Shipment.ShippingAddress.FirstName,
+                    LastName = order.Shipment.ShippingAddress.LastName,
+                    Email = order.Shipment.ShippingAddress.Email,
+                    Phone = order.Shipment.ShippingAddress.Phone,
+                    Street = order.Shipment.ShippingAddress.Street,
+                    PostalCode = order.Shipment.ShippingAddress.PostalCode,
+                    City = order.Shipment.ShippingAddress.City,
+                    Country = order.Shipment.ShippingAddress.Country
+                },
+                DeliveryDate = order.Shipment.DeliveryDate
+            };
+
             _shoppingCartService.EmptyCart();
-            return View();
+
+            return View(order);
         }
     }
 }
+
+//var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
+
+//if (string.IsNullOrEmpty(token))
+//{
+//    return RedirectToAction("Customers", "Login");
+//}
