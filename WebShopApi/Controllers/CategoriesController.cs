@@ -20,7 +20,6 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
     {
         var categories = await context.Categories.ToListAsync();
         var categoryDtos = mapper.Map<List<CategoryDto>>(categories);
-        
         return Ok(categoryDtos);
     }
     
@@ -30,17 +29,14 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
     [HttpPost]
     public async Task<IActionResult> Post(CreateCategoryDto dto)
     {
+        // Validation
         if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var alreadyExists = context.Categories.Any(c => c.Name == dto.Name);
-
         if (alreadyExists) return BadRequest("Category name already exists");
         
         var category = mapper.Map<Category>(dto);
-        
         await context.Categories.AddAsync(category);
         await context.SaveChangesAsync();
-
         return Created();
     }
 }

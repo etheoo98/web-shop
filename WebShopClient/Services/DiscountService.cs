@@ -4,37 +4,23 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    public class DiscountService
+    public class DiscountService(IHttpClientFactory clientFactory, IHttpContextAccessor httpContextAccessor) : ApiService(clientFactory, httpContextAccessor)
     {
-        private readonly HttpClient _client;
-
-        public DiscountService(IHttpClientFactory clientFactory)
-        {
-            _client = clientFactory.CreateClient("API Client");
-        }
-
         // GET all discounts
         public async Task<List<Discount>> GetDiscountsAsync()
         {
             try
             {
-                var response = await _client.GetAsync("Discounts");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return new List<Discount>();
-                }
-
-                var jsonstring = await response.Content.ReadAsStringAsync();
-
-
-                var discounts = JsonSerializer.Deserialize<List<Discount>>(jsonstring);
-
+                var response = await GetHttpClient().GetAsync("Discounts");
+                if (!response.IsSuccessStatusCode) return [];
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var discounts = JsonSerializer.Deserialize<List<Discount>>(jsonString);
                 return discounts;
 
             }
             catch (Exception)
             {
-                return new List<Discount>();
+                return [];
             }
         }
 
@@ -43,14 +29,10 @@ namespace WebShopClient.Services
         {
             try
             {
-                var response = await _client.GetAsync($"Discounts/{id}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return null;
-                }
+                var response = await GetHttpClient().GetAsync($"Discounts/{id}");
+                if (!response.IsSuccessStatusCode) return null;
                 var jsonString = await response.Content.ReadAsStringAsync();
                 var discount = JsonSerializer.Deserialize<Discount>(jsonString);
-
                 return discount;
 
             }
@@ -63,7 +45,7 @@ namespace WebShopClient.Services
         // Create Discount
         public async Task<bool> CreateDiscountAsync(CreateDiscount createDiscount)
         {
-            var response = await _client.PostAsJsonAsync("Discounts", createDiscount);
+            var response = await GetHttpClient().PostAsJsonAsync("Discounts", createDiscount);
             return response.IsSuccessStatusCode;
         }
     }

@@ -19,14 +19,13 @@ public class AuthenticatorsController(ApplicationDbContext context) : BaseContro
     [HttpPost]
     public async Task<IActionResult> Login(LoginCustomerDto dto)
     {
+        // Validation
         if (!ModelState.IsValid) return BadRequest();
-        
         var customer = await context.Customers.SingleOrDefaultAsync(c => c.Email == dto.Email);
         if (customer == null) return NotFound();
-
         var isAuthenticated = dto.Email == customer.Email && dto.Password == customer.Password;
         if (!isAuthenticated) return Unauthorized();
-
+        
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SIGNING_KEY")!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]

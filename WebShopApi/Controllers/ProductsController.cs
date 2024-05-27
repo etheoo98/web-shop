@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
@@ -71,6 +72,7 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     // Creates a new Product
     //
     [HttpPost]
+    [Authorize("Admin")]
     public async Task<IActionResult> Post(CreateProductDto dto)
     {
         // Validation
@@ -120,13 +122,11 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     // Edit a Product
     //
     [HttpPut("{id:int}")]
+    [Authorize("Admin")]
     public async Task<IActionResult> Put(int id, EditProductDto dto)
     {
         // Validation
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var product = await context.Products
             .Where(p => p.Id == id)
@@ -162,51 +162,15 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     // Discontinue a Product
     //
     [HttpPut("{id:int}/discontinue")]
+    [Authorize("Admin")]
     public async Task<IActionResult> Discontinue(int id)
     {
         var product = await context.Products.FindAsync(id);
         if (product == null) return NotFound();
-
+        
         product.IsDiscontinued = true;
         await context.SaveChangesAsync();
 
         return Ok();
-    }
-
-    //
-    // Delete a Product
-    //
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await using var transaction = await context.Database.BeginTransactionAsync();
-
-        try
-        {
-
-            var product = await context.Products
-                .Include(p => p.ProductCategories)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (product == null) return NotFound();
-
-
-            if (product.ProductCategories != null)
-            {
-                context.ProductCategories.RemoveRange(product.ProductCategories);
-            }
-
-            context.Products.Remove(product);
-
-            await context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return StatusCode(500, "An error ocurred while deleting the product.");
-        }
     }
 }

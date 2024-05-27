@@ -18,6 +18,14 @@ public class CustomersController(CustomerService service) : Controller
         HttpContext.Session.Remove("JwtToken");
         return RedirectToAction("Login");
     }
+        
+    [Authorize]
+    public async Task<IActionResult> Orders()
+    {
+        var currentUser = await service.GetCurrentUser();
+        if (currentUser == null) RedirectToAction("Login");
+        return View(currentUser);
+    }
     
     [HttpPost]
     public async Task<IActionResult> Login(LoginCustomer model)
@@ -25,14 +33,5 @@ public class CustomersController(CustomerService service) : Controller
         var success = await service.AttemptLogin(model);
         if (!success) return View();
         return RedirectToAction("Index", "Home");
-    }
-
-    [HttpGet]
-    [Authorize]
-    public async Task<IActionResult> Orders()
-    {
-        var currentUser = await service.GetCurrentUser();
-        if (currentUser == null) RedirectToAction("Login");
-        return View(currentUser);
     }
 }

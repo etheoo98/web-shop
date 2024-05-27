@@ -4,27 +4,20 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    public class CustomerService
-	{
-		private readonly ApiServices _apiServices;
-		private readonly IHttpContextAccessor _httpContextAccessor;
+    public class CustomerService(IHttpClientFactory clientFactory, IHttpContextAccessor httpContextAccessor) : ApiService(clientFactory, httpContextAccessor)
+    {
+	    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public CustomerService(ApiServices apiServices, IHttpContextAccessor httpContextAccessor)
-        {
-            _apiServices = apiServices;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-		public async Task<ICollection<Customer>> GetCustomersAsync()
+	    public async Task<ICollection<Customer>> GetCustomersAsync()
 		{
-			var response = await _apiServices.GetHttpClient().GetAsync("customers");
+			var response = await GetHttpClient().GetAsync("customers");
 			response.EnsureSuccessStatusCode();
 
 			return await response.Content.ReadFromJsonAsync<ICollection<Customer>>();
 		}
-        public async Task<Customer> GetCustomerByIdAsync(int id)
+        public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
-            var response = await _apiServices.GetHttpClient().GetAsync($"customers/{id}");
+            var response = await GetHttpClient().GetAsync($"customers/{id}");
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<Customer>();
@@ -32,18 +25,18 @@ namespace WebShopClient.Services
 
         public async Task<bool> CreateCustomerAsync(CreateCustomer createCustomer)
 		{
-			var response = await _apiServices.GetHttpClient().PostAsJsonAsync("customers", createCustomer);
+			var response = await GetHttpClient().PostAsJsonAsync("customers", createCustomer);
 			return response.IsSuccessStatusCode;
 		}
         public async Task<bool> UpdateCustomerAsync(int id, UpdateCustomer updateCustomer)
         {
-            var response = await _apiServices.GetHttpClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
+            var response = await GetHttpClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
             return response.IsSuccessStatusCode;
         }
         
         public async Task<bool> AttemptLogin(LoginCustomer model)
         {
-	        var response = await _apiServices.GetHttpClient().PostAsJsonAsync("authenticators", model);
+	        var response = await GetHttpClient().PostAsJsonAsync("authenticators", model);
 
 	        if (!response.IsSuccessStatusCode) return false;
 	        
@@ -56,7 +49,7 @@ namespace WebShopClient.Services
 
         public async Task<Customer?> GetCurrentUser()
         {
-	        var response = await _apiServices.GetHttpClient().GetAsync("customers/0"); // 0 returns current customer
+	        var response = await GetHttpClient().GetAsync("customers/0"); // 0 returns current customer
 	        if (!response.IsSuccessStatusCode) return null;
 	        
 	        return await response.Content.ReadFromJsonAsync<Customer>();

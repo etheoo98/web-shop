@@ -5,39 +5,24 @@ using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
-    public class ProductService
+    public class ProductService(IHttpClientFactory clientFactory, IHttpContextAccessor httpContextAccessor) : ApiService(clientFactory, httpContextAccessor)
     {
-        private readonly HttpClient _client;
-
-        public ProductService(IHttpClientFactory clientFactory)
-        {
-            _client = clientFactory.CreateClient("API Client");
-        }
 
         // GET all products
         public async Task<List<Product>> GetProductsAsync()
         {
             try
             {
-                var response = await _client.GetAsync("Products");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return new List<Product>();
-                }
-
-                var jsonstring = await response.Content.ReadAsStringAsync();
-
-                //// Debugging
-                //Console.WriteLine("JSON Response: " + jsonstring);
-
-                var products = JsonSerializer.Deserialize<List<Product>>(jsonstring);
-
+                var response = await GetHttpClient().GetAsync("Products");
+                if (!response.IsSuccessStatusCode) return [];
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var products = JsonSerializer.Deserialize<List<Product>>(jsonString);
                 return products;
 
             }
             catch (Exception)
             {
-                return new List<Product>();
+                return [];
             }
         }
         //GET Product by ID
@@ -45,16 +30,10 @@ namespace WebShopClient.Services
         {
             try
             {
-                var response = await _client.GetAsync($"Products/{id}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return null;
-                }
+                var response = await GetHttpClient().GetAsync($"Products/{id}");
+                if (!response.IsSuccessStatusCode) return null;
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var product = JsonSerializer.Deserialize<Product>(jsonString); // Bytte till System Json
-
-                //var product = JsonConvert.DeserializeObject<Product>(jsonString); <-- Gamla
-
+                var product = JsonSerializer.Deserialize<Product>(jsonString);
                 return product;
 
             }
@@ -66,19 +45,16 @@ namespace WebShopClient.Services
         //Create Product
         public async Task<bool> CreateProductAsync(CreateProduct createProduct)
         {
-            var response = await _client.PostAsJsonAsync("Products", createProduct);
+            var response = await GetHttpClient().PostAsJsonAsync("Products", createProduct);
             return response.IsSuccessStatusCode;
         }
         //Update Product
         public async Task<bool> UpdateProductAsync(EditProduct editProduct)
         {
-            var response = await _client.PutAsJsonAsync($"Products/{editProduct.Id}", editProduct);
-            if (!response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error: {response.StatusCode}, Content: {content}");
-            }
-
+            var response = await GetHttpClient().PutAsJsonAsync($"Products/{editProduct.Id}", editProduct);
+            if (response.IsSuccessStatusCode) return response.IsSuccessStatusCode;
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Error: {response.StatusCode}, Content: {content}");
             return response.IsSuccessStatusCode;
         }
         //Delete Product
@@ -86,7 +62,7 @@ namespace WebShopClient.Services
         {
             try
             {
-                var response = await _client.DeleteAsync($"Products/{id}");
+                var response = await GetHttpClient().DeleteAsync($"Products/{id}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -101,18 +77,15 @@ namespace WebShopClient.Services
         {
             try
             {
-                var response = await _client.GetAsync("Categories");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return new List<Category>();
-                }
+                var response = await GetHttpClient().GetAsync("Categories");
+                if (!response.IsSuccessStatusCode) return [];
                 var jsonString = await response.Content.ReadAsStringAsync();
                 var categories = JsonSerializer.Deserialize<List<Category>>(jsonString);
                 return categories;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new List<Category>();
+                return [];
             }
         }
     }

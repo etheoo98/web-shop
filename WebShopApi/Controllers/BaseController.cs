@@ -12,9 +12,7 @@ public class BaseController  : ControllerBase
     {
         var userIdString = User.FindFirstValue("user-id");
         var isValidInt = int.TryParse(userIdString, out var userId);
-
         if (!isValidInt) return null;
-        
         return userId;
     }
 }

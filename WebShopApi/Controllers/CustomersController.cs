@@ -23,7 +23,6 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
             .ToListAsync();
         
         var customerDtos = mapper.Map<List<CustomerDto>>(customers);
-
         return Ok(customerDtos);
     }
     //
