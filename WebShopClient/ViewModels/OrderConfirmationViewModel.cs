@@ -9,5 +9,6 @@ namespace WebShopClient.ViewModels
         public decimal TotalSum { get; set; }
         public ICollection<OrderItemViewModel> OrderItems { get; set; }
         public ShippingAddressViewModel ShippingAddress { get; set; }
+        public DateTime? DeliveryDate { get; set; } 
     }
 }

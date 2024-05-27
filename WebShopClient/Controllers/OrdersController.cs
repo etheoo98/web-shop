@@ -12,12 +12,18 @@ namespace WebShopClient.Controllers
         private readonly OrderService _orderService;
         private readonly ShoppingCartService _shoppingCartService;
         private readonly CustomerService _customService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrdersController(OrderService orderService, ShoppingCartService shoppingCartService, CustomerService customerService)
+        public OrdersController(
+            OrderService orderService,
+            ShoppingCartService shoppingCartService,
+            CustomerService customerService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _orderService = orderService;
             _shoppingCartService = shoppingCartService;
             _customService = customerService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Index()
@@ -26,7 +32,7 @@ namespace WebShopClient.Controllers
         }
 
         public async Task<IActionResult> Checkout()
-        {
+        {           
             var cartItems = _shoppingCartService.GetCartItems();
 
             if (cartItems == null || cartItems.Count == 0)
@@ -63,7 +69,7 @@ namespace WebShopClient.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PlaceOrder(CheckoutViewModel viewModel)
-        {
+        {           
             if (ModelState.IsValid)
             {
                 var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
@@ -95,11 +101,11 @@ namespace WebShopClient.Controllers
                     ShipmentDetails = shipmentDetails
                 };
 
-                var result = await _orderService.CreateOrderAsync(order);
+                var orderId = await _orderService.CreateOrderAsync(order);
 
-                if (result)
+                if (orderId.HasValue)
                 {
-                    return RedirectToAction("OrderConfirmation", order);
+                    return RedirectToAction("OrderConfirmation", new { orderId = orderId.Value });
                 }
                 else
                 {
@@ -110,14 +116,50 @@ namespace WebShopClient.Controllers
             return View("Checkout", viewModel);
         }
 
+        [HttpGet]
         public async Task<IActionResult> OrderConfirmation(int orderId)
-        {           
-            //var order = await _orderService.GetOrderByIdAsync(orderId);
+        {            
+            var order = await _orderService.GetOrderByIdAsync(orderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new OrderConfirmationViewModel
+            {
+                OrderId = order.Id,
+                OrderDate = order.OrderDate,
+                OrderItems = order.Products.Select(p => new OrderItemViewModel
+                {
+                    ProductName = p.Name,
+                    Price = p.Price,
+                    Quantity = p.Quantity
+                }).ToList(),
+                ShippingAddress = new ShippingAddressViewModel
+                {
+                    FirstName = order.Shipment.ShippingAddress.FirstName,
+                    LastName = order.Shipment.ShippingAddress.LastName,
+                    Email = order.Shipment.ShippingAddress.Email,
+                    Phone = order.Shipment.ShippingAddress.Phone,
+                    Street = order.Shipment.ShippingAddress.Street,
+                    PostalCode = order.Shipment.ShippingAddress.PostalCode,
+                    City = order.Shipment.ShippingAddress.City,
+                    Country = order.Shipment.ShippingAddress.Country
+                },
+                DeliveryDate = order.Shipment.DeliveryDate
+            };
 
             _shoppingCartService.EmptyCart();
 
-            return View();
+            return View(order);
         }
-
     }
 }
+
+//var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
+
+//if (string.IsNullOrEmpty(token))
+//{
+//    return RedirectToAction("Customers", "Login");
+//}
