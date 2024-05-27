@@ -12,22 +12,27 @@ public class CustomersController(CustomerService service) : Controller
         return View();
     }
     
-    [Authorize("Admin")]
-    public IActionResult Test()
+    [Authorize]
+    public IActionResult Logout()
     {
-        return View();
+        HttpContext.Session.Remove("JwtToken");
+        return RedirectToAction("Login");
     }
     
     [HttpPost]
     public async Task<IActionResult> Login(LoginCustomer model)
     {
         var success = await service.AttemptLogin(model);
+        if (!success) return View();
+        return RedirectToAction("Index", "Home");
+    }
 
-        if (success)
-        {
-            return RedirectToAction("Test");
-        }
-
-        return View();
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Orders()
+    {
+        var currentUser = await service.GetCurrentUser();
+        if (currentUser == null) RedirectToAction("Login");
+        return View(currentUser);
     }
 }

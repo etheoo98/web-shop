@@ -61,6 +61,10 @@ namespace WebShopClient
             builder.Services.AddAuthorizationBuilder()
                 .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
                 .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Customer", policy => policy.RequireRole("Customer"));
 
             var app = builder.Build();
 
