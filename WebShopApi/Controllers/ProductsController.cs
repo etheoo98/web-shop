@@ -141,18 +141,32 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
         product.Price = dto.Price;
         product.Quantity = dto.Quantity;
 
-        context.Products.Update(product);
+        // Ta bort kategorier som inte längre är valda
+        var categoriesToRemove = product.ProductCategories
+            .Where(pc => !dto.CategoryIds.Contains(pc.FkCategoryId))
+            .ToList();
 
+        foreach (var categoryToRemove in categoriesToRemove)
+        {
+            product.ProductCategories.Remove(categoryToRemove);
+        }
+
+        // Lägger till nya kategorier
         foreach (var categoryId in dto.CategoryIds)
         {
-            var productCategory = new ProductCategory
+            if (!product.ProductCategories.Any(pc => pc.FkCategoryId == categoryId))
             {
-                FkProductId = product.Id,
-                FkCategoryId = categoryId
-            };
+                var productCategory = new ProductCategory
+                {
+                    FkProductId = product.Id,
+                    FkCategoryId = categoryId
+                };
 
-            product.ProductCategories.Add(productCategory);
+                product.ProductCategories.Add(productCategory);
+            }
         }
+
+        context.Products.Update(product);
         await context.SaveChangesAsync();
 
         return Ok();
