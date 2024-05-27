@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace WebShop.Models.RequestDTOs;
@@ -24,8 +25,13 @@ public class CreateProductDto
     [Range(0, 1000000)]
     [JsonPropertyName("quantity")]
     public int Quantity { get; set; }
-    
-    [Required]
+
+    [Required(ErrorMessage = "\'FileName\' is required.")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "\'filename\' must be between {2} to {1} characters.")]
+    [JsonPropertyName("filename")]
+    public string FileName { get; set; }
+
+    [Required(ErrorMessage = "\'category-ids\' is required.")]
     [JsonPropertyName("category-ids")] 
     public ICollection<int> CategoryIds { get; set; }
 }

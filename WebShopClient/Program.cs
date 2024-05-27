@@ -34,7 +34,7 @@ namespace WebShopClient
             });
 
             builder.Services.AddScoped<ApiServices>();
-            builder.Services.AddScoped<ProductServices>();
+            builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<ShoppingCartService>();
             builder.Services.AddScoped<CustomerService>();
 
@@ -52,7 +52,17 @@ namespace WebShopClient
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            
+            builder.Services.AddAuthentication("CustomAuth")
+                .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomAuth", null);
 
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Customer", policy => policy.RequireRole("Customer"));
 
             var app = builder.Build();
 
@@ -71,12 +81,12 @@ namespace WebShopClient
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSession();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseSession();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

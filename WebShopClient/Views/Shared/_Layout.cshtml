@@ -26,15 +26,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Admin
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="CustomerManagement" asp-action="Index">Customers</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="CreateProduct">Add Product</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="ManageProducts">Product list</a></li>
+                            </ul>
+                        </li>
+                            </ul>
+                        </li>
                             </ul>
                         </li>
                     </ul>
@@ -43,6 +38,9 @@
                         <div class="search-results" id="searchResults" style="display: none;"></div>
                     </form>
                     <ul class="navbar-nav ms-auto">
+                        @{
+                            await Html.RenderPartialAsync("_AuthHeaderListItems");
+                        }
                         <li class="nav-item">
                             @await Component.InvokeAsync("ShoppingCartSummary")
                         </li>

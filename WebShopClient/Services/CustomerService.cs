@@ -37,6 +37,26 @@ namespace WebShopClient.Services
             var response = await _apiServices.GetHttpClient().PutAsJsonAsync($"customers/{id}", updateCustomer);
             return response.IsSuccessStatusCode;
         }
+        
+        public async Task<bool> AttemptLogin(LoginCustomer model)
+        {
+	        var response = await _apiServices.GetHttpClient().PostAsJsonAsync("authenticators", model);
 
+	        if (!response.IsSuccessStatusCode) return false;
+	        
+	        var token = await response.Content.ReadAsStringAsync();
+	        // Store token in Session
+	        _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
+
+	        return true;
+        }
+
+        public async Task<Customer?> GetCurrentUser()
+        {
+	        var response = await _apiServices.GetHttpClient().GetAsync("customers/0"); // 0 returns current customer
+	        if (!response.IsSuccessStatusCode) return null;
+	        
+	        return await response.Content.ReadFromJsonAsync<Customer>();
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class OrdersController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+public class OrdersController(ApplicationDbContext context, IMapper mapper) : BaseController
 {
     //
     // Fetches all Orders
@@ -18,64 +18,145 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Co
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var order = await context.Orders
-            .Include(o => o.CustomerOrders)
-            .ThenInclude(co => co.Customer)
-            .Include(o => o.OrderProducts)
-            .ThenInclude(op => op.Product)
-            .ThenInclude(p => p.ProductCategories)
-            .ThenInclude(pc => pc.Category)
-            .ToListAsync();
+        try
+        {
+            var orders = await context.Orders
+                .Include(o => o.CustomerOrders)
+                .ThenInclude(co => co.Customer)
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .Include(o => o.ShipmentDetails)
+                .ThenInclude(sd => sd.ShippingAddress)
+                .ToListAsync();
 
-        var orderDtos = mapper.Map<List<OrderDto>>(order);
+            var orderDtos = mapper.Map<IEnumerable<OrderDto>>(orders);
 
-        return Ok(orderDtos);
+            return Ok(orderDtos);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
+        }
+    }
+
+    //
+    // Fetches order by id
+    //
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Get(int id)
+    {
+        try
+        {
+            var order = await context.Orders
+                .Where(o => o.Id == id)
+                .Include(o => o.CustomerOrders)
+                .ThenInclude(co => co.Customer)
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .Include(o => o.ShipmentDetails)
+                .ThenInclude(sd => sd.ShippingAddress)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                return NotFound($"Order with ID {id} was not found.");
+            }
+
+            var orderDto = mapper.Map<OrderDto>(order);
+
+            return Ok(orderDto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error ocurred while processing the request: {ex.Message}");
+        }
     }
 
     //
     // Creates a new Order
-    //
+    //    
     [HttpPost]
-    public async Task<IActionResult> Post(CreateOrderDto dto)
+    public async Task<IActionResult> Post(CreateOrderDto createdOrderDto)
     {
         // Validation
-        if (!ModelState.IsValid || dto.ProductIds.Count == 0) return BadRequest("Missing property values");
-        
-        var customerExists = context.Customers.Any(c => c.Id == dto.CustomerId);
-        if (!customerExists) return BadRequest("Invalid customer ID");
-        
-        var productsExist = context.Products.All(p => dto.ProductIds.Contains(p.Id));
-        if (!productsExist) return BadRequest("Invalid product IDs");
-        
-        // Begin transaction
-        await using var transaction = await context.Database.BeginTransactionAsync();
-        try
-        {
-            var order = mapper.Map<Order>(dto);
+        if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
+            return BadRequest(ModelState);
 
-            await context.Orders.AddAsync(order);
-            await context.SaveChangesAsync();
-            
-            foreach (var productId in dto.ProductIds)
+        using (var transaction = await context.Database.BeginTransactionAsync())
+        {
+            try
             {
-                var orderProducts = new OrderProducts()
+                var order = mapper.Map<Order>(createdOrderDto);
+                await context.Orders.AddAsync(order);
+                await context.SaveChangesAsync();
+
+                var customerOrder = new CustomerOrder
                 {
-                    FkProductId = productId,
+                    FkCustomerId = createdOrderDto.CustomerId,
                     FkOrderId = order.Id
                 };
+                await context.CustomerOrders.AddAsync(customerOrder);
+                await context.SaveChangesAsync();
 
-                await context.OrderProducts.AddAsync(orderProducts);
+                // If there are order items, map and save them to the database
+                if (createdOrderDto.OrderItems != null && createdOrderDto.OrderItems.Count != 0)
+                {
+                    foreach (var item in createdOrderDto.OrderItems)
+                    {
+                        var product = context.Products.Find(item.ProductId);
+
+                        if (product == null)
+                        {
+                            throw new Exception("Product not found");
+                        }
+
+                        if (product.Quantity < item.Quantity)
+                        {
+                            throw new Exception($"Insufficient stock for product: ID {product.Id} - {product.Name}");
+                        }
+
+                        product.Quantity -= item.Quantity;
+                        context.Products.Update(product);
+                    }
+
+                    await context.SaveChangesAsync();
+
+                    var orderProducts = mapper.Map<List<OrderProducts>>(createdOrderDto.OrderItems);
+                    orderProducts.ForEach(op => op.FkOrderId = order.Id);
+                    await context.OrderProducts.AddRangeAsync(orderProducts);
+                    await context.SaveChangesAsync();
+                }
+
+                // If shipment details are provided, map and save them to the database
+                if (createdOrderDto.ShipmentDetails?.ShippingAddress != null)
+                {
+                    var shippingAddress = mapper.Map<ShippingAddress>(createdOrderDto.ShipmentDetails.ShippingAddress);
+                    await context.ShippingAddresses.AddAsync(shippingAddress);
+                    await context.SaveChangesAsync();
+
+                    var shipment = new Shipment
+                    {
+                        FkOrderId = order.Id,
+                        FkShippingAddressId = shippingAddress.Id,
+                        ShippedDate = createdOrderDto.ShipmentDetails.ShippedDate ?? DateTime.Now,
+                        DeliveryDate = createdOrderDto.ShipmentDetails.DeliveryDate
+                    };
+                    await context.Shipments.AddAsync(shipment);
+                    await context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+                return Created();
             }
-            
-            await context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            
-            return Created();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            return StatusCode(500);
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"An error occurred while processing the request: {ex.Message}");
+            }
         }
     }
 }

@@ -15,6 +15,10 @@ public class MappingProfile : Profile
         CreateMap<Customer, CustomerDto>();
         CreateMap<Discount, DiscountDto>();
 
+        CreateMap<Customer, CustomerDto>()
+            .ForMember(dest => dest.OrderDtos, opt => opt.MapFrom(src => src.CustomerOrders.Select(co => co.Order)))
+            .ForMember(dest => dest.AddressDto, opt => opt.MapFrom(src => src.Address));
+
         CreateMap<Order, OrderDto>()
             .ForMember(dest => dest.CustomerId,
                 opt => opt.MapFrom(src => src.CustomerOrders.Select(co => co.Customer.Id).FirstOrDefault()))

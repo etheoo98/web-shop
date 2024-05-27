@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Options;
+using Newtonsoft.Json.Linq;
+using System;
+using Microsoft.Extensions.Hosting.Internal;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Services;
 
@@ -8,12 +12,19 @@ namespace WebShopClient.Controllers
     public class AdminController : Controller
     {
         private readonly CustomerService _customerService;
-        private readonly ProductServices _productServices;
+        private readonly ProductService _productService;
+        private readonly DiscountService _discountService;
+        private readonly OrderService _orderService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public AdminController(CustomerService customerService, ProductServices productServices)
+
+        public AdminController(OrderService orderService, CustomerService customerService, ProductService productService, DiscountService discountService, IWebHostEnvironment hostingEnvironment)
         {
             _customerService = customerService;
-            _productServices = productServices;
+            _productService = productService;
+            _discountService = discountService;
+            _orderService = orderService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<IActionResult> Dashboard()
@@ -39,6 +50,7 @@ namespace WebShopClient.Controllers
             return View();
         }
 
+
         // POST: /Admin/CreateProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -46,13 +58,54 @@ namespace WebShopClient.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _productServices.CreateProductAsync(createProduct);
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                if (createProduct.ImageFile != null && createProduct.ImageFile.Length > 0)
+                {
+                    var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                    var extension = Path.GetExtension(createProduct.ImageFile.FileName).ToLowerInvariant();
+
+                    if (!validExtensions.Contains(extension))
+                    {
+                        ModelState.AddModelError("ImageFile", "Please upload a valid image file (jpg, jpeg, png).");
+                        var categories1 = await _productService.GetCategoriesAsync();
+                        ViewBag.Categories = new SelectList(categories1, "Id", "Name");
+                        return View(createProduct);
+                    }
+
+                    try
+                    {
+                        // Apply extension to the specified filename
+                        var fileName = createProduct.FileName + extension;
+                        createProduct.FileName = fileName;
+
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await createProduct.ImageFile.CopyToAsync(stream);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "An error occurred while uploading the file.");
+                        var categories1 = await _productService.GetCategoriesAsync();
+                        ViewBag.Categories = new SelectList(categories1, "Id", "Name");
+                        return View(createProduct);
+                    }
+                }
+
+                var result = await _productService.CreateProductAsync(createProduct);
                 if (result)
                 {
-                    return RedirectToAction(nameof(Dashboard));
+                    return RedirectToAction(nameof(ManageProducts));
                 }
             }
-            var categories = await _productServices.GetCategoriesAsync();
+
+            var categories = await _productService.GetCategoriesAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(createProduct);
         }
