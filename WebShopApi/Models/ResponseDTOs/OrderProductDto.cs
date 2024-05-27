@@ -17,6 +17,6 @@ namespace WebShop.Models.ResponseDTOs
         public int Quantity { get; set; }
 
         [JsonPropertyName("discounted-price")]
-        public decimal? DiscountedPrice { get; set; }
+        public decimal DiscountedPrice { get; set; }
     }
 }

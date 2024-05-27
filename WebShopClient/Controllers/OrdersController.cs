@@ -117,9 +117,9 @@ namespace WebShopClient.Controllers
                     ShipmentDetails = shipmentDetails
                 };
 
-                var orderId = await _orderService.CreateOrderAsync(order);
+                var result = await _orderService.CreateOrderAsync(order);
 
-                if (orderId)
+                if (result)
                 {
                     return RedirectToAction(nameof(OrderConfirmation));
                 }
@@ -153,8 +153,7 @@ namespace WebShopClient.Controllers
                     Price = op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price,
                     Quantity = op.Quantity
                 }).ToList(),
-                TotalSum = latestOrder.OrderProducts.Sum(op => op.DiscountedPrice != 0 ? op.DiscountedPrice * op.Quantity :
-                    op.Quantity * op.Product.Price),
+                TotalSum = latestOrder.OrderProducts.Sum(op => op.DiscountedPrice != 0 ? op.Quantity * op.DiscountedPrice : op.Quantity * op.Price),
                 ShippingAddress = new ShippingAddressViewModel
                 {
                     FirstName = latestOrder.Shipment.ShippingAddress.FirstName,
