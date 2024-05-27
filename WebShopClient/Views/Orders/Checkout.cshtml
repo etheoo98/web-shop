@@ -13,6 +13,7 @@
     <div class="row g-5">
         <form method="post" asp-action="PlaceOrder" asp-controller="Orders">            
             <input hidden asp-for="@Model.Customer.Id" />
+            <input hidden asp-for="@Model.Customer.Role" />
 
             <div class="row g-5">
                 <div class="col-md-5 col-lg-4 order-md-last">

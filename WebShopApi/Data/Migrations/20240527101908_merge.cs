@@ -5,7 +5,7 @@
 namespace WebShop.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateCustomersTable : Migration
+    public partial class merge : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

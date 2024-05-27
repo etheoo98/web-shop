@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace WebShopClient.Models.RequestModels
@@ -24,6 +25,15 @@ namespace WebShopClient.Models.RequestModels
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
+
+        [Required(ErrorMessage = "FileName is required.")]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "Product name must be between {2} and {1} characters.")]
+        [JsonPropertyName("filename")]
+        public string FileName { get; set; }
+
+        [NotMapped]
+        [Required(ErrorMessage = "Image file is required.")]
+        public IFormFile ImageFile { get; set; }
 
         [Required(ErrorMessage = "At least one category must be selected.")]
         [JsonPropertyName("category-ids")]

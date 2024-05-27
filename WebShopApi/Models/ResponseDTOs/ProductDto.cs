@@ -18,7 +18,10 @@ public class ProductDto
     
     [JsonPropertyName("quantity")]
     public int Quantity { get; set; }
-    
+
+    [JsonPropertyName("filename")]
+    public string FileName { get; set; }
+
     [JsonPropertyName("add-date")]
     public DateTime AddDate { get; set; } = DateTime.UtcNow;
     

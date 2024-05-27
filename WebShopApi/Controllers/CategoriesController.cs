@@ -10,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoriesController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+public class CategoriesController(ApplicationDbContext context, IMapper mapper) : BaseController
 {
     //
     // Fetches all Categories
