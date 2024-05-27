@@ -1,0 +1,39 @@
+@using System.Security.Claims
+
+@{
+    if (User.Identity.IsAuthenticated)
+    {
+        var roleClaim = User.FindFirst(ClaimTypes.Role);
+
+        if (roleClaim.Value == "Admin")
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Admin
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="CustomerManagement" asp-action="Index">Customers</a></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="CreateProduct">Add Product</a></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="CreateDiscount">Add Discount</a></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="ManageProducts">Product list</a></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="GetOrders">Orders</a></li>
+                </ul>
+            </li>
+        }
+        
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-dark" href="#" id="user-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                My Account
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="user-dropdown">
+                <a class="nav-link" asp-controller="Customers" asp-action="Orders">My Orders</a>
+                <a class="nav-link" asp-controller="Customers" asp-action="Logout">Logout</a>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <a class="nav-link" asp-area="" asp-controller="Customers" asp-action="Login">Login</a>
+    }
+}

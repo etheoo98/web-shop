@@ -52,7 +52,14 @@ namespace WebShopClient.Services
 	        _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
 
 	        return true;
+        }
 
+        public async Task<Customer?> GetCurrentUser()
+        {
+	        var response = await _apiServices.GetHttpClient().GetAsync("customers/0"); // 0 returns current customer
+	        if (!response.IsSuccessStatusCode) return null;
+	        
+	        return await response.Content.ReadFromJsonAsync<Customer>();
         }
     }
 }
