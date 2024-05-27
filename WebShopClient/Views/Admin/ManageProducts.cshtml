@@ -6,6 +6,10 @@
 
 <h2>Manage Products</h2>
 
+<div class="mb-3">
+    <a class="btn btn-primary" asp-controller="Admin" asp-action="CreateProduct">Add New Product</a>
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -48,13 +52,13 @@
                             data-url="@Url.Action("CreateDiscountPartial", "Admin", new { id = product.Id })"
                             data-title="Add Campaign"
                             data-button-text="Add Campaign">
-	                    Add campaign
+                        Add campaign
                     </button>
                     <form method="post" asp-action="DeleteProduct" asp-route-id="@product.Id">
-	                    <button type="submit" class="btn btn-danger btn-sm"
-	                            onclick="return confirm('Are you sure you want to delete this product?');">
-		                    Delete
-	                    </button>
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this product?');">
+                            Delete
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -113,8 +117,8 @@
             }
 
             startDateElement.value = new Date().toISOString().split('T')[0];
-            periodElement.value = "14"; 
-            calculateEndDate(); 
+            periodElement.value = "14";
+            calculateEndDate();
         }
 
         document.addEventListener('DOMContentLoaded', function () {
