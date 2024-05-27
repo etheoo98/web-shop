@@ -38,23 +38,36 @@
                             data-bs-toggle="modal"
                             data-bs-target="#editModal"
                             data-url="@Url.Action("EditProductPartial", "Admin", new { id = product.Id })"
-                            data-title="Edit Product"
-                            data-button-text="Save Changes">
+                            data-title="Edit Product">
                         Edit
                     </button>
-                    <button class="btn btn-info btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editModal"
-                            data-url="@Url.Action("CreateDiscountPartial", "Admin", new { id = product.Id })"
-                            data-title="Add Campaign"
-                            data-button-text="Add Campaign">
-	                    Add campaign
-                    </button>
+
+                    @if (product.Discount != null)
+                    {
+                        <button class="btn btn-success btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-url="@Url.Action("GetProductDiscountPartial", "Admin", new { id = product.Id })"
+                                data-title="Active Campaign">
+                            See campaign
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-info btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-url="@Url.Action("CreateDiscountPartial", "Admin", new { id = product.Id })"
+                                data-title="Add Campaign">
+                            Add campaign
+                        </button>
+                    }
+
                     <form method="post" asp-action="DeleteProduct" asp-route-id="@product.Id">
-	                    <button type="submit" class="btn btn-danger btn-sm"
-	                            onclick="return confirm('Are you sure you want to delete this product?');">
-		                    Delete
-	                    </button>
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this product?');">
+                            Delete
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -81,10 +94,6 @@
             </div>
             <div class="modal-body" id="modalContent">
                 <!-- Partial views -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitBtn">Save Changes</button>
             </div>
         </div>
     </div>
@@ -113,8 +122,8 @@
             }
 
             startDateElement.value = new Date().toISOString().split('T')[0];
-            periodElement.value = "14"; 
-            calculateEndDate(); 
+            periodElement.value = "14";
+            calculateEndDate();
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -123,26 +132,20 @@
                 var button = event.relatedTarget;
                 var url = button.getAttribute('data-url');
                 var title = button.getAttribute('data-title');
-                var buttonText = button.getAttribute('data-button-text');
                 var modalContent = document.getElementById('modalContent');
                 var modalTitle = document.getElementById('modalTitle');
-                var submitBtn = document.getElementById('submitBtn');
 
                 modalTitle.textContent = title; // Set the modal title
-                submitBtn.textContent = buttonText; // Set the button text
 
                 fetch(url)
                     .then(response => response.text())
                     .then(html => {
                         modalContent.innerHTML = html;
-                        $.validator.unobtrusive.parse(modalContent); // Reinitialize validation, didn't work in modal otherwize
-                        initializeDiscountForm(); // Initialize discount form scripts
+                        $.validator.unobtrusive.parse(modalContent); // Reinitialize validation
+                        if (title === "Add Campaign") {
+                            initializeDiscountForm(); // Initialize discount form scripts
+                        }
                     });
-            });
-
-            document.getElementById('submitBtn').addEventListener('click', function () {
-                var form = document.querySelector('#modalContent form');
-                form.submit();
             });
         });
     </script>

@@ -292,6 +292,19 @@ namespace WebShopClient.Controllers
             });
         }
 
+        // GET: Partial view Product discount
+        public async Task<IActionResult> GetProductDiscountPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_GetProductDiscountPartial", product);
+        }
+
     }
 }
 
