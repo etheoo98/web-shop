@@ -15,7 +15,9 @@ ViewData["Title"] = Model.Name;
                 <div class="row">
                     <div class="col-md-6">
                         <div class="images p-3">
-                            <div class="text-center p-4"> <img id="main-image" src="https://i.ibb.co/qpB9ZCZ/placeholder.png" width="250" /> </div>
+                            <div class="text-center p-4">
+                                <img id="main-image" src="@Url.Content("~/uploads/" + Model.FileName)" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'" width="250" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
