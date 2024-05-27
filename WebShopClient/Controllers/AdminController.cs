@@ -70,13 +70,24 @@ namespace WebShopClient.Controllers
 
                 if (createProduct.ImageFile != null && createProduct.ImageFile.Length > 0)
                 {
+                    var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                    var extension = Path.GetExtension(createProduct.ImageFile.FileName).ToLowerInvariant();
+
+                    if (!validExtensions.Contains(extension))
+                    {
+                        ModelState.AddModelError("ImageFile", "Please upload a valid image file (jpg, jpeg, png).");
+                        var categories1 = await _productService.GetCategoriesAsync();
+                        ViewBag.Categories = new SelectList(categories1, "Id", "Name");
+                        return View(createProduct);
+                    }
+
                     try
                     {
-                        //var fileName = Path.GetFileNameWithoutExtension(createProduct.ImageFile.FileName);
-                        var extension = Path.GetExtension(createProduct.ImageFile.FileName);
-                        createProduct.FileName = createProduct.FileName + extension;
+                        // Apply extension to the specified filename
+                        var fileName = createProduct.FileName + extension;
+                        createProduct.FileName = fileName;
 
-                        var filePath = Path.Combine(uploadsFolder, createProduct.FileName);
+                        var filePath = Path.Combine(uploadsFolder, fileName);
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await createProduct.ImageFile.CopyToAsync(stream);
@@ -94,7 +105,7 @@ namespace WebShopClient.Controllers
                 var result = await _productService.CreateProductAsync(createProduct);
                 if (result)
                 {
-                    return RedirectToAction(nameof(Dashboard));
+                    return RedirectToAction(nameof(ManageProducts));
                 }
             }
 
@@ -102,7 +113,6 @@ namespace WebShopClient.Controllers
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(createProduct);
         }
-
 
         // GET: /Admin/ManageProducts
         public async Task<IActionResult> ManageProducts()
