@@ -18,6 +18,8 @@ public class Product
     public DateTime AddDate { get; set; } = DateTime.Now;
     public bool IsDiscontinued { get; set; }
     
+    public string FileName { get; set; }
+
     // Foreign Keys
     [ForeignKey("Discount")]
     public int? FkDiscountId { get; set; }

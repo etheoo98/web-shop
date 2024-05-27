@@ -14,6 +14,6 @@ namespace WebShopClient.Models.RequestModels
 
         [Required]
         [JsonPropertyName("shipping-address")]
-        public CreateShipmentAddress ShippingAddress { get; set; }
+        public CreateShippingAddress ShippingAddress { get; set; }
     }
 }

@@ -11,8 +11,8 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240522074502_UpdateCustomersTable")]
-    partial class UpdateCustomersTable
+    [Migration("20240527081138_imagefile")]
+    partial class imagefile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,7 +109,14 @@ namespace WebShop.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Email");
 
                     b.ToTable("Customers");
                 });
@@ -219,6 +226,10 @@ namespace WebShop.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("FkDiscountId")
                         .HasColumnType("INTEGER");
 
@@ -304,6 +315,21 @@ namespace WebShop.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");

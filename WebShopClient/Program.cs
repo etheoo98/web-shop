@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using WebShopClient.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using WebShopClient.Handlers;
 using WebShopClient.Services;
 
 namespace WebShopClient
@@ -54,7 +54,17 @@ namespace WebShopClient
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            
+            builder.Services.AddAuthentication("CustomAuth")
+                .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomAuth", null);
 
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Customer", policy => policy.RequireRole("Customer"));
 
             var app = builder.Build();
 
@@ -73,12 +83,12 @@ namespace WebShopClient
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSession();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseSession();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

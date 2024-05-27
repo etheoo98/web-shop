@@ -1,0 +1,54 @@
+﻿@model ICollection<WebShopClient.Models.ResponseModels.Order>
+
+@{
+    ViewData["Title"] = "Get Orders";
+}
+
+<h2>Orders</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Total Sum</th>
+            <th>Is Paid</th>
+            <th>Shipment Details</th>
+            <th>Products</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@order.TotalSum</td>
+                <td>@order.IsPaid</td>
+                <td>
+                    @if (order.Shipment != null)
+                    {
+                        <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd HH:mm")</p>
+                        <p>Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</p>
+                        <p>Address: @order.Shipment.ShippingAddress.Street, @order.Shipment.ShippingAddress.City</p>
+                    }
+                </td>
+                <td>
+                    @if (order.Products != null && order.Products.Any())
+                    {
+                        <ul>
+                            @foreach (var product in order.Products)
+                            {
+                                <li>@product.Name - @product.Quantity x @product.Price kr</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No products</p>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

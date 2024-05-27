@@ -11,8 +11,8 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240521151005_UpdateOrdersTable3")]
-    partial class UpdateOrdersTable3
+    [Migration("20240524095954_AddRoleToCustomersTable")]
+    partial class AddRoleToCustomersTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,7 +109,14 @@ namespace WebShop.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Email");
 
                     b.ToTable("Customers");
                 });
@@ -164,7 +171,7 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("FkShipmentId")
+                    b.Property<int>("FkShipmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPaid")
@@ -308,6 +315,21 @@ namespace WebShop.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -442,7 +464,8 @@ namespace WebShop.Data.Migrations
 
                     b.Navigation("OrderProducts");
 
-                    b.Navigation("ShipmentDetails");
+                    b.Navigation("ShipmentDetails")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebShop.Models.DbModels.Product", b =>

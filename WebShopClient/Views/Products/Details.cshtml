@@ -15,7 +15,9 @@ ViewData["Title"] = Model.Name;
                 <div class="row">
                     <div class="col-md-6">
                         <div class="images p-3">
-                            <div class="text-center p-4"> <img id="main-image" src="https://i.ibb.co/qpB9ZCZ/placeholder.png" width="250" /> </div>
+                            <div class="text-center p-4">
+                                <img id="main-image" src="@Url.Content("~/uploads/" + Model.FileName)" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'" width="250" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -50,13 +52,29 @@ ViewData["Title"] = Model.Name;
                                     <input hidden asp-for="@Model.Id" name="productId" />
                                     <input hidden asp-for="@Model.Quantity" name="quantity" value="1" />
                                     <input hidden name="returnUrl" value="/products/details/@Model.Id" />
-                                    <button type="submit" class="btn btn-primary mr-2 px-4">Add to cart</button>
+                                    @if (Model.Quantity > 0)
+                                    {
+                                        <button type="submit" class="btn btn-primary">Add to cart</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" disabled class="btn btn-danger">Out of stock</button>
+                                    }                                    
                                 </form>                                
                                 <i class="fa fa-heart text-muted"></i> 
                                 <i class="fa fa-share-alt text-muted"></i> 
                             </div>
                         </div>
                     </div>
+                    @if (TempData["AddToCartMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle"></i>
+                            @Model.Name @TempData["AddToCartMessage"] ||
+                            <a class="alert-link" asp-action="GetCartItems" asp-controller="ShoppingCarts">View shopping cart!</a>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
