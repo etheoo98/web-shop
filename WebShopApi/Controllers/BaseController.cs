@@ -8,12 +8,12 @@ public class BaseController  : ControllerBase
     //
     // Returns the token's user-id value as int
     //
-    protected int? GetUserId()
+    protected int GetUserId()
     {
         var userIdString = User.FindFirstValue("user-id");
         var isValidInt = int.TryParse(userIdString, out var userId);
 
-        if (!isValidInt) return null;
+        if (!isValidInt) throw new Exception();
         
         return userId;
     }

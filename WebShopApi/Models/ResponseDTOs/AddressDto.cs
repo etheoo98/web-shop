@@ -21,4 +21,7 @@ public class AddressDto
 
     [JsonPropertyName("country")]
     public string Country { get; set; }
+
+    [JsonPropertyName("customer-id")]
+    public int CustomerId { get; set; }
 }

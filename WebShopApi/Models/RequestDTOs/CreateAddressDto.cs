@@ -3,23 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace WebShop.Models.RequestDTOs
 {
-    public class CreateShippingAddressDto
-    {
-        [Required(ErrorMessage = "\'first-name\' is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "\'first-name\' must be between {2} to {1} characters.")]
-        [JsonPropertyName("first-name")]
-        public string FirstName { get; set; }
-
-        [Required(ErrorMessage = "\'last-name\' is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "\'last-name\' must be between {2} to {1} characters.")]
-        [JsonPropertyName("last-name")]
-        public string LastName { get; set; }
-
-        [Required(ErrorMessage = "\'email\' is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "\'email\' must be between {2} to {1} characters.")]
-        [JsonPropertyName("email")]
-        public string Email { get; set; }
-
+    public class CreateAddressDto
+    {      
         [Required(ErrorMessage = "\'phone\' is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "\'phone\' must be between {2} to {1} characters.")]
         [JsonPropertyName("phone")]

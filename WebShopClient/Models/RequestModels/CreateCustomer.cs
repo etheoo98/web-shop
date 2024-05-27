@@ -30,7 +30,6 @@ namespace WebShopClient.Models.RequestModels
         [JsonPropertyName("last-name")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Last name must be between {2} to {1} characters. ")]
         [DisplayName("Last name")]
-        public string LastName { get; set; }  
-        
+        public string LastName { get; set; }
     }
 }
