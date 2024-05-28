@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
 using System.Security.Claims;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
@@ -62,12 +63,15 @@ namespace WebShopClient.Controllers
                     Customer = customer,
                     CartItems = cartItems,
                     TotalSum = cartItems.Sum(item => item.Price * item.Quantity),
-                    ShipmentDetails = new ShipmentDetailsViewModel{ShippingAddress = new ShippingAddressViewModel
+                    ShipmentDetails = new ShipmentDetailsViewModel
+                    {
+                        ShippingAddress = new ShippingAddressViewModel
                         {
                             FirstName = customer.FirstName,
                             LastName = customer.LastName,
                             Email = customer.Email
-                        }}
+                        }
+                    }
                 });
             }
 
@@ -100,66 +104,72 @@ namespace WebShopClient.Controllers
         [Authorize]
         public async Task<IActionResult> PlaceOrder(CheckoutViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
-                {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity
-                }).ToList();
+                var cartItems = _shoppingCartService.GetCartItems();
+                viewModel.CartItems = cartItems;
+                viewModel.TotalSum = cartItems.Sum(item => item.DiscountedPrice == 0 ? item.Price * item.Quantity : item.DiscountedPrice * item.Quantity);
 
-                var shipmentDetails = new Shipment
+                return View("Checkout", viewModel);
+            }
+
+            var orderItems = viewModel.CartItems.Select(item => new CreateOrderItem
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity
+            }).ToList();
+
+            var shipmentDetails = new Shipment
+            {
+                ShippedDate = DateTime.Now,
+                DeliveryDate = DateTime.Now.AddDays(5),
+                ShippingAddress = new ShippingAddress
                 {
-                    ShippedDate = DateTime.Now,
-                    DeliveryDate = DateTime.Now.AddDays(5),
-                    ShippingAddress = new ShippingAddress
-                    {
-                        FirstName = viewModel.ShipmentDetails.ShippingAddress.FirstName,
-                        LastName = viewModel.ShipmentDetails.ShippingAddress.LastName,
-                        Email = viewModel.ShipmentDetails.ShippingAddress.Email,
-                        Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
-                        Street = viewModel.ShipmentDetails.ShippingAddress.Street,
-                        PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
-                        City = viewModel.ShipmentDetails.ShippingAddress.City,
-                        Country = viewModel.ShipmentDetails.ShippingAddress.Country
-                    }
+                    FirstName = viewModel.ShipmentDetails.ShippingAddress.FirstName,
+                    LastName = viewModel.ShipmentDetails.ShippingAddress.LastName,
+                    Email = viewModel.ShipmentDetails.ShippingAddress.Email,
+                    Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
+                    Street = viewModel.ShipmentDetails.ShippingAddress.Street,
+                    PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
+                    City = viewModel.ShipmentDetails.ShippingAddress.City,
+                    Country = viewModel.ShipmentDetails.ShippingAddress.Country
+                }
+            };
+
+            var order = new CreateOrder
+            {
+                IsPaid = true,
+                TotalSum = viewModel.TotalSum,
+                OrderItems = orderItems,
+                ShipmentDetails = shipmentDetails
+            };
+
+
+            var userId = GetUserIdFromClaims();
+            var customer = await _customService.GetCustomerByIdAsync(userId.Value);
+
+            if (customer == null) return NotFound("Customer not found.");
+
+            if (customer.Address == null)
+            {
+                var address = new CreateAddress
+                {
+                    Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
+                    Street = viewModel.ShipmentDetails.ShippingAddress.Street,
+                    PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
+                    City = viewModel.ShipmentDetails.ShippingAddress.City,
+                    Country = viewModel.ShipmentDetails.ShippingAddress.Country,
+                    CustomerId = userId.Value
                 };
 
-                var order = new CreateOrder
-                {
-                    IsPaid = true,
-                    TotalSum = viewModel.TotalSum,
-                    OrderItems = orderItems,
-                    ShipmentDetails = shipmentDetails
-                };
-                
-                
-                var userId = GetUserIdFromClaims();
-                var customer = await _customService.GetCustomerByIdAsync(userId.Value);
-                
-                if (customer == null) return NotFound("Customer not found.");
+                var addressResult = await _customService.CreateAddressAsync(address);
+            }
 
-                if (customer.Address == null)
-                {
-                    var address = new CreateAddress
-                    {
-                        Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
-                        Street = viewModel.ShipmentDetails.ShippingAddress.Street,
-                        PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
-                        City = viewModel.ShipmentDetails.ShippingAddress.City,
-                        Country = viewModel.ShipmentDetails.ShippingAddress.Country,
-                        CustomerId = userId.Value
-                    };
-                    
-                    var addressResult = await _customService.CreateAddressAsync(address);
-                }
+            var result = await _orderService.CreateOrderAsync(order);
 
-                var result = await _orderService.CreateOrderAsync(order);
-
-                if (result)
-                {
-                    return RedirectToAction(nameof(OrderConfirmation));
-                }
+            if (result)
+            {
+                return RedirectToAction(nameof(OrderConfirmation));
             }
 
             return View("Checkout", viewModel);

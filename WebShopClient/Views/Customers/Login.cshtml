@@ -1,22 +1,25 @@
 @model WebShopClient.Models.RequestModels.LoginCustomer
-<form method="post" class="m-auto" style="max-width: 640px">
-    <!-- Email input -->
-    <div data-mdb-input-init class="form-outline mb-4">
-        <label class="form-label" for="email">Email address</label>
-        <input type="email" id="email" name="Email" class="form-control"/>
-    </div>
 
-    <!-- Password input -->
-    <div data-mdb-input-init class="form-outline mb-4">
-        <label class="form-label" for="password">Password</label>
-        <input type="password" id="password" name="Password" class="form-control"/>
-    </div>
+<div class="d-flex justify-content-center align-items-center">
+    <form method="post" class="w-100" style="max-width: 400px;">
+        <!-- Email input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <label class="form-label" for="email">Email address</label>
+            <input type="email" id="email" name="Email" class="form-control" />
+        </div>
 
-    <!-- Submit button -->
-    <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+        <!-- Password input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" id="password" name="Password" class="form-control" />
+        </div>
 
-    <!-- Register buttons -->
-    <div class="text-center">
-        <p>Not a member? <a asp-controller="Customers" asp-action="Register">Register</a></p>
-    </div>
-</form>
+        <!-- Submit button -->
+        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+
+        <!-- Register buttons -->
+        <div class="text-center">
+            <p>Not a member? <a asp-controller="Customers" asp-action="Register">Register</a></p>
+        </div>
+    </form>
+</div>

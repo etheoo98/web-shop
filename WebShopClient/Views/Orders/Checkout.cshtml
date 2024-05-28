@@ -58,10 +58,10 @@
                                             </h6>
                                             @if (product.Quantity > 1)
                                             {
-                                                <small class="text-body-secondary">$@(@product.DiscountedPrice)/each</small>
+                                                <small class="text-body-secondary">$@(@product.DiscountedPrice) kr/each</small>
                                             }
                                         </div>
-                                        <span class="text-body-secondary">$@(@product.DiscountedPrice * @product.Quantity)</span>
+                                        <span class="text-body-secondary">@(@product.DiscountedPrice * @product.Quantity) kr</span>
                                     }
                                     else
                                     {
@@ -71,10 +71,10 @@
                                             </h6>
                                             @if (product.Quantity > 1)
                                             {
-                                                <small class="text-body-secondary">$@(@product.Price)/each</small>
+                                                <small class="text-body-secondary">@(@product.Price) kr/each</small>
                                             }
                                         </div>
-                                        <span class="text-body-secondary">$@(@product.Price * @product.Quantity)</span>
+                                        <span class="text-body-secondary">@(@product.Price * @product.Quantity) kr</span>
                                     }
                                 </li>
                             }
@@ -83,8 +83,8 @@
                                 <span class="text-body-secondary">$5</span>
                             </li> *@
                             <li class="list-group-item d-flex justify-content-between">
-                                <h5>Total (USD)</h5>
-                                <h5>$@totalSum</h5>
+                                <h5>Total (SEK)</h5>
+                                <h5>@totalSum kr</h5>
                             </li>
                         }
                     </ul>

@@ -48,7 +48,7 @@
                         <h5 class="modal-title" id="exampleModalLabel">Filter</h5>
                     </div>
                     <div class="modal-body">
-                        <h5>Kategori</h5>
+                        <h5>Category</h5>
                         @if (Model.Any(c => c.Categories != null && c.Categories.Any()))
                         {
                             <div>
@@ -74,8 +74,8 @@
                         }
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
-                        <button type="button" class="btn btn-primary" onclick="applyFilter()">Filtrera</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="applyFilter()">Add Filter</button>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                 {   
 	                <div class="col-12 d-flex justify-content-center">
 		                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
-			                Sortera
+			                Filter products
 		                </button>
 					</div>
                     @foreach (var item in Model)
@@ -128,13 +128,13 @@
                                             @if (item.Discount != null)
                                             {
                                                 <div class="new-price text-danger">
-                                                    @($"{item.Discount.DiscountedPrice}")
+                                                    @($"{item.Discount.DiscountedPrice} kr")
                                                 </div>
-                                                <div class="old-price">@($"{item.Price}kr")</div>
+                                                <div class="old-price">@($"{item.Price} kr")</div>
                                             }
                                             else
                                             {
-                                                <div class="price">@($"{item.Price}kr")</div>
+                                                <div class="price">@($"{item.Price} kr")</div>
                                             }
                                         </div>
                                         <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">

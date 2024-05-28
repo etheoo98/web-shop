@@ -11,8 +11,7 @@
         <tr>
             <th>Order ID</th>
             <th>Order Date</th>
-            <th>Total Sum</th>
-            <th>Is Paid</th>
+            <th>Total Sum</th>            
             <th>Shipment Details</th>
             <th>Products</th>
         </tr>
@@ -23,14 +22,13 @@
             <tr>
                 <td>@order.Id</td>
                 <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@order.TotalSum</td>
-                <td>@order.IsPaid</td>
+                <td>@order.TotalSum kr</td>                
                 <td>
                     @if (order.Shipment != null)
                     {
-                        <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd HH:mm")</p>
-                        <p>Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</p>
-                        <p>Address: @order.Shipment.ShippingAddress.Street, @order.Shipment.ShippingAddress.City</p>
+                        <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd")</p>
+                        <p>Estimated Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd") : "N/A")</p>
+                        <p>Address: @order.Shipment.ShippingAddress.Street, @order.Shipment.ShippingAddress.City, @order.Shipment.ShippingAddress.Country</p>
                     }
                 </td>
                 <td>
@@ -39,7 +37,7 @@
                         <ul>
                             @foreach (var product in order.OrderProducts)
                             {
-                                <li>@product.ProductName - @product.Quantity x @product.Price kr</li>
+                                <li>x@(@product.Quantity) @product.ProductName - @product.Price kr</li>
                             }
                         </ul>
                     }

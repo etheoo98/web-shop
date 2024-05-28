@@ -16,14 +16,14 @@
         <dl>
             <dd><strong>Order Number:</strong> @Model.OrderId</dd>
             <dd><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</dd>
-            <dd><strong>Total Sum:</strong> $@Model.TotalSum</dd>
+            <dd><strong>Total Sum:</strong> @Model.TotalSum kr</dd>
         </dl>
 
         <h4>Products Purchased</h4>
         <ul>
             @foreach (var product in Model.OrderItems)
             {
-                <li>@(@product.Quantity)x @product.ProductName | $@product.Price/each</li>
+                <li>@(@product.Quantity)x @product.ProductName | @product.Price kr/each</li>
             }
         </ul>
 

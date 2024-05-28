@@ -36,7 +36,7 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
         
         var customer = await context.Customers
             .Include(c => c.CustomerOrders)
-            .ThenInclude(co => co.Order)
+            .ThenInclude(co => co.Order)            
             .ThenInclude(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
             .ThenInclude(p => p.ProductCategories)!
@@ -50,7 +50,7 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
             .Include(c => c.CustomerOrders)
             .ThenInclude(co => co.Order)
             .ThenInclude(o => o.ShipmentDetails)
-            .ThenInclude(sd => sd.ShippingAddress)
+            .ThenInclude(sd => sd.ShippingAddress)            
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (customer == null) return NotFound();
