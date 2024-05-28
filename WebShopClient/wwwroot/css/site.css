@@ -1,5 +1,5 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
@@ -7,6 +7,41 @@ html {
     font-size: 16px;
   }
 }
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #272343;
+    background-color: #fffffe;
+}
+
+.navbar, .footer {
+    background-color: #bae8e8;
+}
+
+.btn {
+    border-radius: 0 !important;
+}
+
+.btn-primary {
+    background-color: #247291; 
+    border-color: #247291; 
+}
+
+.btn-primary:hover {
+    background-color: #1e5e77; /* Darkened  */
+    border-color: #1e5e77; 
+}
+
+.btn-outline-primary {
+    color: #247291; 
+    border-color: #247291; 
+}
+
+.btn-outline-primary:hover {
+    background-color: #247291; 
+    color: #ffffff; 
+}
+
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;

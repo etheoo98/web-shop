@@ -9,22 +9,21 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebShopClient.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+	    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom mb-3">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebShopClient</a>
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index"><img class="me-1" src="@(Url.Content("~/smile.svg"))" />HAPPY TIMES</a>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                         </li>
                     </ul>
                     <form class="d-flex position-relative" role="search">
@@ -50,8 +49,8 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - WebShopClient - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+	    <div class="container text-center">
+            &copy; 2024 - HAPPY TIMES
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
