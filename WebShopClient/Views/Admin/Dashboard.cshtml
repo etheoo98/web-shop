@@ -2,6 +2,7 @@
     ViewData["Title"] = "Admin Dashboard";
     Layout = "_Layout";
 }
+
 @using Newtonsoft.Json
 
 <head>
@@ -132,15 +133,21 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Månad sales data
+        var monthlyRevenue = @Html.Raw(JsonConvert.SerializeObject(ViewBag.MonthlyRevenue));
+
+        var months = monthlyRevenue.map(m => new Date(2024, m.Month - 1).toLocaleString('default', { month: 'long' }));
+        var revenues = monthlyRevenue.map(m => m.Revenue);
+
         // Sales Chart
         var ctx = document.getElementById('salesChart').getContext('2d');
         var salesChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['May', 'June', 'July', 'August'],
+                labels: months,
                 datasets: [{
-                    label: 'Sales',
-                    data: [50, 150, 350, 250],
+                    label: 'Revenue',
+                    data: revenues,
                     borderColor: '#8e7dbe',
                     backgroundColor: 'rgba(142, 125, 190, 0.1)',
                     fill: true,
@@ -156,14 +163,14 @@
                         display: true,
                         title: {
                             display: true,
-                            text: 'Date'
+                            text: 'Month'
                         }
                     },
                     y: {
                         display: true,
                         title: {
                             display: true,
-                            text: 'Sales'
+                            text: 'Revenue 2024'
                         },
                         beginAtZero: true
                     }

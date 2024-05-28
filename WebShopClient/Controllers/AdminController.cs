@@ -63,6 +63,28 @@ namespace WebShopClient.Controllers
 
             ViewBag.TopProducts = topProducts;
 
+            //räknar sales per månad för nuvarande år
+            var monthlyRevenue = orders
+                .Where(order => order.OrderDate.Year == 2024)
+                .GroupBy(order => order.OrderDate.Month)
+                .Select(group => new
+                {
+                    Month = group.Key,
+                    Revenue = group.Sum(order => order.TotalSum)
+                })
+                .ToList();
+
+            //Alla månader på året har 0 från början
+            var allMonths = Enumerable.Range(1, 12).Select(month => new { Month = month, Revenue = 0m }).ToList();
+
+            
+            foreach (var monthRevenue in monthlyRevenue)
+            {
+                allMonths[monthRevenue.Month - 1] = monthRevenue;
+            }
+
+            ViewBag.MonthlyRevenue = allMonths.OrderBy(mr => mr.Month).ToList();
+
 
             return View();
         }
