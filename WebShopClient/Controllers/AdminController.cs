@@ -44,6 +44,26 @@ namespace WebShopClient.Controllers
             var latestProducts = products.OrderByDescending(p => p.AddDate).Take(3).ToList();
             ViewBag.LatestProducts = latestProducts;
 
+            //räknar totalRevenue
+            decimal totalRevenue = orders.Sum(order => order.TotalSum);
+            ViewBag.TotalRevenue = totalRevenue;
+
+            // Räknar top products
+            var topProducts = orders
+                .SelectMany(order => order.OrderProducts)
+                .GroupBy(op => new { op.ProductId, op.ProductName })
+                .Select(group => new
+                {
+                    ProductName = group.Key.ProductName,
+                    Quantity = group.Sum(op => op.Quantity)
+                })
+                .OrderByDescending(p => p.Quantity)
+                .Take(4)
+                .ToList();
+
+            ViewBag.TopProducts = topProducts;
+
+
             return View();
         }
 
