@@ -98,6 +98,7 @@ namespace WebShopClient.Controllers
         }
 
 
+
         // POST: /Admin/CreateProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
