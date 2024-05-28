@@ -73,17 +73,17 @@
                             if (data.length > 0) {
                                 data.forEach(function (product) {
                                     results.append(`
-                                             <div class="result-item d-flex align-items-center" onclick="location.href='/Products/Details/${product.id}'">
-                                             <img src="https://via.placeholder.com/50" alt="Product Image">
-                                             <div>
-                                             <div>${product.name}</div>
-                                             <div class="text-danger">${product.price} kr</div>
-                                             </div>
-                                             </div>
-                                            `);
+                                                     <div class="result-item d-flex align-items-center" onclick="location.href='/Products/Details/${product.id}'">
+                                                     <img src="/uploads/${product.fileName}" alt="Product Image" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'" style="width: 50px; height: 50px; object-fit: cover;">
+                                                     <div>
+                                                     <div>${product.name}</div>
+                                                     <div class="text-danger">${product.price} kr</div>
+                                                     </div>
+                                                     </div>
+                                                    `);
                                 });
                             } else {
-                                results.append('<div class="result-item">no product found</div>');
+                                results.append('<div class="result-item">No product found</div>');
                             }
                             results.show();
                         },

@@ -39,7 +39,7 @@
     </div>
     <div class="form-group">
         <label asp-for="CategoryIds" class="control-label"></label>
-         <a asp-area="" asp-controller="Category" asp-action="Create">Create New Category</a>
+        <a asp-area="" asp-controller="Category" asp-action="Create">Create New Category</a>
         <select asp-for="CategoryIds" class="form-control" multiple="multiple">
             @foreach (var category in ViewBag.Categories)
             {
@@ -49,7 +49,8 @@
         <span asp-validation-for="CategoryIds" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-controller="Admin" asp-action="ManageProducts" class="btn btn-secondary">Back</a>
+        <button type="submit" class="btn btn-primary">Create</button>    
     </div>
 </form>
 @section Scripts {

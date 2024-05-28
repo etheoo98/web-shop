@@ -41,7 +41,7 @@ namespace WebShopClient.Controllers
             var products = await _api.GetProductsAsync();
             var filteredProducts = products
                 .Where(p => p.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                .Select(p => new { p.Id, p.Name, p.Price })
+                .Select(p => new { p.Id, p.Name, p.Price, p.FileName })
                 .ToList();
             return Json(filteredProducts);
         }
