@@ -16,12 +16,14 @@ namespace WebShopClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int quantity, string returnUrl)
         {
-            await _shoppingCartService.AddToCartAsync(productId, quantity);            
+            await _shoppingCartService.AddToCartAsync(productId, quantity);
+            TempData["AddToCartMessage"] = "added to your cart.";
 
             if (string.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index", "Products");
             }
+            
             return Redirect(returnUrl);
         }
 

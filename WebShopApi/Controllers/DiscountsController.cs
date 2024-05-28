@@ -10,7 +10,7 @@ namespace WebShop.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class DiscountsController(ApplicationDbContext context, IMapper mapper) : ControllerBase
+public class DiscountsController(ApplicationDbContext context, IMapper mapper) : BaseController
 {
     //
     // Creates a Discount for a Product

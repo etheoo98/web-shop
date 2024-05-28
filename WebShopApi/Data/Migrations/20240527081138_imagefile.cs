@@ -5,7 +5,7 @@
 namespace WebShop.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateNullableProperties : Migration
+    public partial class imagefile : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

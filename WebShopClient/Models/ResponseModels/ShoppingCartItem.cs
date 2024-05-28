@@ -19,6 +19,9 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 
+        [JsonPropertyName("stock-quantity")]
+        public int StockQuantity { get; set; }
+
         [JsonPropertyName("discounted-price")]
         public decimal DiscountedPrice { get; set; }
 
