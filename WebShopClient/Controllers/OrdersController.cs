@@ -55,6 +55,22 @@ namespace WebShopClient.Controllers
                 return NotFound("Customer not found.");
             }
 
+            if (customer.Address == null)
+            {
+                return View(new CheckoutViewModel
+                {
+                    Customer = customer,
+                    CartItems = cartItems,
+                    TotalSum = cartItems.Sum(item => item.Price * item.Quantity),
+                    ShipmentDetails = new ShipmentDetailsViewModel{ShippingAddress = new ShippingAddressViewModel
+                        {
+                            FirstName = customer.FirstName,
+                            LastName = customer.LastName,
+                            Email = customer.Email
+                        }}
+                });
+            }
+
             var viewModel = new CheckoutViewModel
             {
                 Customer = customer,
@@ -116,6 +132,27 @@ namespace WebShopClient.Controllers
                     OrderItems = orderItems,
                     ShipmentDetails = shipmentDetails
                 };
+                
+                
+                var userId = GetUserIdFromClaims();
+                var customer = await _customService.GetCustomerByIdAsync(userId.Value);
+                
+                if (customer == null) return NotFound("Customer not found.");
+
+                if (customer.Address == null)
+                {
+                    var address = new CreateAddress
+                    {
+                        Phone = viewModel.ShipmentDetails.ShippingAddress.Phone,
+                        Street = viewModel.ShipmentDetails.ShippingAddress.Street,
+                        PostalCode = viewModel.ShipmentDetails.ShippingAddress.PostalCode,
+                        City = viewModel.ShipmentDetails.ShippingAddress.City,
+                        Country = viewModel.ShipmentDetails.ShippingAddress.Country,
+                        CustomerId = userId.Value
+                    };
+                    
+                    var addressResult = await _customService.CreateAddressAsync(address);
+                }
 
                 var result = await _orderService.CreateOrderAsync(order);
 
