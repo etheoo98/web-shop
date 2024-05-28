@@ -2,6 +2,8 @@
     ViewData["Title"] = "Admin Dashboard";
     Layout = "_Layout";
 }
+@using Newtonsoft.Json
+
 <head>
     <link rel="stylesheet" type="text/css" href="~/css/admin.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -11,7 +13,7 @@
         <div class="col-lg-3 col-md-6">
             <div class="card stat-card orders">
                 <div class="card-body">
-                    <div class="icon-container">                    
+                    <div class="icon-container">
                         <a asp-controller="Admin" asp-action="GetOrders">
                             <i class="bi bi-cart-check"></i>
                         </a>
@@ -46,7 +48,7 @@
                     </div>
                     <div>
                         <div class="card-title">Revenue</div>
-                        <h2>$8,400</h2>
+                        <h2>@ViewBag.TotalRevenue.ToString("C")</h2>
                     </div>
                 </div>
             </div>
@@ -57,7 +59,7 @@
                     <div class="icon-container">
                         <a asp-controller="Admin" asp-action="ManageProducts">
                             <i class="bi bi-box"></i>
-                        </a>                       
+                        </a>
                     </div>
                     <div>
                         <div class="card-title">Products</div>
@@ -176,26 +178,29 @@
         });
 
         // Top Products Chart
+        var topProducts = @Html.Raw(JsonConvert.SerializeObject(ViewBag.TopProducts));
+
+        var productNames = topProducts.map(p => p.ProductName);
+        var productQuantities = topProducts.map(p => p.Quantity);
+
         var ctx = document.getElementById('productsChart').getContext('2d');
         var productsChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['iPhone IIDX', 'Samsung3', 'Pixel55', 'Nokia3310', 'Other'],
+                labels: productNames,
                 datasets: [{
-                    data: [35, 25, 20, 10, 10],
+                    data: productQuantities,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
                         'rgba(54, 162, 235, 0.6)',
                         'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(142, 125, 190, 0.6)'
+                        'rgba(75, 192, 192, 0.6)'
                     ],
                     borderColor: [
                         'rgba(255, 99, 132, 1)',
                         'rgba(54, 162, 235, 1)',
                         'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(142, 125, 190, 1)'
+                        'rgba(75, 192, 192, 1)'
                     ],
                     borderWidth: 1
                 }]
@@ -210,7 +215,7 @@
                     tooltip: {
                         callbacks: {
                             label: function (tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' units';
                             }
                         }
                     }
