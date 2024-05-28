@@ -3,19 +3,19 @@
 
 @if (Model.Orders == null || Model.Orders.Count == 0)
 {
-    <p>Du har inte gjort någon order ännu</p>
+    <p>You currently have no orders.</p>
 }
 else
 {
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Datum</th>
-                <th>Ordernummer</th>
+                <th>Date</th>
+                <th>Order Number</th>
                 @* <th>Ordervärde</th> *@
-                <th>Produkt</th>
+                <th>Product</th>
                 <th>Status</th>
-                <th>Leverans</th>
+                <th>Shippment Details</th>
             </tr>
         </thead>
         <tbody>
@@ -31,7 +31,7 @@ else
                             <ul class="list-unstyled">
                                 @foreach (var product in order.OrderProducts)
                                 {
-                                    <li>@product.ProductName - @product.Quantity x @product.Price kr</li>
+                                    <li>x@(@product.Quantity) @product.ProductName - @product.Price kr</li>
                                 }
                             </ul>
                         }
@@ -40,12 +40,12 @@ else
                             <p>No products</p>
                         }
                     </td>
-                    <td>@(order.IsPaid ? "Betald" : "Obetald")</td>
+                    <td>@(order.IsPaid ? "Paid" : "Not Paid")</td>
                     <td>
                         @if (order.Shipment != null)
                         {
-                            <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd HH:mm")</p>
-                            <p>Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</p>
+                            <p>Shipped Date: @order.Shipment.ShippedDate.ToString("yyyy-MM-dd")</p>
+                            <p>Estimated Delivery Date: @(order.Shipment.DeliveryDate.HasValue ? order.Shipment.DeliveryDate.Value.ToString("yyyy-MM-dd") : "N/A")</p>
                             <p>Address: @order.Shipment.ShippingAddress.Street, @order.Shipment.ShippingAddress.City</p>
                         }
                         else

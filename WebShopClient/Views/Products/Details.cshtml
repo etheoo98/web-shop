@@ -24,7 +24,7 @@ ViewData["Title"] = Model.Name;
                         <div class="product p-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
-                                    <a href="../" class="text-black text-decoration-none">Back</a>
+                                    <a href="../" class="text-black">Back</a>
                                 </div>
                             </div>
                             <div class="mt-4 mb-3">
@@ -41,9 +41,16 @@ ViewData["Title"] = Model.Name;
                                 </h6>
                                 <h5 class="text-uppercase">@Model.Name</h5>
                                 <div class="price d-flex flex-row align-items-center gap-2">
-                                    <span class="act-price">€@Model.Price</span>
-                                    <small class="text-decoration-line-through">€59</small>
-                                    <span>40% OFF</span>
+                                    @if (Model.Discount != null)
+                                    {
+                                        <span class="act-price">@Model.Discount.DiscountedPrice kr</span>
+                                        <small class="text-decoration-line-through">@Model.Price kr</small>
+                                        <span>@(Model.Discount.Percent)% OFF</span>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-black">@Model.Price kr</small>
+                                    }
                                 </div>
                             </div>
                             <p class="about">@Model.Description</p>                           

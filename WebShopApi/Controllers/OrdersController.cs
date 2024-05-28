@@ -30,6 +30,7 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Ba
                 .ThenInclude(pc => pc.Category)
                 .Include(o => o.ShipmentDetails)
                 .ThenInclude(sd => sd.ShippingAddress)
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
             var orderDtos = mapper.Map<IEnumerable<OrderDto>>(orders);

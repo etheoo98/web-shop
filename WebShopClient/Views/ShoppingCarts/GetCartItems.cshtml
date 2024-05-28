@@ -45,13 +45,13 @@
                             @if (@product.DiscountedPrice != 0)
                             {
                                 <div>
-                                    <span class="text-danger">@product.DiscountedPrice</span>
-                                    <span class="text-decoration-line-through">@product.Price</span>
+                                    <span class="text-danger">@product.DiscountedPrice kr</span>
+                                    <span class="text-decoration-line-through">@product.Price kr</span>
                                 </div>
                             }
                             else
                             {
-                                @product.Price
+                                <div>@product.Price kr</div>
                             }
                         </td>
                         <td class="align-middle">
@@ -72,7 +72,7 @@
                                 </select>
                             </form>
                         </td>
-                        <td class="align-middle">@product.TotalPrice</td>
+                        <td class="align-middle">@product.TotalPrice kr</td>
                         <td>
                             <form method="post" asp-action="RemoveCartItem">
                                 <input hidden name="productId" value="@product.ProductId" />
@@ -85,7 +85,7 @@
                 }
                 <tr>
                     <td>
-                        <strong>Total Order Price:</strong> @totalSum
+                        <strong>Total Order Price:</strong> @totalSum kr
                     </td>
                 </tr>
             </tbody>

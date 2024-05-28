@@ -55,7 +55,8 @@ public class CustomersController(CustomerService service) : Controller
     public async Task<IActionResult> Orders()
     {
         var currentUser = await service.GetCurrentUser();
-        if (currentUser == null) RedirectToAction("Login");
+        if (currentUser == null) RedirectToAction("Login");        
+
         return View(currentUser);
     }
 }
