@@ -101,12 +101,12 @@
 					</div>
                     @foreach (var item in Model)
                     {
-	                    <div class="col-12 col-md-4 col-lg-3">
+	                    <div class="col-12 col-md-4 col-lg-4 col-xl-3">
                             <div class="product-single-card">
                                 <div class="product-top-area">
                                     @if (item.Discount != null)
                                     {
-                                        <div class="product-discount text-danger">
+                                        <div class="product-discount">
                                             @($"{item.Discount.Percent}%")
                                         </div>
                                     }
@@ -129,20 +129,21 @@
                                         </h6>
                                     }
                                     <h6 class="product-title text-truncate"><a asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h6>
-                                    <div class="d-flex flex-wrap justify-content-between align-items-center py-2">
-                                        <div class="d-flex price">
-                                            @if (item.Discount != null)
-                                            {
-                                                <div class="new-price text-danger">
-                                                    @($"{item.Discount.DiscountedPrice} kr")
-                                                </div>
-                                                <div class="old-price">@($"{item.Price} kr")</div>
-                                            }
-                                            else
-                                            {
-                                                <div class="price">@($"{item.Price} kr")</div>
-                                            }
-                                        </div>
+                                    <div class="card-bottom d-flex flex-wrap justify-content-between align-items-center py-2">
+	                                    <div class="price d-flex d-lg-block mb-2">
+		                                    @if (item.Discount != null)
+		                                    {
+			                                    <div class="new-price text-danger me-2">
+				                                    @($"{item.Discount.DiscountedPrice} kr")
+			                                    </div>
+			                                    <div class="old-price">@($"{item.Price} kr")</div>
+		                                    }
+		                                    else
+		                                    {
+			                                    <div class="price">@($"{item.Price} kr")</div>
+		                                    }
+	                                    </div>
+
                                         <form method="post" asp-controller="ShoppingCarts" asp-action="AddToCart">
                                             <input hidden asp-for="@item.Id" name="productId" />
                                             <input hidden asp-for="@item.Quantity" name="quantity" value="1" />
