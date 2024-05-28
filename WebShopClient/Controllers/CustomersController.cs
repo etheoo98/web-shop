@@ -11,6 +11,14 @@ public class CustomersController(CustomerService service) : Controller
     {
         return View();
     }
+        
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginCustomer model)
+    {
+        var success = await service.AttemptLogin(model);
+        if (!success) return View();
+        return RedirectToAction("Index", "Home");
+    }
     
     [Authorize]
     public IActionResult Logout()
@@ -19,12 +27,27 @@ public class CustomersController(CustomerService service) : Controller
         return RedirectToAction("Login");
     }
     
-    [HttpPost]
-    public async Task<IActionResult> Login(LoginCustomer model)
+    
+    // GET: /Create
+    public IActionResult Register()
     {
-        var success = await service.AttemptLogin(model);
-        if (!success) return View();
-        return RedirectToAction("Index", "Home");
+        return View();
+    }
+    
+    // POST: Create Customer
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(CreateCustomer createCustomer)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = await service.CreateCustomerAsync(createCustomer);
+            if (result)
+            {
+                return RedirectToAction("Login");
+            }
+        }
+        return View(createCustomer);
     }
 
     [HttpGet]

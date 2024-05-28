@@ -61,5 +61,13 @@ namespace WebShopClient.Services
 	        
 	        return await response.Content.ReadFromJsonAsync<Customer>();
         }
+        
+        public async Task<bool> CreateAddressAsync(CreateAddress address)
+        {
+	        var userId = address.CustomerId;
+	        
+	        var response = await _apiServices.GetHttpClient().PostAsJsonAsync($"customers/{userId}/addresses", address);
+	        return response.IsSuccessStatusCode;
+        }
     }
 }
