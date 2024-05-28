@@ -1,0 +1,31 @@
+﻿@model List<WebShopClient.Models.ResponseModels.Category>
+
+@{
+    ViewData["Title"] = "Categories Page";
+}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="~/css/home.css">
+</head>
+<div>
+    <a asp-action="Create">Create Category</a>
+</div>
+<!-- Product Section - Start -->
+<section>
+    <div class="container">
+        <div class="row g-4 py-5">
+            <div class="row g-4 py-5">
+                <!-- Detta ska loopas per produkt - Start -->
+                @if (Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <h2>@item.Name</h2>
+                        <p>@item.Description</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Product Section - End -->

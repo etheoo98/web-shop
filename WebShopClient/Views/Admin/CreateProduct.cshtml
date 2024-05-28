@@ -39,6 +39,7 @@
     </div>
     <div class="form-group">
         <label asp-for="CategoryIds" class="control-label"></label>
+         <a asp-area="" asp-controller="Category" asp-action="Create">Create New Category</a>
         <select asp-for="CategoryIds" class="form-control" multiple="multiple">
             @foreach (var category in ViewBag.Categories)
             {
@@ -51,7 +52,6 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </div>
 </form>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

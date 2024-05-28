@@ -38,5 +38,7 @@ namespace WebShopClient.Models.RequestModels
         [Required(ErrorMessage = "At least one category must be selected.")]
         [JsonPropertyName("category-ids")]
         public ICollection<int> CategoryIds { get; set; }
+
+        
     }
 }

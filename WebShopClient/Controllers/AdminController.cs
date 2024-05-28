@@ -14,6 +14,7 @@ namespace WebShopClient.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
 
 
+
         public AdminController(CustomerService customerService, ProductService productService, DiscountService discountService,IWebHostEnvironment hostingEnvironment)
         {
             _customerService = customerService;
@@ -44,6 +45,7 @@ namespace WebShopClient.Controllers
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View();
         }
+
 
 
         // POST: /Admin/CreateProduct

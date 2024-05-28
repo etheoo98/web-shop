@@ -68,6 +68,8 @@ namespace WebShopClient.Services
             var response = await _client.PostAsJsonAsync("Products", createProduct);
             return response.IsSuccessStatusCode;
         }
+        
+
         //Update Product
         public async Task<bool> UpdateProductAsync(EditProduct editProduct)
         {
