@@ -40,7 +40,7 @@
                                         </div>
                                     }
                                     <div class="product-img">
-                                        <img src="./uploads/@item.FileName" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
+                                    <img src="@Url.Content("~/uploads/" + item.FileName)" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
                                     </div>
                                 </div>
                                 <div class="product-info">
@@ -49,8 +49,8 @@
                                         <h6 class="product-category">
                                             @foreach (var category in item.Categories)
                                             {
-                                                <a asp-action="Details" asp-route-id="@category.Id">@category.Name</a>
-                                                if (!category.Equals(item.Categories.Last()))
+                                            <a asp-controller="Products" asp-action="Category" asp-route-category="@category.Name" class="text-black text-decoration-none">@category.Name</a>
+                                            if (!category.Equals(item.Categories.Last()))
                                                 {
                                                     <span>,</span>
                                                 }
