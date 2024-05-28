@@ -1,10 +1,22 @@
 @model WebShopClient.Models.RequestModels.LoginCustomer
-<h1>Login Screen</h1>
+<form method="post" class="m-auto" style="max-width: 640px">
+    <!-- Email input -->
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="email">Email address</label>
+        <input type="email" id="email" name="Email" class="form-control"/>
+    </div>
 
-<form asp-action="Login" asp-controller="Customers" method="post">
-    <label for="email">Email</label>
-    <input id="email" name="Email" type="text"/>
-    <label for="password">Password</label>
-    <input id="password" name="Password" type="text"/>
-    <button type="submit">Login</button>
+    <!-- Password input -->
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="Password" class="form-control"/>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+
+    <!-- Register buttons -->
+    <div class="text-center">
+        <p>Not a member? <a asp-controller="Customers" asp-action="Register">Register</a></p>
+    </div>
 </form>

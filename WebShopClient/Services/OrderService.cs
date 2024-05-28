@@ -1,16 +1,17 @@
-﻿using System.Text.Json;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
 
 namespace WebShopClient.Services
 {
     public class OrderService
-    {
+    {            
         private readonly ApiServices _api;
         private readonly ILogger<OrderService> _logger;
 
         public OrderService(ApiServices api, ILogger<OrderService> logger)
-        {
+        {            
             _api = api;
             _logger = logger;
         }
@@ -25,6 +26,12 @@ namespace WebShopClient.Services
 
                 if (orders != null && orders.Count != 0)
                 {
+                    foreach (var order in orders)
+                    {
+                        // Beräknar totalbeloppet för ordern
+                        order.TotalSum = order.OrderProducts.Sum(op => op.Quantity * (op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price));
+                    }
+
                     return orders;
                 }
                 else
@@ -40,6 +47,7 @@ namespace WebShopClient.Services
             }
         }
 
+
         public async Task<Order?> GetOrderByIdAsync(int? id)
         {
             try
@@ -51,8 +59,7 @@ namespace WebShopClient.Services
                     return null;
                 }
 
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var order = JsonSerializer.Deserialize<Order>(jsonString);            
+                var order = await response.Content.ReadFromJsonAsync<Order>();
 
                 if (order == null)
                 {
@@ -60,46 +67,22 @@ namespace WebShopClient.Services
                     return null;
                 }
 
+                // Beräkna totalbeloppet för ordern
+                order.TotalSum = order.OrderProducts.Sum(op => op.Quantity * (op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price));
+
                 return order;
             }
             catch (HttpRequestException ex)
             {
                 _logger.LogError($"Error fetching order with ID {id}: {ex.Message}");
-                throw new Exception($"An error occurred while fetching the order with ID {id}.", ex);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Unexpected error: {ex.Message}");
-                throw;
+                throw new Exception($"An error occurred while fetching the order with ID {id}.");
             }
         }
 
-        public async Task<int?> CreateOrderAsync(CreateOrder order)
+        public async Task<bool> CreateOrderAsync(CreateOrder createOrder)
         {
-            try
-            {
-                var response = await _api.GetHttpClient().PostAsJsonAsync<CreateOrder>("orders", order);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var createdOrder = JsonSerializer.Deserialize<Order>(jsonString);
-
-                    _logger.LogInformation("Order created successfully.");
-
-                    return createdOrder?.Id;
-                }
-                else
-                {
-                    _logger.LogWarning($"Failed to create order. Status code: {response.StatusCode}");
-                    return null;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError($"Error creating order: {ex.Message}");
-                throw;
-            }
-        }
+            var response = await _api.GetHttpClient().PostAsJsonAsync("Orders", createOrder);
+            return response.IsSuccessStatusCode;
+        }    
     }
-}
+        }

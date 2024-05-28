@@ -30,7 +30,9 @@ namespace WebShopClient
 
             builder.Services.AddHttpClient("API Client", client =>
             {
+                //client.BaseAddress = new Uri("https://webshopapi20240527103524.azurewebsites.net/api/");
                 client.BaseAddress = new Uri("https://localhost:7190/api/");
+
             });
 
             builder.Services.AddScoped<ApiServices>();
@@ -62,6 +64,10 @@ namespace WebShopClient
             builder.Services.AddAuthorizationBuilder()
                 .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
                 .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            
+            builder.Services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder("CustomAuth").RequireAuthenticatedUser().Build())
+                .AddPolicy("Customer", policy => policy.RequireRole("Customer"));
 
             var app = builder.Build();
 

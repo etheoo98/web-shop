@@ -44,6 +44,24 @@ namespace WebShopClient.Controllers
                 .Select(p => new { p.Id, p.Name, p.Price })
                 .ToList();
             return Json(filteredProducts);
-        }  
+        }
+
+        // GET: products by category
+        public async Task<IActionResult> Category(string[] category)
+        {
+            if (category == null || category.Length == 0)
+            {
+                return BadRequest("Category cannot be null or empty.");
+            }
+
+            var products = await _api.GetProductsByCategoryAsync(category.ToList());
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound("No products found for the specified category.");
+            }
+
+            return View(products);
+        }
     }
 }

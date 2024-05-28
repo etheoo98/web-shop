@@ -23,6 +23,9 @@ public class OrderDto
     [JsonPropertyName("shipment-details")]
     public ShipmentDto? ShipmentDetails { get; set; }
 
-    [JsonPropertyName("products")]
-    public ICollection<ProductDto> ProductDtos { get; set; }
+    //[JsonPropertyName("products")]
+    //public ICollection<ProductDto> ProductDtos { get; set; }
+
+    [JsonPropertyName("order-products")]
+    public ICollection<OrderProductDto> OrderProducts { get; set; }
 }

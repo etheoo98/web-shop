@@ -6,6 +6,7 @@ using System;
 using Microsoft.Extensions.Hosting.Internal;
 using WebShopClient.Models.RequestModels;
 using WebShopClient.Models.ResponseModels;
+using WebShopClient.ViewModels;
 using WebShopClient.Services;
 
 namespace WebShopClient.Controllers
@@ -42,6 +43,48 @@ namespace WebShopClient.Controllers
             // Sorterar produkterna efter datum och visar dom tre senaste
             var latestProducts = products.OrderByDescending(p => p.AddDate).Take(3).ToList();
             ViewBag.LatestProducts = latestProducts;
+
+            //räknar totalRevenue
+            decimal totalRevenue = orders.Sum(order => order.TotalSum);
+            ViewBag.TotalRevenue = totalRevenue;
+
+            // Räknar top products
+            var topProducts = orders
+                .SelectMany(order => order.OrderProducts)
+                .GroupBy(op => new { op.ProductId, op.ProductName })
+                .Select(group => new
+                {
+                    ProductName = group.Key.ProductName,
+                    Quantity = group.Sum(op => op.Quantity)
+                })
+                .OrderByDescending(p => p.Quantity)
+                .Take(4)
+                .ToList();
+
+            ViewBag.TopProducts = topProducts;
+
+            //räknar sales per månad för nuvarande år
+            var monthlyRevenue = orders
+                .Where(order => order.OrderDate.Year == 2024)
+                .GroupBy(order => order.OrderDate.Month)
+                .Select(group => new
+                {
+                    Month = group.Key,
+                    Revenue = group.Sum(order => order.TotalSum)
+                })
+                .ToList();
+
+            //Alla månader på året har 0 från början
+            var allMonths = Enumerable.Range(1, 12).Select(month => new { Month = month, Revenue = 0m }).ToList();
+
+            
+            foreach (var monthRevenue in monthlyRevenue)
+            {
+                allMonths[monthRevenue.Month - 1] = monthRevenue;
+            }
+
+            ViewBag.MonthlyRevenue = allMonths.OrderBy(mr => mr.Month).ToList();
+
 
             return View();
         }
@@ -119,56 +162,82 @@ namespace WebShopClient.Controllers
         public async Task<IActionResult> ManageProducts()
         {
             var products = await _productService.GetProductsAsync();
-            return View(products);
-        }
-
-        // GET: /Admin/EditProduct/5
-        public async Task<IActionResult> EditProduct(int id)
-        {
-            var product = await _productService.GetProductAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
             var categories = await _productService.GetCategoriesAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
 
-            return View(new EditProduct
+            var model = new ManageProductsViewModel
             {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                Quantity = product.Quantity,
-                CategoryIds = product.Categories.Select(c => c.Id).ToList()
-            });
+                Products = products,
+                EditProduct = new EditProduct() 
+            };
+
+            return View(model);
         }
 
         // POST: /Admin/EditProduct/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProduct(int id, EditProduct editProduct)
+        public async Task<IActionResult> EditProduct(EditProduct editProduct)
         {
-            if (id != editProduct.Id)
-            {
-                return BadRequest();
-            }
-
             if (!ModelState.IsValid)
             {
+                var products = await _productService.GetProductsAsync();
                 var categories = await _productService.GetCategoriesAsync();
                 ViewBag.Categories = new SelectList(categories, "Id", "Name");
-                return View(editProduct);
+
+                var model = new ManageProductsViewModel
+                {
+                    Products = products,
+                    EditProduct = editProduct
+                };
+
+                return View("ManageProducts", model);
             }
+
             var result = await _productService.UpdateProductAsync(editProduct);
             if (result)
             {
+                TempData["SuccessMessage"] = "Product updated successfully!";
                 return RedirectToAction(nameof(ManageProducts));
             }
 
-            return View(editProduct);
+            var productsList = await _productService.GetProductsAsync();
+            var categoriesList = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categoriesList, "Id", "Name");
+
+            var modelError = new ManageProductsViewModel
+            {
+                Products = productsList,
+                EditProduct = editProduct
+            };
+
+            return View("ManageProducts", modelError);
         }
+
+        //// POST: /Admin/EditProduct/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditProduct(int id, EditProduct editProduct)
+        //{
+        //    if (id != editProduct.Id)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var categories = await _productService.GetCategoriesAsync();
+        //        ViewBag.Categories = new SelectList(categories, "Id", "Name");
+        //        return View(editProduct);
+        //    }
+        //    var result = await _productService.UpdateProductAsync(editProduct);
+        //    if (result)
+        //    {
+        //        return RedirectToAction(nameof(ManageProducts));
+        //    }
+
+        //    return View(editProduct);
+        //}
 
         // DELETE: 
         [HttpPost]
@@ -203,7 +272,8 @@ namespace WebShopClient.Controllers
                 var result = await _discountService.CreateDiscountAsync(createDiscount);
                 if (result)
                 {
-                    return RedirectToAction(nameof(Dashboard));
+                    TempData["SuccessMessage"] = "Campaign created successfully!";
+                    return RedirectToAction(nameof(ManageProducts));
                 }
             }
             var products = await _productService.GetProductsAsync();
@@ -222,6 +292,62 @@ namespace WebShopClient.Controllers
 
             return View(orders);
         }
+
+        // Partial View for Edit Product
+        public async Task<IActionResult> EditProductPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var categories = await _productService.GetCategoriesAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
+            return PartialView("_EditProductPartial", new EditProduct
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                CategoryIds = product.Categories.Select(c => c.Id).ToList()
+            });
+        }
+
+
+        // Partial View for Create Discount
+        public async Task<IActionResult> CreateDiscountPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ProductName = product.Name;
+
+			return PartialView("_CreateDiscountPartial", new CreateDiscount
+            {
+                ProductId = product.Id,
+                StartDate = DateTime.Now
+            });
+        }
+
+        // GET: Partial view Product discount
+        public async Task<IActionResult> GetProductDiscountPartial(int id)
+        {
+            var product = await _productService.GetProductAsync(id);
+            
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_GetProductDiscountPartial", product);
+        }
+
     }
 }
 

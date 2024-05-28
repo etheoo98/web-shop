@@ -5,11 +5,6 @@ namespace WebShop.Models.RequestDTOs;
 
 public class CreateOrderDto
 {
-    [Required(ErrorMessage = "\'customer-id\' is required.")]
-    [Range(0, int.MaxValue, ErrorMessage = "\'customer-id\' must a positive 32 bit integer.")]
-    [JsonPropertyName("customer-id")]
-    public int CustomerId { get; set; }
-
     [Required(ErrorMessage = "\'total-sum\' is required.")]
     [JsonPropertyName("total-sum")]
     public decimal TotalSum { get; set; }

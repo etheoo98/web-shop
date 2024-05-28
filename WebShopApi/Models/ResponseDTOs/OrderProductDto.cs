@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WebShopClient.Models.ResponseModels
+namespace WebShop.Models.ResponseDTOs
 {
-    public class OrderProduct
+    public class OrderProductDto
     {
         [JsonPropertyName("product-id")]
         public int ProductId { get; set; }
@@ -13,16 +13,10 @@ namespace WebShopClient.Models.ResponseModels
         [JsonPropertyName("price")]
         public decimal Price { get; set; }
 
-        [JsonPropertyName("discounted-price")]
-        public decimal DiscountedPrice { get; set; }
-
         [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 
-        [JsonPropertyName("order")]
-        public Order Order { get; set; }
-
-        [JsonPropertyName("product")]
-        public Product Product { get; set; }           
+        [JsonPropertyName("discounted-price")]
+        public decimal DiscountedPrice { get; set; }
     }
 }

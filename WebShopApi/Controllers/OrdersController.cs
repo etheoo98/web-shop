@@ -1,7 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 using WebShop.Data;
 using WebShop.Models.DbModels;
 using WebShop.Models.RequestDTOs;
@@ -81,11 +81,14 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Ba
     // Creates a new Order
     //    
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Post(CreateOrderDto createdOrderDto)
     {
+        var userId = GetUserId();
+
         // Validation
         if (!ModelState.IsValid || createdOrderDto.OrderItems.Count == 0)
-            return BadRequest("Missing or invalid property values");
+            return BadRequest(ModelState);
 
         using (var transaction = await context.Database.BeginTransactionAsync())
         {
@@ -97,7 +100,7 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Ba
 
                 var customerOrder = new CustomerOrder
                 {
-                    FkCustomerId = createdOrderDto.CustomerId,
+                    FkCustomerId = userId,
                     FkOrderId = order.Id
                 };
                 await context.CustomerOrders.AddAsync(customerOrder);
