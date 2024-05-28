@@ -26,6 +26,12 @@ namespace WebShopClient.Services
 
                 if (orders != null && orders.Count != 0)
                 {
+                    foreach (var order in orders)
+                    {
+                        // Beräknar totalbeloppet för ordern
+                        order.TotalSum = order.OrderProducts.Sum(op => op.Quantity * (op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price));
+                    }
+
                     return orders;
                 }
                 else
@@ -41,6 +47,7 @@ namespace WebShopClient.Services
             }
         }
 
+
         public async Task<Order?> GetOrderByIdAsync(int? id)
         {
             try
@@ -52,7 +59,7 @@ namespace WebShopClient.Services
                     return null;
                 }
 
-                var order = await response.Content.ReadFromJsonAsync<Order>();            
+                var order = await response.Content.ReadFromJsonAsync<Order>();
 
                 if (order == null)
                 {
@@ -60,13 +67,16 @@ namespace WebShopClient.Services
                     return null;
                 }
 
+                // Beräkna totalbeloppet för ordern
+                order.TotalSum = order.OrderProducts.Sum(op => op.Quantity * (op.DiscountedPrice != 0 ? op.DiscountedPrice : op.Price));
+
                 return order;
             }
             catch (HttpRequestException ex)
             {
                 _logger.LogError($"Error fetching order with ID {id}: {ex.Message}");
                 throw new Exception($"An error occurred while fetching the order with ID {id}.");
-            }      
+            }
         }
 
         public async Task<bool> CreateOrderAsync(CreateOrder createOrder)
@@ -75,4 +85,4 @@ namespace WebShopClient.Services
             return response.IsSuccessStatusCode;
         }    
     }
-}
+        }
