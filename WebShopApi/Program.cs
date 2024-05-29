@@ -88,14 +88,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Adress till Client!
-//app.UseCors(options => 
-//{ 
-//    options.WithOrigins("https://webshopapiserver.database.windows.net")
-//        .AllowAnyMethod()
-//        .AllowAnyHeader()
-//        .AllowCredentials(); 
-//});
+// Lägg till adress Client happytimes.azurewebsites.net
+app.UseCors(options =>
+{
+    options.WithOrigins("https://happytimes.azurewebsites.net")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+});
 
 app.UseHttpsRedirection();
 app.MapControllers();

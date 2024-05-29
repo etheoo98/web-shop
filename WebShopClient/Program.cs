@@ -29,8 +29,8 @@ namespace WebShopClient
             *************************************************************************************************************/
 
             builder.Services.AddHttpClient("API Client", client =>
-            {
-                client.BaseAddress = new Uri("https://webshopapi20240527103524.azurewebsites.net/api/");
+            {                
+                client.BaseAddress = new Uri("https://webshopapi2024.azurewebsites.net/api/");
                 //client.BaseAddress = new Uri("https://localhost:7190/api/");
             });
 
