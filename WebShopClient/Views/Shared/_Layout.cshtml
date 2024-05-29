@@ -14,23 +14,27 @@
 </head>
 <body>
     <header>
-	    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom mb-3">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index"><img class="me-1" src="@(Url.Content("~/smile.svg"))" />HAPPY TIMES</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom mb-3">
+            <div class="container-fluid px-4">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img class="me-1" src="@(Url.Content("~/smile.svg"))" />HAPPY TIMES
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+                        <!-- Removed the Home link from here -->
                     </ul>
-                    <form class="d-flex position-relative" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search for products" aria-label="Search" id="searchInput" autocomplete="off">
-                        <div class="search-results" id="searchResults" style="display: none;"></div>
-                    </form>
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto d-flex align-items-center">
+                        <li class="nav-item">
+                            <form class="d-flex position-relative" role="search">
+                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="searchInput" autocomplete="off">
+                                <div class="search-results" id="searchResults" style="display: none;"></div>
+                            </form>
+                        </li>
                         @{
                             await Html.RenderPartialAsync("_AuthHeaderListItems");
                         }
@@ -42,6 +46,9 @@
             </div>
         </nav>
     </header>
+
+
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
