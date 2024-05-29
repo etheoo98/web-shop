@@ -24,10 +24,11 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Include(p => p.Discount)
             .ToListAsync();
 
-        if (products.Count == 0)
+        if (products == null)
         {
-            return Ok(new List<ProductDto>());
+            return NotFound();
         }
+
         var productDtos = mapper.Map<List<ProductDto>>(products);
 
         return Ok(productDtos);
@@ -48,6 +49,11 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Include(p => p.Discount)
             .ToListAsync();
 
+        if (products == null)
+        {
+            return NotFound();
+        }
+
         var productDtos = mapper.Map<List<ProductDto>>(products);
 
         return Ok(productDtos);
@@ -59,14 +65,19 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        var products = await context.Products
+        var product = await context.Products
             .Where(p => p.Id == id)
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category)
             .Include(p => p.Discount)
             .FirstOrDefaultAsync();
 
-        var productDto = mapper.Map<ProductDto>(products);
+        if (product == null) 
+        {
+            return NotFound();
+        }
+
+        var productDto = mapper.Map<ProductDto>(product);
 
         return Ok(productDto);
     }

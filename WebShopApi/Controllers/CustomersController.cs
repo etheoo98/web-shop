@@ -19,8 +19,13 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     public async Task<IActionResult> Get()
     {
         var customers = await context.Customers
-             .Include(c => c.Address)          
+             .Include(c => c.Address)
             .ToListAsync();
+
+        if (customers == null)
+        {
+            return NotFound();
+        }
 
         var customerDtos = mapper.Map<List<CustomerDto>>(customers);
 
@@ -33,24 +38,24 @@ public class CustomersController(ApplicationDbContext context, IMapper mapper) :
     public async Task<IActionResult> Get(int id)
     {
         if (id <= 0) id = GetUserId();
-        
+
         var customer = await context.Customers
             .Include(c => c.CustomerOrders)
-            .ThenInclude(co => co.Order)            
+            .ThenInclude(co => co.Order)
             .ThenInclude(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
             .ThenInclude(p => p.ProductCategories)!
             .ThenInclude(pc => pc.Category)
             .Include(c => c.Address)
             .Include(c => c.CustomerOrders)
-            .ThenInclude(co => co.Order) 
+            .ThenInclude(co => co.Order)
             .ThenInclude(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
-            .ThenInclude(p => p.Discount)                
+            .ThenInclude(p => p.Discount)
             .Include(c => c.CustomerOrders)
             .ThenInclude(co => co.Order)
             .ThenInclude(o => o.ShipmentDetails)
-            .ThenInclude(sd => sd.ShippingAddress)            
+            .ThenInclude(sd => sd.ShippingAddress)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (customer == null) return NotFound();

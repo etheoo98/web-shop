@@ -19,11 +19,16 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
     public async Task<IActionResult> Get()
     {
         var categories = await context.Categories.ToListAsync();
-        var categoryDtos = mapper.Map<List<CategoryDto>>(categories);
-        
+        if (categories == null)
+        {
+            return NotFound();
+        }
+
+        var categoryDtos = mapper.Map<List<CategoryDto>>(categories);      
+
         return Ok(categoryDtos);
     }
-    
+
     //
     // Creates a new Category
     //
@@ -35,9 +40,9 @@ public class CategoriesController(ApplicationDbContext context, IMapper mapper) 
         var alreadyExists = context.Categories.Any(c => c.Name == dto.Name);
 
         if (alreadyExists) return BadRequest("Category name already exists");
-        
+
         var category = mapper.Map<Category>(dto);
-        
+
         await context.Categories.AddAsync(category);
         await context.SaveChangesAsync();
 
