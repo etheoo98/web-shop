@@ -35,6 +35,7 @@ namespace WebShopClient.Controllers
             return View();
         }
 
+        [Authorize]
         public async Task<IActionResult> Checkout()
         {
             var cartItems = _shoppingCartService.GetCartItems();
