@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -88,13 +88,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors(options => 
-{ 
-    options.WithOrigins("http://localhost:7064")
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials(); 
-});
+// Adress till Client!
+//app.UseCors(options => 
+//{ 
+//    options.WithOrigins("https://webshopapiserver.database.windows.net")
+//        .AllowAnyMethod()
+//        .AllowAnyHeader()
+//        .AllowCredentials(); 
+//});
 
 app.UseHttpsRedirection();
 app.MapControllers();

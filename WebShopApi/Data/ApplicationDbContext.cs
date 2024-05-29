@@ -21,5 +21,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         modelBuilder.Entity<Customer>()
             .HasAlternateKey(c => c.Email);
+        base.OnModelCreating(modelBuilder);
     }
 }
