@@ -24,6 +24,10 @@ public class ProductsController(ApplicationDbContext context, IMapper mapper) : 
             .Include(p => p.Discount)
             .ToListAsync();
 
+        if (products.Count == 0)
+        {
+            return Ok(new List<ProductDto>());
+        }
         var productDtos = mapper.Map<List<ProductDto>>(products);
 
         return Ok(productDtos);
