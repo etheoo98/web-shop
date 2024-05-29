@@ -45,8 +45,9 @@ namespace WebShopClient.Controllers
             ViewBag.LatestProducts = latestProducts;
 
             //räknar totalRevenue
-            decimal totalRevenue = orders.Sum(order => order.TotalSum);
-            ViewBag.TotalRevenue = totalRevenue;
+            var totalRevenue = orders.Sum(order => order.TotalSum);
+            var totalRevenueInt = (int)Math.Round(totalRevenue);
+            ViewBag.TotalRevenue = totalRevenueInt.ToString("N0");
 
             // Räknar top products
             var topProducts = orders
