@@ -111,7 +111,7 @@
                                         </div>
                                     }
                                     <div class="product-img">
-                                        <img src="./uploads/@item.FileName" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
+                                        <img src="@(Url.Content($"~/uploads/{item.FileName}"))" alt="logo" class="img-fluid" onerror="this.src='https://i.ibb.co/qpB9ZCZ/placeholder.png'">
                                     </div>
                                 </div>
                                 <div class="product-info">

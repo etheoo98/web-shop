@@ -33,6 +33,11 @@ public class OrdersController(ApplicationDbContext context, IMapper mapper) : Ba
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
             var orderDtos = mapper.Map<IEnumerable<OrderDto>>(orders);
 
             return Ok(orderDtos);

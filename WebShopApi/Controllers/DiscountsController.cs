@@ -58,6 +58,12 @@ public class DiscountsController(ApplicationDbContext context, IMapper mapper) :
     public async Task<IActionResult> Get()
     {
         var discounts = await context.Discounts.ToListAsync();
+
+        if (discounts == null)
+        {
+            return NotFound();
+        }
+
         var discountDtos = mapper.Map<List<DiscountDto>>(discounts);
 
         return Ok(discountDtos);
