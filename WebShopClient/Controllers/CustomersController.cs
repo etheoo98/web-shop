@@ -5,7 +5,7 @@ using WebShopClient.Services;
 
 namespace WebShopClient.Controllers;
 
-public class CustomersController(CustomerService service) : Controller
+public class CustomersController(CustomerService service, ShoppingCartService shoppingCartService) : Controller
 {
     public IActionResult Login()
     {
@@ -24,6 +24,7 @@ public class CustomersController(CustomerService service) : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Remove("JwtToken");
+        shoppingCartService.EmptyCart();
         return RedirectToAction("Login");
     }
     

@@ -91,7 +91,14 @@
             </tbody>
         </table>
         <div class="flex-fill">
-            <a class="btn btn-primary" asp-controller="Orders" asp-action="Checkout">Proceed to checkout</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-primary" asp-controller="Orders" asp-action="Checkout">Proceed to checkout</a>
+            }            
+            else
+            {
+                <a class="btn btn-primary" asp-controller="Customers" asp-action="Login" asp-route-returnUrl="@Url.Action("GetCartItems", "ShoppingCarts")">Proceed to checkout</a>
+            }
         </div>
     }
     else
